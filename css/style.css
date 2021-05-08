@@ -1,15 +1,18 @@
 /*Variables*/
 :root {
   --color_3: rgba(255, 175, 1, 0.4);
+  --font-size-navbar: 18px;
 }
 /*normalizacion de caja*/
 * {
   box-sizing: border-box;
+  font-family: "Heebo", sans-serif;
 }
 
 /*nav bar */
 ul {
   height: 100%;
+  font-size: var(--font-size-navbar);
 }
 .nav {
   align-content: center;
@@ -96,11 +99,31 @@ h3 {
   height: 500px;
 }
 
-.content-all {
-  width: 800px;
+.contentTotal {
+  width: 100%;
   height: 400px;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: center;
+  align-items: center;
+}
+
+.content-all {
+  width: 80%;
+  height: 10%;
+}
+
+.division-cut {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-content: center;
+  width: 100%;
+  height: 600px;
+  padding: 30px;
+}
+
+.img-division {
+  width: 100%;
+  height: 100%;
 }
