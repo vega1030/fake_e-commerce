@@ -10,7 +10,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/style.css">
-    <title>Document</title>
+    <link rel="shortcut icon" href="./icon/iconmonstr-shop-13.svg" type="image/x-icon">
+    <title>E-Commerce</title>
 </head>
 
 <body>
@@ -73,75 +74,9 @@
             <h3>Productos recomendados</h3>
         </div>
         <!-- cards sale -->
-        <div class="content-sale">
-            <div class="content-sale__child">
-                <img src="./img/creambody.jpeg" class="content-sale__child__img" alt="">
-                <div class="content-text">
-                    <h4>Promo</h4>
-                    <p>Crema para manos</p>
-                    <span class="salecolor">
-                        2a unidad al 70% de descompte
-                    </span>
-                </div>
-                <button type="button" class="btn btn-primary btn-card">COMPRAR ONLINE</button>
-            </div>
-            <div class="content-sale__child">
-                <img src="./img/facialspray.jpeg" class="content-sale__child__img alt=">
-                <div class="content-text">
-                    <h4>Promo</h4>
-                    <p>Crema para manos</p>
-                    <span class="salecolor">
-                        2a unidad al 70% de descompte
-                    </span>
-                </div>
-                <button type="button" class="btn btn-primary btn-card">COMPRAR ONLINE</button>
-            </div>
-            <div class=" content-sale__child">
-                <img src="./img/facilblue.jpeg" class="content-sale__child__img alt=">
-                <div class="content-text">
-                    <h4>Promo</h4>
-                    <p>Crema para manos</p>
-                    <span class="salecolor">
-                        2a unidad al 70% de descompte
-                    </span>
-                </div>
-                <button type="button" class="btn btn-primary btn-card">COMPRAR ONLINE</button>
-            </div>
-        </div>
-        <div class=" content-sale">
-            <div class="content-sale__child">
-                <img src="./img/milk-barista.jpeg" class="content-sale__child__img alt=">
-                <div class="content-text">
-                    <h4>Promo</h4>
-                    <p>Crema para manos</p>
-                    <span class="salecolor">
-                        2a unidad al 70% de descompte
-                    </span>
-                </div>
-                <button type="button" class="btn btn-primary btn-card">COMPRAR ONLINE</button>
-            </div>
-            <div class="content-sale__child">
-                <img src="./img/faceoil.jpeg" class="content-sale__child__img alt=">
-                <div class="content-text">
-                    <h4>Promo</h4>
-                    <p>Crema para manos</p>
-                    <span class="salecolor">
-                        2a unidad al 70% de descompte
-                    </span>
-                </div>
-                <button type="button" class="btn btn-primary btn-card">COMPRAR ONLINE</button>
-            </div>
-            <div class="content-sale__child">
-                <img src="./img/creambody.jpeg" class="content-sale__child__img alt=">
-                <div class="content-text">
-                    <h4>Promo</h4>
-                    <p>Crema para manos</p>
-                    <span class="salecolor">
-                        2a unidad al 70% de descompte
-                    </span>
-                </div>
-                <button type="button" class="btn btn-primary btn-card">COMPRAR ONLINE</button>
-            </div>
+
+        <div class=" content-sale" id="content_card">
+
         </div>
 
         <!-- MODAL-SALES -->
@@ -171,6 +106,9 @@
     <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8"
         crossorigin="anonymous"></script>
+        <script type="module" src="./js/model.js"></script>
+        <script type="module" src="./js/controller.js"></script>
+        <script type="module" src="./js/view.js"></script>
 </body>
 
 </html>
