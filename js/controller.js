@@ -1,85 +1,71 @@
 'use strict'
 
 import { products_Store } from "./model.js";
+import { products_Instance, createCartCont, create_Category_UI } from "./view.js";
 
 let controller_Store = await products_Store;
 
-//product
-class Product {
-    constructor(title,category,price,description,id){
-        this._title=title;
-        this._category=category;
-        this._price=price;
-        this._description=description;
-        this._id = id
+let cart = [];
+
+
+//-----------------------------------------------------------------------------//
+class Cart {
+
+    constructor(total) {
+        this._total = total
     }
 
-/* Creating a getter and setter for the title property. */
-
-    set title(newTitle){
-        this._title = newTitle
+    set total_At_Cart(newTotal) {
+        this._total = newTotal
+    }
+    get total_At_Cart() {
+        return this._total;
     }
 
-    get title(){
-        return this._title
+
+    //filter element for search at API and later push into cartObject
+
+    push_Into_Cart(idElement = '') {
+        cart.push(controller_Store.find(ele => ele.id === parseInt(idElement)));
+        cart_Instance.calculate_Total_Into_Cart(cart);
+        return createCartCont(cart)
     }
 
-////********----------------------- */
+    calculate_Total_Into_Cart = (product = '') => {
+        const initialValue = 0;
+        const total = product.reduce((preValue, currValue) => preValue + currValue.price, initialValue);
+        console.log(total);
+    };
 
-
-/* A getter and setter for the category property. */
-    set category(newCategory){
-        this.category = newCategory
-    }
-    get category(){
-        return this._category
-    }
-
-////********----------------------- */
-
-
-/* A getter and setter for the price property. */
-    set price(newPrice){
-        this.category = newPrice
-    }
-    get price(){
-        return this.__price
-    }
-
-////********----------------------- */
-
-
-/* A getter and setter for the description property. */
-    set description(newDescription){
-        this.category = newDescription
-    }
-    get description(){
-        return this.__description
-    }
-
-////********----------------------- */
-
+    delete_Product_At_Cart(idElement = '') {
+        cart = cart.filter(ele => { return ele.id != parseInt(idElement) });
+        console.log('Update cart: ', cart);
+    };
 
 }
+//-----------------------------------------------------------------------------//
+/**
+ * It takes a category as an argument, filters the controller_Store array by that category, and returns
+ * a new array with the filtered data
+ * @param category - The category of the element you want to filter.
+ */
 
-
-const generate_Instance_Of_Product = (product ='')=>{
-    product.forEach(iterable_Products =>{
-        const instance_Product = new Product(
-            iterable_Products.title,
-            iterable_Products.category,
-            iterable_Products.price,
-            iterable_Products.description,
-            iterable_Products.id)
-            return instance_Product; 
+const filterElementByCategory = (category) => {
+    let newFilter = '';
+    controller_Store.filter(data => data.category === category).map(dataFiltered => {
+        newFilter = dataFiltered;
+        return create_Category_UI(newFilter);
     })
 }
-generate_Instance_Of_Product(controller_Store)
 
+products_Instance.create_Card(controller_Store)
 
+const cart_Instance = new Cart()
 
-export{
+export {
+    cart_Instance,
+    filterElementByCategory,
     controller_Store,
-    generate_Instance_Of_Product,
-    Product
+    cart
+
 }
