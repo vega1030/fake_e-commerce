@@ -105,9 +105,14 @@ class Product {
     }
 }
 
+const createListCart = (products) =>{
+    products.forEach(elements => {
+        console.log(elements);
+    })
+}
 
 const createCartCont = (arr) => {
-
+    createListCart(arr)
     const counter = document.querySelector('#count_elements_at_cart')
     const content_Counter = document.querySelector('#content_count_cart')
 
@@ -116,24 +121,26 @@ const createCartCont = (arr) => {
 
 }
 
-const products_Instance = new Product();
 
 
-document.querySelector('.dropdown-menu').addEventListener('click', (event) => { filterElementByCategory(event.target.id) })
-
-const create_Category_UI = (data) => {
-    let modelUi = ''
-    Object.values(data).forEach(item => {
-        modelUi = item
-        console.log(modelUi);
-    })
-}
+    const products_Instance = new Product();
 
 
+    document.querySelector('.dropdown-menu').addEventListener('click', (event) => { filterElementByCategory(event.target.id) })
+
+    const create_Category_UI = (data) => {
+        let modelUi = ''
+        Object.values(data).forEach(item => {
+            modelUi = item
+            console.log(modelUi);
+        })
+    }
 
 
-export {
-    products_Instance,
-    createCartCont,
-    create_Category_UI
-}
+
+
+    export {
+        products_Instance,
+        createCartCont,
+        create_Category_UI
+    }
