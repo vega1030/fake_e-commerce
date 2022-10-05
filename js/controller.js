@@ -1,13 +1,17 @@
 'use strict'
 
-import { products_Store } from "./model.js";
-import { products_Instance, createCartCont, create_Category_UI } from "./view.js";
+import { products_Store, Control_Data } from "./model.js";
+import { products_Instance, View_cart, Category_ui } from "./view.js";
 
 let controller_Store = await products_Store;
+const control_Data_Model = new Control_Data
 
-let cart = [];
+const cart_New = new View_cart
 
 
+
+
+let cart = []
 //-----------------------------------------------------------------------------//
 class Cart {
 
@@ -27,8 +31,10 @@ class Cart {
 
     push_Into_Cart(idElement = '') {
         cart.push(controller_Store.find(ele => ele.id === parseInt(idElement)));
+        control_Data_Model.save_Cart_Db(cart)
+
         cart_Instance.calculate_Total_Into_Cart(cart);
-        return createCartCont(cart)
+        return cart_New.createListCart(cart)
     }
 
     calculate_Total_Into_Cart = (product = '') => {
@@ -50,11 +56,15 @@ class Cart {
  * @param category - The category of the element you want to filter.
  */
 
+const category_Instance = new Category_ui
+
+
 const filterElementByCategory = (category) => {
     let newFilter = '';
     controller_Store.filter(data => data.category === category).map(dataFiltered => {
         newFilter = dataFiltered;
-        return create_Category_UI(newFilter);
+        category_Instance.create_Category_UI_Cards (newFilter)
+        return newFilter;
     })
 }
 

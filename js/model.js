@@ -18,12 +18,24 @@ const callFetchProducts = async (url="")=>{
             console.log(e)
         }
 }
-
-
 const products_Store = callFetchProducts('https://fakestoreapi.com/products');
+
+class Control_Data{
+
+    save_Cart_Db(objCart){
+        console.log(objCart);
+        localStorage.setItem('cart',JSON.stringify(objCart))
+    }
+
+}
+
+
+
+
 
 
 
 export{
-    products_Store
+    products_Store,
+    Control_Data
 }
