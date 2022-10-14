@@ -22,10 +22,20 @@ const products_Store = callFetchProducts('https://fakestoreapi.com/products');
 
 class Control_Data{
 
+    //save data at cart
+
     save_Cart_Db(objCart){
         console.log(objCart);
         localStorage.setItem('cart',JSON.stringify(objCart))
     }
+    //delete products at cart
+
+    delete_Cart_db(objCart){
+        if(objCart.id ===JSON.parse(localStorage.getItem('cart'))){
+
+        }
+    }
+
 
 }
 

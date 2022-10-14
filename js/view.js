@@ -1,6 +1,6 @@
 "use strict";
 
-import { cart_Instance, filterElementByCategory } from "./controller.js";
+import { cart_Instance } from "./controller.js";
 
 class Product {
     constructor(title, category, price, description, id, image) {
@@ -68,9 +68,11 @@ class Product {
     }
     /* Creating a card with the information of the product. */
 
-    create_Card(product) {
-        newCategories_Instance.createDynamicCategoryNav(product)
+    create_Card(product, flag = '') {
+
         const content_Cards = document.querySelector("#content_card");
+        const $content_Categories = document.querySelector('#section_categories')
+
         let cards = "";
 
         product.forEach((data) => {
@@ -79,7 +81,7 @@ class Product {
             <div class="content-sale__child">
                 <img src="${ data.image }" class="${ data.title } img-cards-product" alt="" srcset="">
                 <div class="content-text">
-                    <h3 class="name_product">${ data.title }</h3>
+                    <h3 class="name_product">${ data.title.slice(0, 13) }</h3>
                     <h4>€ ${ data.price }</h4>                        
                 </div>
                 <div class="content-buttons___card">
@@ -88,6 +90,7 @@ class Product {
                 </div>
             </div>
             `;
+
             content_Cards.innerHTML = cards;
         })
 
@@ -123,7 +126,6 @@ class View_cart {
     }
 }
 
-const cart_Ui = new View_cart
 
 
 class Category_ui {
@@ -142,41 +144,30 @@ class Category_ui {
 
     createDynamicCategoryNav(categories) {
 
-        /* Filtering the array of objects and returning only the unique values of the category property. */
-        let result = categories.reduce((select, i) => {
-            if (!select.some(obj => obj.category === i.category)) {
-                select.push(i)
-            }
-            return select;
-        }, [])
-
         const containt_Li_In_Header = document.querySelector('#ul_List')
         let modelNavHeader = "";
-
-        result.forEach((elements) => {
-            modelNavHeader+=
-            `
+        products_Instance.create_Card(categories, true)
+        categories.forEach((elements) => {
+            modelNavHeader +=
+                `
             <li><a class="dropdown-item" href="#" id="${ elements.category }"> ${ elements.category } </a></li>
-
             `;
             containt_Li_In_Header.innerHTML = modelNavHeader
+
         })
+
     }
 
     create_Category_UI_Cards = (data) => {
-        let modelUi = ''
-        Object.values(data).forEach(item => {
-            console.log(item);
-        })
+        console.log(data);
+        products_Instance.create_Card(data, true)
     }
+
 }
-const newCategories_Instance = new Category_ui
-
-const products_Instance = new Product();
+const cart_Ui = new View_cart;
 
 
-document.querySelector('.dropdown-menu').addEventListener('click', (event) => { filterElementByCategory(event.target.id) })
-
+const products_Instance = new Product;
 
 
 

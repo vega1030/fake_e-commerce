@@ -16,16 +16,30 @@
 /*cart img */
 
 .cart_style {
-  display: grid;
-  background-color: cadetblue;
   width: 100%;
-  height: 86vh;
-  grid-template: .5fr repeat(2, 1fr) 0.5fr / .2fr repeat(3, 1fr) .2fr;
+  height: 100%;
+  padding: 2%;
+  display: grid;
+  grid-template-columns: 3fr 2fr 2fr 2fr 2fr;
+  margin: 0 0 0 0;
   justify-items: center;
-  align-items: center;
-  grid-auto-flow: column;
-  gap: 1%;
+  grid-auto-rows: 28rem;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
 
+}
+
+.categories_style {
+  width: 100%;
+  height: 100%;
+  padding: 2%;
+  display: grid;
+  grid-template-columns: 3fr 2fr 2fr 2fr 2fr;
+  margin: 0 0 0 0;
+  justify-items: center;
+  grid-auto-rows: 28rem;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
 }
 
 .name_product {
@@ -128,9 +142,8 @@ section {
 
 .title {
   width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  height: 35%;
+  display: grid;
   justify-content: center;
   align-items: center;
 }
@@ -225,8 +238,9 @@ h2 {
   grid-template-columns: 3fr 2fr 2fr 2fr 2fr;
   margin: 0 0 0 0;
   justify-items: center;
-  grid-template-rows: 0.5fr 1fr 1fr 0.5fr;
-  grid-template-areas: "z z b b";
+  grid-auto-rows: 28rem;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
 }
 
 .content-buttons___card {
@@ -238,16 +252,15 @@ h2 {
 .content-sale__child {
   display: flex;
   flex-direction: column;
-  width: 70%;
-  height: 100%;
+  width: 48%;
+  height: 80%;
   font-weight: 300;
   align-items: center;
   justify-content: center;
 }
 
 .img-cards-product {
-  width: 70%;
-  background-color: #666;
+  width: 50%;
 }
 
 .content-text {

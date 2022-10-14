@@ -26,9 +26,9 @@
                         Dropdown link
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id="ul_List">
-                        <!-- <li><a class="dropdown-item" href="#" id="jewelery">Jewellery</a></li>
-                        <li><a class="dropdown-item" href="#" id="electronics">Electronic</a></li>
-                        <li><a class="dropdown-item" href="#" id="women's clothing">Women's clothing</a></li> -->
+
+                        <!-- create dynamic category -->
+
                     </ul>
                 </li>
             </form>
@@ -36,10 +36,8 @@
                 <a class="nav-link" href="#">Link</a>
             </li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="#" id="content_count_cart"> <span><img src="./icon/cart_icon.svg"
-                            alt="icon_cart" class="navbar_cart"></span><span id="count_elements_at_cart"></span></a>
-            </li>
+            <a class="nav-link" href="#" id="content_count_cart"> <span><img src="./icon/cart_icon.svg"
+                        alt="icon_cart" class="navbar_cart"></span><span id="count_elements_at_cart"></span></a>
         </ul>
 
     </header>
@@ -86,7 +84,7 @@
             </div>
         </div>
         <h3 class="products-recomended">Productos recomendados</h3>
-        
+
         <!-- cards sale -->
 
         <div class=" content-sale" id="content_card">
@@ -97,6 +95,10 @@
 
         <!-- MODAL-SALES -->
 
+
+    </section>
+    
+    <section id="section_categories" class="categories_style">
 
     </section>
 
@@ -227,31 +229,31 @@
 
 
 
-        <!-- FOOTER -->
+    <!-- FOOTER -->
 
-        <footer>
-            <div class="content-text__footer">
-                <p>Seguinos en nuestras redes</p>
+    <footer>
+        <div class="content-text__footer">
+            <p>Seguinos en nuestras redes</p>
+        </div>
+        <div class="contenticons">
+            <div class="facebook">
+                <img src="./icon/facebook_icon.svg" class="icon" alt="">
             </div>
-            <div class="contenticons">
-                <div class="facebook">
-                    <img src="./icon/facebook_icon.svg" class="icon" alt="">
-                </div>
-                <div class="twitter">
-                    <img src="./icon/twitersocialnetworkbrandlogo_78853.svg" class="icon" alt="">
-                </div>
-                <div class="instagram">
-                    <img src="./icon/instagram_108066.svg" class="icon" alt="">
-                </div>
+            <div class="twitter">
+                <img src="./icon/twitersocialnetworkbrandlogo_78853.svg" class="icon" alt="">
             </div>
-        </footer>
+            <div class="instagram">
+                <img src="./icon/instagram_108066.svg" class="icon" alt="">
+            </div>
+        </div>
+    </footer>
 
-        <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8"
-            crossorigin="anonymous"></script>
-        <script type="module" src="./js/model.js"></script>
-        <script type="module" src="./js/controller.js"></script>
-        <script type="module" src="./js/view.js"></script>
+    <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8"
+        crossorigin="anonymous"></script>
+    <script type="module" src="./js/model.js"></script>
+    <script type="module" src="./js/controller.js"></script>
+    <script type="module" src="./js/view.js"></script>
 </body>
 
 </html>

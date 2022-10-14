@@ -4,9 +4,8 @@ import { products_Store, Control_Data } from "./model.js";
 import { products_Instance, View_cart, Category_ui } from "./view.js";
 
 let controller_Store = await products_Store;
-const control_Data_Model = new Control_Data
 
-const cart_New = new View_cart
+
 
 
 
@@ -50,31 +49,60 @@ class Cart {
 
 }
 //-----------------------------------------------------------------------------//
-/**
- * It takes a category as an argument, filters the controller_Store array by that category, and returns
- * a new array with the filtered data
- * @param category - The category of the element you want to filter.
- */
 
-const category_Instance = new Category_ui
+class Filter_Feactures {
 
 
-const filterElementByCategory = (category) => {
-    let newFilter = '';
-    controller_Store.filter(data => data.category === category).map(dataFiltered => {
-        newFilter = dataFiltered;
-        category_Instance.create_Category_UI_Cards (newFilter)
-        return newFilter;
-    })
+    filterElementsAndCreateNewObject(category) {
+        controller_Store.filter(data => data.category === category).forEach(dataFiltered => {
+            const filterProducts = {
+                id: dataFiltered.id,
+                category: dataFiltered.category,
+                title: dataFiltered.title,
+                image: dataFiltered.image
+            }
+            console.log(filterProducts);
+        })
+    }
+
+
+
+    send_Categories_In_View(products) {
+        let result = products.reduce((value, i) => {
+            if (!value.some(data => data.category === i.category)) {
+                value.push(i)
+            }
+            return value
+        }
+            , [])
+        category_Instance_View.createDynamicCategoryNav(result)
+    };
+
+    filterElementByCategory(category) {
+        const newFilter = controller_Store.filter(data => data.category === category)
+        category_Instance_View.create_Category_UI_Cards(newFilter)
+
+    }
 }
 
+
+/* This is a event listener that is listening to the click event on the dropdown menu. */
+
+
+const control_Data_Model = new Control_Data
+const category_Instance_View = new Category_ui
+const filter_Feactures = new Filter_Feactures
+const cart_New = new View_cart
+
+document.querySelector('.dropdown-menu').addEventListener('click', (event) => { filter_Feactures.filterElementByCategory(event.target.id) })
+filter_Feactures.send_Categories_In_View(controller_Store)
+filter_Feactures.filterElementsAndCreateNewObject(controller_Store)
 products_Instance.create_Card(controller_Store)
 
 const cart_Instance = new Cart()
 
 export {
     cart_Instance,
-    filterElementByCategory,
     controller_Store,
     cart
 
