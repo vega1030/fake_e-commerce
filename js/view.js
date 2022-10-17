@@ -1,6 +1,7 @@
 "use strict";
 
-import { cart_Instance } from "./controller.js";
+import { cart_Instance, controller } from "./controller.js";
+
 
 class Product {
     constructor(title, category, price, description, id, image) {
@@ -68,42 +69,46 @@ class Product {
     }
     /* Creating a card with the information of the product. */
 
-    create_Card(product, flag = '') {
-
+    create_Card(product) {
+        const card_Model = (products, content_Data_In_DOM, global_Variable) => {
+            products.forEach(data => {
+                global_Variable +=
+                    `
+                <div class="content-sale__child">
+                    <img src="${ data.image }" class="${ data.title } img-cards-product" alt="" srcset="">
+                    <div class="content-text">
+                        <h3 class="name_product">${ data.title.slice(0, 13) }</h3>
+                        <h4>€ ${ data.price }</h4>                        
+                    </div>
+                    <div class="content-buttons___card">
+                    <button type="button" id ="${ data.id }" class="btn btn-primary btn-card btn_push_element">comprar</button>
+                    <button type="button" id ="${ data.id }" class="btn btn-primary btn-card btn_delete_element">DELETE AT CART</button>
+                    </div>
+                </div>
+                `;
+                return content_Data_In_DOM.innerHTML = global_Variable
+            })
+        }
         const content_Cards = document.querySelector("#content_card");
         const $content_Categories = document.querySelector('#section_categories')
 
         let cards = "";
+        let filtered_cards = ""
 
-        product.forEach((data) => {
-            cards +=
-                `
-            <div class="content-sale__child">
-                <img src="${ data.image }" class="${ data.title } img-cards-product" alt="" srcset="">
-                <div class="content-text">
-                    <h3 class="name_product">${ data.title.slice(0, 13) }</h3>
-                    <h4>€ ${ data.price }</h4>                        
-                </div>
-                <div class="content-buttons___card">
-                <button type="button" id ="${ data.id }" class="btn btn-primary btn-card btn_push_element">comprar</button>
-                <button type="button" id ="${ data.id }" class="btn btn-primary btn-card btn_delete_element">DELETE AT CART</button>
-                </div>
-            </div>
-            `;
-
-            content_Cards.innerHTML = cards;
-        })
+        card_Model(product, content_Cards, cards)
+        card_Model(product, $content_Categories, filtered_cards)
 
         const btn_Push_Cart = document.querySelectorAll('.btn_push_element')
         btn_Push_Cart.forEach((element) => {
             element.addEventListener('click', (e) => {
-                cart_Instance.push_Into_Cart(e.target.id)
+                // cart_Instance.push_Into_Cart(e.target.id)
+                controller.send_Id(e.target.id)
             });
         })
         const btn_Delete_Cart = document.querySelectorAll('.btn_delete_element')
         btn_Delete_Cart.forEach((element) => {
             element.addEventListener('click', (e) => {
-                cart_Instance.delete_Product_At_Cart(e.target.id)
+                // cart_Instance.delete_Product_At_Cart(e.target.id)
             });
         })
     }
@@ -127,7 +132,6 @@ class View_cart {
 }
 
 
-
 class Category_ui {
 
     constructor(category) {
@@ -143,14 +147,12 @@ class Category_ui {
     }
 
     createDynamicCategoryNav(categories) {
-
         const containt_Li_In_Header = document.querySelector('#ul_List')
         let modelNavHeader = "";
-        products_Instance.create_Card(categories, true)
-        categories.forEach((elements) => {
+        categories.forEach(elements => {
             modelNavHeader +=
                 `
-            <li><a class="dropdown-item" href="#" id="${ elements.category }"> ${ elements.category } </a></li>
+            <li><a class="dropdown-item" href="#" id="${ elements }"> ${ elements } </a></li>
             `;
             containt_Li_In_Header.innerHTML = modelNavHeader
 
@@ -160,20 +162,21 @@ class Category_ui {
 
     create_Category_UI_Cards = (data) => {
         console.log(data);
-        products_Instance.create_Card(data, true)
+        products_Instance.create_Card(data)
     }
 
 }
-const cart_Ui = new View_cart;
+const cart_Ui = new View_cart();
+const products_Instance = new Product();
+// const newController = new Control_View_Information_At_DOM() 
 
 
-const products_Instance = new Product;
-
-
+document.querySelector('.dropdown-menu').addEventListener('click', (event) => { controller.send_Category(event.target.id) })
 
 
 export {
     products_Instance,
     View_cart,
-    Category_ui
+    Category_ui,
+    Product, controller
 }
