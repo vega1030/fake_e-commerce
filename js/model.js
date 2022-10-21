@@ -1,5 +1,8 @@
 'use strict'
-import { controller } from "./controller.js";
+import { controller, controller_Cart } from "./controller.js";
+
+
+let id_products_reference = []
 
 
 class Calls_API {
@@ -90,12 +93,35 @@ class Calls_API {
 
 const calls_To_API = new Calls_API()
 
-calls_To_API.get_All_Products('https://fakestoreapi.com/products').then(products => controller.control_View_All_Products(products))
+let cart = []
+calls_To_API.get_All_Products('https://fakestoreapi.com/products').then(products => { controller.control_View_All_Products(products) })
+
 calls_To_API.get_Categories('https://fakestoreapi.com/products/categories').then(categories => controller.control_View_Categories(categories))
 
 
+class Drive_Data_Cart {
 
+    constructor(data_cart = []) {
+        this._data_cart = data_cart
+    }
 
+    async save_Data_Into_Cart(id) {
+        id_products_reference.push(id)
+        data_Cart.send_Products_To_Controller(id)
+
+    }
+
+    async send_Products_To_Controller(id) {
+        console.log(id);
+        calls_To_API.get_All_Products('https://fakestoreapi.com/products').then(products => {
+            cart.push(products.find(item => item.id == id))
+            console.log(cart);
+            controller_Cart.reception_Data_For_Cart(cart)
+        })
+    }
+}
+
+const data_Cart = new Drive_Data_Cart
 
 class Control_Data {
 
@@ -115,4 +141,5 @@ class Control_Data {
 export {
     calls_To_API,
     Control_Data,
+    data_Cart
 }

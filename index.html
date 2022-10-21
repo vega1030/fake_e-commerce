@@ -11,223 +11,238 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700&display=swap" rel="stylesheet">
     <!-- <link rel="stylesheet" href="./less/style.less"> -->
     <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/structure.css">
     <link rel="shortcut icon" href="./icon/iconmonstr-shop-13.svg" type="image/x-icon">
     <title>E-Commerce</title>
 </head>
 
 <body>
-    <header>
-
-        <ul class="nav justify-content-end">
-            <form action="#">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        Dropdown link
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id="ul_List">
-
-                        <!-- create dynamic category -->
-
-                    </ul>
+    <header class="header">
+        <nav class="navigation">
+            <ul class="nav justify-content-end">
+                <li class="nav-item">
+                    <a class="nav-link" href="#section_home" id="home">Home</a>
                 </li>
-            </form>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
-            </li>
+                <form action="#">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Categories
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id="ul_List">
 
-            <a class="nav-link" href="#" id="content_count_cart"> <span><img src="./icon/cart_icon.svg"
-                        alt="icon_cart" class="navbar_cart"></span><span id="count_elements_at_cart"></span></a>
-        </ul>
+                            <!-- create dynamic category -->
+
+                        </ul>
+                    </li>
+                </form>
+
+
+                <a class="nav-link" href="#" id="section_cart"> <span><img src="./icon/cart_icon.svg"
+                            alt="icon_cart" class="navbar_cart"></span><span id="count_elements_at_cart"></span></a>
+            </ul>
+
+        </nav>
 
     </header>
 
-    <section>
-        <div class="contentsection">
-            <div class="banner">
-            </div>
-            <div class="title-content">
-                <div class="title">
-                    <h1>Empieza tu compra</h1>
-                    <h3>Ingresa tu e-mail</h3>
-                    <div class="mb-3 form-init">
-                        <label for="exampleFormControlInput1" class="form-label"></label>
-                        <input type="email" class="form-control" id="exampleFormControlInput1"
-                            placeholder="Ingresa tu correo electronico">
-                        <button type="button" class="btn btn-primary">Primary</button>
+    <section id="content">
+
+        <section class="section_home_page" id="section_home">
+            <div class="contentsection">
+                <div class="banner">
+                </div>
+                <div class="title-content">
+                    <div class="title">
+                        <h1>Empieza tu compra</h1>
+                        <h3>Ingresa tu e-mail</h3>
+                        <div class="mb-3 form-init">
+                            <label for="exampleFormControlInput1" class="form-label"></label>
+                            <input type="email" class="form-control" id="exampleFormControlInput1"
+                                placeholder="Ingresa tu correo electronico">
+                            <button type="button" class="btn btn-primary">Primary</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="content-card">
-            <div class="leyend">
-                <h2>Compra desde tu casa</h2>
-                <p> Lorem ipsum dolor, sit amet consectetur adipisicing elit. Mollitia inventore corrupti deserunt! Nemo
-                    aperiam nam officia libero vero aut quam, neque, cum natus quaerat minus quia exercitationem,
-                    distinctio
-                    possimus commodi. </p>
+            <div class="content-card">
+                <div class="leyend">
+                    <h2>Compra desde tu casa</h2>
+                    <p> Lorem ipsum dolor, sit amet consectetur adipisicing elit. Mollitia inventore corrupti deserunt!
+                        Nemo
+                        aperiam nam officia libero vero aut quam, neque, cum natus quaerat minus quia exercitationem,
+                        distinctio
+                        possimus commodi. </p>
+                </div>
+                <div class="img-content">
+                    <img src="./img/img-super.jpeg" class="img-card" alt="">
+                </div>
             </div>
-            <div class="img-content">
-                <img src="./img/img-super.jpeg" class="img-card" alt="">
+            <div class="content-card__reverse">
+                <div class="leyend">
+                    <h2>Compra desde tu casa</h2>
+                    <p> Lorem ipsum dolor, sit amet consectetur adipisicing elit. Mollitia inventore corrupti deserunt!
+                        Nemo
+                        aperiam nam officia libero vero aut quam, neque, cum natus quaerat minus quia exercitationem,
+                        distinctio
+                        possimus commodi. </p>
+                </div>
+                <div class="img-content">
+                    <img src="./img/delivery-CT7IWRM7G5k-unsplash.jpeg" class="img-card" alt="">
+                </div>
             </div>
-        </div>
-        <div class="content-card__reverse">
-            <div class="leyend">
-                <h2>Compra desde tu casa</h2>
-                <p> Lorem ipsum dolor, sit amet consectetur adipisicing elit. Mollitia inventore corrupti deserunt! Nemo
-                    aperiam nam officia libero vero aut quam, neque, cum natus quaerat minus quia exercitationem,
-                    distinctio
-                    possimus commodi. </p>
+            <h3 class="products-recomended">Productos recomendados</h3>
+
+            <!-- cards sale -->
+
+            <div class=" content-sale" id="content_card">
+
+                <!-- DYNAMIC TEMPLATE AT VIEW.JS  -->
+
             </div>
-            <div class="img-content">
-                <img src="./img/delivery-CT7IWRM7G5k-unsplash.jpeg" class="img-card" alt="">
+
+            <!-- MODAL-SALES -->
+
+
+        </section class="categories_style">
+
+        <section id="section_categories" class="categories_style">
+
+        </section>
+
+        <section id="individual_card_product" class="style_content_card">
+
+            <!-- Dynamic template view.js -->
+
+        </section>
+
+        <section class="cart_style" id="section_cart">
+
+            <div class="containt_card____cart" id="$containt_card____cart">
+                <div class="card____cart">
+                    <div class="content_image_product_at_cart">
+                        <img src="/img/faceoil.jpeg" alt="img" srcset="" class="img-card____cart">
+                    </div>
+
+                    <div class="content_description">
+                        <h2>Perfume</h2>
+
+                    </div>
+
+                    <div class="price_and_cant">
+                        <h3>$122</h3>
+                        <select class="form-select" aria-label="Default select example">
+                            <option selected>Open this select menu</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+
+                </div>
             </div>
-        </div>
-        <h3 class="products-recomended">Productos recomendados</h3>
+            <div class="containt_card____cart" id="$containt_card____cart">
+                <div class="card____cart">
+                    <div class="content_image_product_at_cart">
+                        <img src="/img/faceoil.jpeg" alt="img" srcset="" class="img-card____cart">
+                    </div>
 
-        <!-- cards sale -->
+                    <div class="content_description">
+                        <h2>Perfume</h2>
 
-        <div class=" content-sale" id="content_card">
+                    </div>
 
-            <!-- DYNAMIC TEMPLATE AT VIEW.JS  -->
+                    <div class="price_and_cant">
+                        <h3>$122</h3>
+                        <select class="form-select" aria-label="Default select example">
+                            <option selected>Open this select menu</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
 
-        </div>
+                </div>
+            </div>
+            <div class="containt_card____cart" id="$containt_card____cart">
+                <div class="card____cart">
+                    <div class="content_image_product_at_cart">
+                        <img src="/img/faceoil.jpeg" alt="img" srcset="" class="img-card____cart">
+                    </div>
 
-        <!-- MODAL-SALES -->
+                    <div class="content_description">
+                        <h2>Perfume</h2>
+
+                    </div>
+
+                    <div class="price_and_cant">
+                        <h3>$122</h3>
+                        <select class="form-select" aria-label="Default select example">
+                            <option selected>Open this select menu</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+            <div class="containt_card____cart" id="$containt_card____cart">
+                <div class="card____cart">
+                    <div class="content_image_product_at_cart">
+                        <img src="/img/faceoil.jpeg" alt="img" srcset="" class="img-card____cart">
+                    </div>
+
+                    <div class="content_description">
+                        <h2>Perfume</h2>
+
+                    </div>
+
+                    <div class="price_and_cant">
+                        <h3>$122</h3>
+                        <select class="form-select" aria-label="Default select example">
+                            <option selected>Open this select menu</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
 
 
     </section>
-    
-    <section id="section_categories" class="categories_style">
-
-    </section>
-
-    <section class="cart_style" id="cart">
-
-        <div class="containt_card____cart" id="$containt_card____cart">
-            <div class="card____cart">
-                <div class="content_image_product_at_cart">
-                    <img src="/img/faceoil.jpeg" alt="img" srcset="" class="img-card____cart">
-                </div>
-
-                <div class="content_description">
-                    <h2>Perfume</h2>
-
-                </div>
-
-                <div class="price_and_cant">
-                    <h3>$122</h3>
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected>Open this select menu</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                    </select>
-                </div>
-
-            </div>
-        </div>
-        <div class="containt_card____cart" id="$containt_card____cart">
-            <div class="card____cart">
-                <div class="content_image_product_at_cart">
-                    <img src="/img/faceoil.jpeg" alt="img" srcset="" class="img-card____cart">
-                </div>
-
-                <div class="content_description">
-                    <h2>Perfume</h2>
-
-                </div>
-
-                <div class="price_and_cant">
-                    <h3>$122</h3>
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected>Open this select menu</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                    </select>
-                </div>
-
-            </div>
-        </div>
-        <div class="containt_card____cart" id="$containt_card____cart">
-            <div class="card____cart">
-                <div class="content_image_product_at_cart">
-                    <img src="/img/faceoil.jpeg" alt="img" srcset="" class="img-card____cart">
-                </div>
-
-                <div class="content_description">
-                    <h2>Perfume</h2>
-
-                </div>
-
-                <div class="price_and_cant">
-                    <h3>$122</h3>
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected>Open this select menu</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                    </select>
-                </div>
-
-            </div>
-        </div>
-        <div class="containt_card____cart" id="$containt_card____cart">
-            <div class="card____cart">
-                <div class="content_image_product_at_cart">
-                    <img src="/img/faceoil.jpeg" alt="img" srcset="" class="img-card____cart">
-                </div>
-
-                <div class="content_description">
-                    <h2>Perfume</h2>
-
-                </div>
-
-                <div class="price_and_cant">
-                    <h3>$122</h3>
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected>Open this select menu</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                    </select>
-                </div>
-
-            </div>
-        </div>
-
-    </section>
-
-
 
     <!-- FOOTER -->
 
@@ -251,9 +266,10 @@
     <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8"
         crossorigin="anonymous"></script>
-        <script type="module" src="./js/model.js"></script>
-        <script type="module" src="./js/view.js"></script>
-        <script type="module" src="./js/controller.js"></script>
+    <script type="module" src="./js/model.js"></script>
+    <script type="module" src="./js/view.js"></script>
+    <script type="module" src="./js/controller.js"></script>
+    <script type="module" src="./js/routers.js"></script>
 </body>
 
 </html>

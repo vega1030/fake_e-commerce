@@ -1,7 +1,6 @@
 "use strict";
 
-import { cart_Instance, controller } from "./controller.js";
-
+import { controller, cart_Instance } from "./controller.js";
 
 class Product {
     constructor(title, category, price, description, id, image) {
@@ -21,14 +20,13 @@ class Product {
         return this._image;
     }
 
-    ////********----------------------- */
+    ////******** ---------------------- ******************/
 
 
     /* Creating a getter and setter for the title property. */
 
     set title(newTitle) {
         this.title = newTitle
-
     }
 
     get title() {
@@ -69,7 +67,7 @@ class Product {
     }
     /* Creating a card with the information of the product. */
 
-    create_Card(product) {
+    create_Card(product, flag) {
         const card_Model = (products, content_Data_In_DOM, global_Variable) => {
             products.forEach(data => {
                 global_Variable +=
@@ -77,12 +75,14 @@ class Product {
                 <div class="content-sale__child">
                     <img src="${ data.image }" class="${ data.title } img-cards-product" alt="" srcset="">
                     <div class="content-text">
+                    <a href="#" class="content_names" id="${ data.id }">
                         <h3 class="name_product">${ data.title.slice(0, 13) }</h3>
-                        <h4>€ ${ data.price }</h4>                        
+                    </a>                      
+                        <h4>€ ${ data.price }</h4>  
                     </div>
                     <div class="content-buttons___card">
-                    <button type="button" id ="${ data.id }" class="btn btn-primary btn-card btn_push_element">comprar</button>
-                    <button type="button" id ="${ data.id }" class="btn btn-primary btn-card btn_delete_element">DELETE AT CART</button>
+                        <button type="button" id ="${ data.id }" class="btn btn-primary btn-card btn_push_element">comprar</button>
+                        <button type="button" id ="${ data.id }" class="btn btn-primary btn-card btn_delete_element">DELETE AT CART</button>
                     </div>
                 </div>
                 `;
@@ -95,14 +95,22 @@ class Product {
         let cards = "";
         let filtered_cards = ""
 
-        card_Model(product, content_Cards, cards)
-        card_Model(product, $content_Categories, filtered_cards)
+
+        flag === true ? card_Model(product, $content_Categories, filtered_cards) : card_Model(product, content_Cards, cards)
+
+        const anchor_Name = document.querySelectorAll('.content_names')
+
+        anchor_Name.forEach((element) => {
+            element.addEventListener('click', (e) => {
+                console.log(e.target.parentNode.id)
+                controller.send_Id(e.target.parentNode.id)
+            })
+        })
 
         const btn_Push_Cart = document.querySelectorAll('.btn_push_element')
         btn_Push_Cart.forEach((element) => {
             element.addEventListener('click', (e) => {
-                // cart_Instance.push_Into_Cart(e.target.id)
-                controller.send_Id(e.target.id)
+                cart_Instance.send_Id_To_Cart(parseInt(e.target.id))
             });
         })
         const btn_Delete_Cart = document.querySelectorAll('.btn_delete_element')
@@ -112,6 +120,34 @@ class Product {
             });
         })
     }
+
+    uI_Individual_Card(product) {
+        const content_Individual_Cards = document.querySelector('#individual_card_product')
+
+        let model_Card = ''
+        console.log(product);
+        model_Card =
+            `
+        <div class="content_title">
+        <h1> ${ product.title }</h1>
+    </div>
+    <div class="content_price">
+        <h3>${ product.price }</h3>
+    </div>
+    <div class="content_description">
+        <p>
+
+            ${ product.description }
+        
+        </p>
+    </div>
+    <div class="content_image">
+        <img src="${ product.image }" alt="image${ product.title }" class="image_style">
+    </div>
+        `
+        console.log(model_Card);
+    }
+
 }
 class View_cart {
 
@@ -123,7 +159,7 @@ class View_cart {
     }
     createCartCont = (arr) => {
         const counter = document.querySelector('#count_elements_at_cart')
-        const content_Counter = document.querySelector('#content_count_cart')
+        const content_Counter = document.querySelector('#cart')
 
         counter.innerText = JSON.stringify(arr.length)
         content_Counter.appendChild(counter)
@@ -152,7 +188,7 @@ class Category_ui {
         categories.forEach(elements => {
             modelNavHeader +=
                 `
-            <li><a class="dropdown-item" href="#" id="${ elements }"> ${ elements } </a></li>
+            <li><a class="dropdown-item route" href="#section_categories" id="${ elements }"> ${ elements } </a></li>
             `;
             containt_Li_In_Header.innerHTML = modelNavHeader
 
@@ -172,8 +208,6 @@ const products_Instance = new Product();
 
 
 document.querySelector('.dropdown-menu').addEventListener('click', (event) => { controller.send_Category(event.target.id) })
-
-
 export {
     products_Instance,
     View_cart,

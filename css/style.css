@@ -92,16 +92,12 @@ ul {
   align-content: center;
 }
 
-header {
-  width: 100%;
-  height: 80px;
+.header {
   background: var(--color_2);
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
+
 }
 
-header,
+.header,
 .content-sale__child {
   box-shadow: var(--shadow_box);
 }
@@ -112,14 +108,7 @@ section {
   height: 100%;
 }
 
-.contentsection {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-content: center;
-  width: 100%;
-  height: 700px;
-}
+
 
 .banner {
   width: 50%;
@@ -182,13 +171,7 @@ h3 {
 }
 
 /*--cardLandscape--*/
-.content-card {
-  width: 100%;
-  height: 400px;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-}
+
 
 .leyend,
 .img-content {
@@ -290,6 +273,10 @@ h2 {
 .btn-card:hover {
   background-color: var(--color_2);
 }
+
+
+
+
 
 /** footer **/
 
