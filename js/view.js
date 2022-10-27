@@ -90,7 +90,7 @@ class Product {
             })
         }
         const content_Cards = document.querySelector("#content_card");
-        const $content_Categories = document.querySelector('#section_categories')
+        const $content_Categories = document.querySelector('#_categories')
 
         let cards = "";
         let filtered_cards = ""
@@ -122,10 +122,9 @@ class Product {
     }
 
     uI_Individual_Card(product) {
-        const content_Individual_Cards = document.querySelector('#individual_card_product')
+        const content_Individual_Cards = document.querySelector('#individual_product')
 
         let model_Card = ''
-        console.log(product);
         model_Card =
             `
         <div class="content_title">
@@ -144,9 +143,7 @@ class Product {
     <div class="content_image">
         <img src="${ product.image }" alt="image${ product.title }" class="image_style">
     </div>
-        `
-        console.log(model_Card);
-    }
+        `    }
 
 }
 class View_cart {
@@ -158,8 +155,9 @@ class View_cart {
         })
     }
     createCartCont = (arr) => {
+        console.log(arr.length);
         const counter = document.querySelector('#count_elements_at_cart')
-        const content_Counter = document.querySelector('#cart')
+        const content_Counter = document.querySelector('#section_cart')
 
         counter.innerText = JSON.stringify(arr.length)
         content_Counter.appendChild(counter)
@@ -187,8 +185,8 @@ class Category_ui {
         let modelNavHeader = "";
         categories.forEach(elements => {
             modelNavHeader +=
-                `
-            <li><a class="dropdown-item route" href="#section_categories" id="${ elements }"> ${ elements } </a></li>
+            `
+            <li><a class="dropdown-item route" href="#_categories" id="${ elements }"> ${ elements } </a></li>
             `;
             containt_Li_In_Header.innerHTML = modelNavHeader
 
@@ -204,8 +202,6 @@ class Category_ui {
 }
 const cart_Ui = new View_cart();
 const products_Instance = new Product();
-// const newController = new Control_View_Information_At_DOM() 
-
 
 document.querySelector('.dropdown-menu').addEventListener('click', (event) => { controller.send_Category(event.target.id) })
 export {

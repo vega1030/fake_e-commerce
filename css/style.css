@@ -79,7 +79,7 @@
 /********************************/
 
 .navbar_cart {
-  width: 4rem;
+  width: 3.2rem;
 }
 
 /*nav bar */
@@ -92,8 +92,9 @@ ul {
   align-content: center;
 }
 
-.header {
-  background: var(--color_2);
+.header,
+.navbar {
+  background: var(--color_2) !important;
 
 }
 

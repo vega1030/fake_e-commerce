@@ -46,6 +46,11 @@
 }
 
 .navigation {
-    width: 25%;
+    width: 35%;
     height: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-items: center;
+    align-content: center;
 }
