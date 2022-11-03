@@ -144,8 +144,41 @@ class Product {
         <img src="${ product.image }" alt="image${ product.title }" class="image_style">
     </div>
         `    }
+}
+
+class Handler_Displayes_Ui {
+
+    handler_Display_(hash) {
+        if (hash === 'categories') {
+            return (
+                document.querySelector('#home').style.display = 'none',
+                document.querySelector('#_categories').style.display = 'grid',
+                document.querySelector('#section_cart').style.display = 'none'
+            )
+        }
+        if (hash === 'home') {
+            return (
+                document.querySelector('#_categories').style.display = 'none',
+                document.querySelector('#home').style.display = 'grid',
+                document.querySelector('#section_cart').style.display = 'none',
+                document.querySelector('.cart_style').style.display = 'none'
+            )
+        }
+        if (hash === 'cart') {
+            return (
+                document.querySelector('.cart_style').style.display = 'grid',
+                document.querySelector('#home').style.display = 'none',
+
+                console.log('cart')
+            )
+        }
+
+    }
+
+
 
 }
+
 class View_cart {
 
     createListCart = (products) => {
@@ -185,7 +218,7 @@ class Category_ui {
         let modelNavHeader = "";
         categories.forEach(elements => {
             modelNavHeader +=
-            `
+                `
             <li><a class="dropdown-item route" href="#_categories" id="${ elements }"> ${ elements } </a></li>
             `;
             containt_Li_In_Header.innerHTML = modelNavHeader
@@ -195,9 +228,9 @@ class Category_ui {
     }
 
     create_Category_UI_Cards = (data) => {
-        console.log(data);
         products_Instance.create_Card(data)
     }
+
 
 }
 const cart_Ui = new View_cart();
@@ -208,5 +241,6 @@ export {
     products_Instance,
     View_cart,
     Category_ui,
-    Product, controller
+    Product, controller,
+    Handler_Displayes_Ui
 }

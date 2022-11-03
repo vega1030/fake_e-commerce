@@ -1,11 +1,12 @@
 'use strict'
 
 import { calls_To_API, data_Cart } from "./model.js";
-import { View_cart, Category_ui, products_Instance } from "./view.js";
+import { View_cart, Category_ui, products_Instance, Handler_Displayes_Ui } from "./view.js";
 
 
 
 
+const handler_View = new Handler_Displayes_Ui
 
 const view_Cart = new View_cart
 
@@ -13,11 +14,11 @@ const categories_UI = new Category_ui
 //----------------------------------------------------------------
 class Control_View_Information_At_DOM {
 
-    constructor(data = []) {
+    constructor(data = {}) {
         this._data = data
     }
 
-    async control_View_All_Products(products, route) {
+    async control_View_All_Products(products,) {
 
         products_Instance.create_Card(products, false)
     }
@@ -49,9 +50,9 @@ class Control_View_Information_At_DOM {
         else {
             return await calls_To_API.get_Single_Product(id).then(
                 data => data)
-            // product_Instance_Controller.uI_Individual_Card(data))
         }
     }
+
 
 }
 
@@ -108,13 +109,13 @@ class Control_cart {
 
 class Control_Routes {
 
-    async reception_Hash(hash = '') {
-        const  name_hash  =  {
-            "#home": "The home",
-            "#cart": "The cart",
-            "#_categories": "The categories"
+    reception_Hash(hash = '') {
+        const name_Hash = {
+            "#home": 'home',
+            "#section_cart": 'cart',
+            "#_categories": 'categories'
         }
-        return await console.log("the hash is: " + name_hash[ hash ]);
+        return handler_View.handler_Display_(name_Hash[ hash ]);
     }
 
 }
