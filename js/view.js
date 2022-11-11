@@ -102,7 +102,6 @@ class Product {
 
         anchor_Name.forEach((element) => {
             element.addEventListener('click', (e) => {
-                console.log(e.target.parentNode.id)
                 controller.send_Id(e.target.parentNode.id)
             })
         })
@@ -152,15 +151,13 @@ class Handler_Displayes_Ui {
         if (hash === 'categories') {
             return (
                 document.querySelector('#home').style.display = 'none',
-                document.querySelector('#_categories').style.display = 'grid',
-                document.querySelector('#section_cart').style.display = 'none'
+                document.querySelector('#_categories').style.display = 'grid'
             )
         }
         if (hash === 'home') {
             return (
                 document.querySelector('#_categories').style.display = 'none',
                 document.querySelector('#home').style.display = 'grid',
-                document.querySelector('#section_cart').style.display = 'none',
                 document.querySelector('.cart_style').style.display = 'none'
             )
         }
@@ -181,20 +178,83 @@ class Handler_Displayes_Ui {
 
 class View_cart {
 
-    createListCart = (products) => {
+    createListCart(products) {
         cart_Ui.createCartCont(products)
         products.forEach(elements => {
+            console.log(elements);
             return (elements)
         })
     }
-    createCartCont = (arr) => {
-        console.log(arr.length);
+    createCartCont(arr) {
         const counter = document.querySelector('#count_elements_at_cart')
         const content_Counter = document.querySelector('#section_cart')
 
         counter.innerText = JSON.stringify(arr.length)
         content_Counter.appendChild(counter)
 
+    }
+
+    model_UiCart_List(arr) {
+        const section_Content_Data = document.querySelector('#view_section_cart')
+        const total_At_Cart = document.querySelector('#total_at_cart')
+
+        let content_Data = ''
+        arr.forEach(item => {
+
+            content_Data =
+                `
+
+            <div class="containt_card____cart" id="$containt_card____cart">
+                <button type="button" class="btn-close close" aria-label="Close"></button>
+            <div class="content_image_product_at_cart">
+                <img src="${ item.image }" alt="img" srcset="" class="img-card____cart">
+            </div>
+
+            <div class="content_description">
+                <h2>${ item.title.slice(0, 13) }</h2>
+
+            </div>
+
+            <div class="price_and_cant">
+                <h3>$${ item.price }</h3>
+            </div>
+            <div class="content_select">
+
+            <select class="select_quantity_value form-select" aria-label="Default select example" id="select_quantity_value">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+            </select>
+            </div>
+            <div class="content_total">
+                <h3 id="total" class="total">123</h3>
+            </div>
+            </div>`
+            
+            console.log(item.price)
+            const value_quantity_products = document.querySelectorAll('.select_quantity_value')
+            value_quantity_products.forEach(data => data.addEventListener('click', (e) => {
+                console.log(e)
+            }))
+        })
+
+
+        section_Content_Data.insertAdjacentHTML('beforeend', content_Data)
+
+        //check sum total value the option tag
+
+
+        // const total = arr.reduce(
+        //     (previous, current) => current.price + previous, 0);
+        // console.log(total.toFixed(2))
+        // total_At_Cart.innerHTML = total.toFixed(2);
     }
 }
 

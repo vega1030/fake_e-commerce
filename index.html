@@ -9,7 +9,7 @@
         integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700&display=swap" rel="stylesheet">
-    <!-- <link rel="stylesheet" href="./less/style.less"> -->
+
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/structure.css">
     <link rel="shortcut icon" href="./icon/iconmonstr-shop-13.svg" type="image/x-icon">
@@ -17,53 +17,50 @@
 </head>
 
 <body>
-    <header class="header">
-        <nav class="navigation navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container-fluid">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#home" aria-current="page" id="_home">Home</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                Categories
-                            </a>
-
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id="ul_List">
-
-                            </ul>
-
-                        </li>
-                        <li>
-                            <a class="nav-link" href="#section_cart" id="section_cart">
-                                <span id="content_count_cart">
-                                    <img src="./icon/cart_icon.svg" alt="icon_cart" class="navbar_cart" id="cart">
-                                </span>
-                                <span id="count_elements_at_cart">
-
-                                    <!-- Dynamic Count -->
-    
-                                </span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-
-                        </li>
-                    </ul>
-                    <form class="d-flex">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                        <button class="btn btn-outline-success" type="submit">Search</button>
-                    </form>
+    <header class="header sticky-top">
+        <nav class="nav">
+            <input type="checkbox" id="nav-check">
+            <div class="nav-header">
+                <div class="nav-title">
+                    E-Commerce
                 </div>
             </div>
+            <div class="nav-btn">
+                <label for="nav-check">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </label>
+            </div>
+
+            <div class="nav-links">
+                <a class="nav-link active" href="#home" aria-current="page" id="_home">Home</a>
+
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Categories
+                </a>
+
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id="ul_List">
+
+                </ul>
+                <a class="nav-link" href="#section_cart" id="section_cart">
+                    <span id="content_count_cart">
+                        <img src="./icon/cart_icon.svg" alt="icon_cart" class="navbar_cart" id="cart">
+                    </span>
+                    <span id="count_elements_at_cart">
+
+                        <!-- Dynamic Count -->
+
+                    </span>
+                </a>
+                <form class="d-flex">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
         </nav>
+
     </header>
 
     <section id="content" class="content_style">
@@ -122,163 +119,46 @@
             <!-- MODAL-SALES -->
 
 
-        </section >
-
-        <section id="_categories" class="categories_style">
-
         </section>
 
-        <section id="individual_product" class="style_content_card">
 
-            <!-- Dynamic template view.js -->
 
-        </section>
+    </section>
+    <section class="cart_style" id="view_section_cart">
+        <!-- Dynamic template view.js -->
 
-        <section class="cart_style" id="section_cart">
 
-            <div class="containt_card____cart" id="$containt_card____cart">
-                <div class="card____cart">
-                    <div class="content_image_product_at_cart">
-                        <img src="/img/faceoil.jpeg" alt="img" srcset="" class="img-card____cart">
-                    </div>
-
-                    <div class="content_description">
-                        <h2>Perfume</h2>
-
-                    </div>
-
-                    <div class="price_and_cant">
-                        <h3>$122</h3>
-                        <select class="form-select" aria-label="Default select example">
-                            <option selected>Open this select menu</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                        </select>
-                    </div>
-
-                </div>
-            </div>
-            <div class="containt_card____cart" id="$containt_card____cart">
-                <div class="card____cart">
-                    <div class="content_image_product_at_cart">
-                        <img src="/img/faceoil.jpeg" alt="img" srcset="" class="img-card____cart">
-                    </div>
-
-                    <div class="content_description">
-                        <h2>Perfume</h2>
-
-                    </div>
-
-                    <div class="price_and_cant">
-                        <h3>$122</h3>
-                        <select class="form-select" aria-label="Default select example">
-                            <option selected>Open this select menu</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                        </select>
-                    </div>
-
-                </div>
-            </div>
-            <div class="containt_card____cart" id="$containt_card____cart">
-                <div class="card____cart">
-                    <div class="content_image_product_at_cart">
-                        <img src="/img/faceoil.jpeg" alt="img" srcset="" class="img-card____cart">
-                    </div>
-
-                    <div class="content_description">
-                        <h2>Perfume</h2>
-
-                    </div>
-
-                    <div class="price_and_cant">
-                        <h3>$122</h3>
-                        <select class="form-select" aria-label="Default select example">
-                            <option selected>Open this select menu</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                        </select>
-                    </div>
-
-                </div>
-            </div>
-            <div class="containt_card____cart" id="$containt_card____cart">
-                <div class="card____cart">
-                    <div class="content_image_product_at_cart">
-                        <img src="/img/faceoil.jpeg" alt="img" srcset="" class="img-card____cart">
-                    </div>
-
-                    <div class="content_description">
-                        <h2>Perfume</h2>
-
-                    </div>
-
-                    <div class="price_and_cant">
-                        <h3>$122</h3>
-                        <select class="form-select" aria-label="Default select example">
-                            <option selected>Open this select menu</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                        </select>
-                    </div>
-
-                </div>
-            </div>
-
-        </section>
-
-        <footer>
-            <div class="content-text__footer">
-                <p>Seguinos en nuestras redes</p>
-            </div>
-            <div class="contenticons">
-                <div class="facebook">
-                    <img src="./icon/facebook_icon.svg" class="icon" alt="">
-                </div>
-                <div class="twitter">
-                    <img src="./icon/twitersocialnetworkbrandlogo_78853.svg" class="icon" alt="">
-                </div>
-                <div class="instagram">
-                    <img src="./icon/instagram_108066.svg" class="icon" alt="">
-                </div>
-            </div>
-        </footer>
-    
-   
+        <div id="content_total">
+            <h4 class="total" id="total_at_cart"></h4>
+        </div>
     </section>
 
+    <section id="_categories" class="categories_style">
+        <!-- Dynamic template view.js -->
+
+    </section>
+
+    <section id="individual_product" class="style_content_card_individual_product">
+
+        <!-- Dynamic template view.js -->
+
+    </section>
+    <footer class="style_footer">
+        <div class="content-text__footer">
+            <p>Seguinos en nuestras redes</p>
+        </div>
+        <div class="contenticons">
+            <div class="facebook">
+                <img src="./icon/facebook_icon.svg" class="icon" alt="">
+            </div>
+            <div class="twitter">
+                <img src="./icon/twitersocialnetworkbrandlogo_78853.svg" class="icon" alt="">
+            </div>
+            <div class="instagram">
+                <img src="./icon/instagram_108066.svg" class="icon" alt="">
+            </div>
+        </div>
+    </footer>
     <!-- FOOTER -->
 
 

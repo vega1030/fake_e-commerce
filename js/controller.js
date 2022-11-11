@@ -86,26 +86,31 @@ class Control_cart {
 
 
     async reception_Data_For_Cart(data) {
+
         try {
             if (data === '') {
-                console.log('error');
+                return console.log('error');
             }
             else {
-                view_Cart.createCartCont(data)
-                controller_Cart.reception_Price_And_Sum(data)
+                return (
+                    view_Cart.createCartCont(data),
+                    view_Cart.model_UiCart_List(data)
+                )
             }
         } catch (error) {
             console.log(error);
         }
     }
-    async reception_Price_And_Sum(price) {
-        price.reduce((previous, current) => {
-            previous + current.price
-            console.log(previous + current.price)
-            return previous + current.price
-        }, 0);
+    async reception_Price_And_Sum(price,quantity) {
+
+        const total_For_Contact = price*quantity
+        console.log(price*quantity) 
+
+    };
+
     }
-}
+
+
 
 class Control_Routes {
 
@@ -125,6 +130,7 @@ const instance_Control_Routes = new Control_Routes
 const cart_Instance = new Control_cart()
 const controller = new Control_View_Information_At_DOM
 const controller_Cart = new Control_cart
+
 
 export {
     instance_Control_Routes,

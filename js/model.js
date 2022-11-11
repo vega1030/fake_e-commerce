@@ -112,11 +112,9 @@ class Drive_Data_Cart {
     }
 
     async send_Products_To_Controller(id) {
-        console.log(id);
         calls_To_API.get_All_Products('https://fakestoreapi.com/products').then(products => {
             cart.push(products.find(item => item.id == id))
             controller_Cart.reception_Data_For_Cart(cart)
-            controller_Cart.reception_Price_And_Sum(cart)
         })
     }
 }
