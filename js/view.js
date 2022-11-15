@@ -12,8 +12,8 @@ class Product {
         this._image = image
     }
 
-    set image(newImage) {
-        this._image = newImage
+    set image(image) {
+        this._image = image
     }
 
     get image() {
@@ -25,8 +25,8 @@ class Product {
 
     /* Creating a getter and setter for the title property. */
 
-    set title(newTitle) {
-        this.title = newTitle
+    set title(title) {
+        this.title = title
     }
 
     get title() {
@@ -36,8 +36,8 @@ class Product {
     ////********----------------------- */
 
     /* A getter and setter for the category property. */
-    set category(newCategory) {
-        this._category = newCategory
+    set category(category) {
+        this._category = category
     }
     get category() {
         return this._category
@@ -47,8 +47,8 @@ class Product {
 
 
     /* A getter and setter for the price property. */
-    set price(newPrice) {
-        this._price = newPrice
+    set price(price) {
+        this._price = price
     }
     get price() {
 
@@ -59,8 +59,8 @@ class Product {
 
 
     /* A getter and setter for the description property. */
-    set description(newDescription) {
-        this._description = newDescription
+    set description(description) {
+        this._description = description
     }
     get description() {
         return this._description
@@ -81,8 +81,7 @@ class Product {
                         <h4>€ ${ data.price }</h4>  
                     </div>
                     <div class="content-buttons___card">
-                        <button type="button" id ="${ data.id }" class="btn btn-primary btn-card btn_push_element">comprar</button>
-                        <button type="button" id ="${ data.id }" class="btn btn-primary btn-card btn_delete_element">DELETE AT CART</button>
+                        <button type="button" id ="${ data.id }" class="btn btn-primary btn-card btn_push_element">Add</button>
                     </div>
                 </div>
                 `;
@@ -112,12 +111,7 @@ class Product {
                 cart_Instance.send_Id_To_Cart(parseInt(e.target.id))
             });
         })
-        const btn_Delete_Cart = document.querySelectorAll('.btn_delete_element')
-        btn_Delete_Cart.forEach((element) => {
-            element.addEventListener('click', (e) => {
-                // cart_Instance.delete_Product_At_Cart(e.target.id)
-            });
-        })
+
     }
 
     uI_Individual_Card(product) {
@@ -194,18 +188,16 @@ class View_cart {
 
     }
 
-    model_UiCart_List(arr) {
+    model_UiCart_List(arr = "") {
         const section_Content_Data = document.querySelector('#view_section_cart')
-        const total_At_Cart = document.querySelector('#total_at_cart')
 
-        let content_Data = ''
         arr.forEach(item => {
-
-            content_Data =
+            console.log(item)
+            content_Data_New_Product =
                 `
 
             <div class="containt_card____cart" id="$containt_card____cart">
-                <button type="button" class="btn-close close" aria-label="Close"></button>
+                <button type="button" class="btn-close close btn_delete_element" aria-label="Close"></button>
             <div class="content_image_product_at_cart">
                 <img src="${ item.image }" alt="img" srcset="" class="img-card____cart">
             </div>
@@ -216,47 +208,39 @@ class View_cart {
             </div>
 
             <div class="price_and_cant">
-                <h3>$${ item.price }</h3>
+                <h3>$${ item.price
+                }</h3>
             </div>
             <div class="content_select">
 
-            <select class="select_quantity_value form-select" aria-label="Default select example" id="select_quantity_value">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-            </select>
-            </div>
-            <div class="content_total">
-                <h3 id="total" class="total">123</h3>
+            <input data-id-product = ${ item.id } type="number" class="item-count form-control" min="1" max="10" value=${ amount }
             </div>
             </div>`
-            
-            console.log(item.price)
-            const value_quantity_products = document.querySelectorAll('.select_quantity_value')
-            value_quantity_products.forEach(data => data.addEventListener('click', (e) => {
-                console.log(e)
-            }))
+
+
+            view_total(item.price, amount)
         })
 
+        if (amount === 1) {
 
-        section_Content_Data.insertAdjacentHTML('beforeend', content_Data)
+            section_Content_Data.insertAdjacentHTML('afterbegin', content_Data_New_Product)
+        }
 
-        //check sum total value the option tag
+        const count_item = document.querySelectorAll('.item-count')
 
 
-        // const total = arr.reduce(
-        //     (previous, current) => current.price + previous, 0);
-        // console.log(total.toFixed(2))
-        // total_At_Cart.innerHTML = total.toFixed(2);
+
+        const btn_Delete_Cart = document.querySelectorAll('.btn_delete_element')
+        btn_Delete_Cart.forEach((element) => {
+            element.addEventListener('click', (e) => {
+                cart_Instance.handler_Delete_Element_Cart(parseInt(e.target.id))
+            });
+        })
     }
+
+
 }
+
 
 
 class Category_ui {
@@ -293,6 +277,19 @@ class Category_ui {
 
 
 }
+
+// let content_Data_New_Product = ''
+// const view_total = (price, count) => {
+//     const total =+ price 
+//     console.log(total);
+//     const $content_Data = document.querySelector('#content_total')
+//     const model_Total =
+//         `
+//         <h4 class="total" id="total_at_cart">$${ total }</h4>
+//     `
+//     $content_Data.innerHTML = model_Total
+// }
+
 const cart_Ui = new View_cart();
 const products_Instance = new Product();
 

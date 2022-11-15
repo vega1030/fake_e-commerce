@@ -101,9 +101,35 @@ calls_To_API.get_Categories('https://fakestoreapi.com/products/categories').then
 
 class Drive_Data_Cart {
 
-    constructor(data_cart = []) {
-        this._data_cart = data_cart
+    constructor(id, count, total) {
+        this._id = id,
+            this._count = count,
+            this._total = total
     }
+
+    set item(item) {
+        this._id = item
+    }
+
+    get item() {
+        return this._id
+    }
+
+    set count(count) {
+        this._count = count
+    }
+
+    get count() {
+        return this._count
+    }
+
+    set total(total) {
+        this._total = total;
+    }
+    get total() {
+        return this._total
+    }
+
 
     async save_Data_Into_Cart(id) {
         id_products_reference.push(id)
@@ -111,9 +137,19 @@ class Drive_Data_Cart {
 
     }
 
+    delete_Product_At_Cart(id = "") {
+        const new_Cart = []
+        new_Cart.push(cart.filter(item => item.id != id))
+        cart = new_Cart
+        console.log(cart);
+        return cart
+    }
+
     async send_Products_To_Controller(id) {
+
         calls_To_API.get_All_Products('https://fakestoreapi.com/products').then(products => {
             cart.push(products.find(item => item.id == id))
+            handle_Local_Storage.save_Cart_Db(cart)
             controller_Cart.reception_Data_For_Cart(cart)
         })
     }
@@ -126,9 +162,14 @@ class Control_Data {
     //save data at cart
 
     save_Cart_Db(objCart) {
-        console.log(objCart);
-        localStorage.setItem('cart', JSON.stringify(objCart))
+        localStorage.setItem('cart', JSON.stringify(objCart, 3))
     }
+
+    send_Cart_To_Controller() {
+        const cart_Local_Storage = JSON.parse(localStorage.getItem('cart'))
+        console.log(cart_Local_Storage)
+    }
+
     //delete products at cart
 
     delete_Cart_db(objCart) {
@@ -136,6 +177,9 @@ class Control_Data {
         }
     }
 }
+
+const handle_Local_Storage = new Control_Data
+
 export {
     calls_To_API,
     Control_Data,

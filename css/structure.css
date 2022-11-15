@@ -153,11 +153,12 @@ h1 {
 .cart_style {
   display: none;
   grid-template-columns: 2fr 2fr 2fr 2fr 2fr;
-  gap: 1%;
+  gap: 2%;
   padding: 2%;
-  grid-template-rows: repeat(1, 1fr);
+  grid-template-rows: repeat(2, 1fr);
   width: 100%;
   overflow: scroll;
+  height: 65vh;
 }
 
 .content_style {
@@ -176,7 +177,13 @@ h1 {
 }
 
 
-
+.content_total {
+  grid-column: 4/5;
+  width: 74%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
 
 
 .nav {

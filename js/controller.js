@@ -79,7 +79,6 @@ class Control_cart {
             console.log('error');
         }
         else {
-
             data_Cart.save_Data_Into_Cart(idElement);
         }
     }
@@ -92,23 +91,30 @@ class Control_cart {
                 return console.log('error');
             }
             else {
+                const number_Items = data.reduce((total, itemId) => {
+                    itemId === item ? total += 1 : total;
+                }, 0);
+                console.log(number_Items);
                 return (
                     view_Cart.createCartCont(data),
                     view_Cart.model_UiCart_List(data)
+
                 )
             }
         } catch (error) {
             console.log(error);
         }
     }
-    async reception_Price_And_Sum(price,quantity) {
-
-        const total_For_Contact = price*quantity
-        console.log(price*quantity) 
-
+    async reception_Price_And_Sum(total) {
+        const quant = e.target.value
+        console.log(`${ quant } and ${ price }`);
     };
 
+    handler_Delete_Element_Cart(id) {
+        data_Cart.delete_Product_At_Cart(id)
     }
+
+}
 
 
 
