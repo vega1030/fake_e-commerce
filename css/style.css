@@ -21,6 +21,9 @@
 
 /*cart img */
 
+a{
+  text-decoration: none;
+}
 
 .categories_style {
   width: 100%;
@@ -189,11 +192,7 @@ h2 {
   grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
 }
 
-.content-buttons___card {
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-}
+
 
 
 
@@ -203,7 +202,6 @@ h2 {
 
 .content-text {
   padding: 4%;
-  background: var(--color_3);
   text-align: center;
 }
 
@@ -245,8 +243,8 @@ h2 {
   height: 30%;
 }
 
-.contenticons {
-  width: 50%;
+.content_icons {
+  width: 27%;
   display: flex;
 }
 

@@ -1,10 +1,5 @@
 'use strict'
 import { controller, controller_Cart } from "./controller.js";
-
-
-let id_products_reference = []
-
-
 class Calls_API {
 
     constructor(response = '', response_Categories = [], response_Product_For_Category = []) {
@@ -34,7 +29,7 @@ class Calls_API {
         }
     }
 
-    async get_Categories(url) {
+    async get_Categories(url = "") {
         let result = []
 
         try {
@@ -52,7 +47,6 @@ class Calls_API {
     }
 
     async get_View_Products_For_Category(category) {
-
         let result = [];
 
         const url = `https://fakestoreapi.com/products/category/${ category }`
@@ -72,8 +66,7 @@ class Calls_API {
 
     async get_Single_Product(id) {
         let result = []
-
-        const url = `https://fakestoreapi.com/products/${ id }`
+        const url = `https://fakestoreapi.com/products/${ Number (id) }`
         try {
             if (id == '') {
                 console.log('error');
@@ -93,7 +86,9 @@ class Calls_API {
 
 const calls_To_API = new Calls_API()
 
+
 let cart = []
+
 calls_To_API.get_All_Products('https://fakestoreapi.com/products').then(products => { controller.control_View_All_Products(products) })
 
 calls_To_API.get_Categories('https://fakestoreapi.com/products/categories').then(categories => controller.control_View_Categories(categories))
@@ -132,8 +127,38 @@ class Drive_Data_Cart {
 
 
     async save_Data_Into_Cart(id) {
-        id_products_reference.push(id)
-        await data_Cart.send_Products_To_Controller(id)
+
+        await calls_To_API.get_Single_Product(id).then(product => {
+
+            const amount_Item = cart.reduce((acc, item) => {
+                return item.id === id ? item.amount += 1 : acc
+            }, 1)
+
+            const cart_Item = {
+                amount: amount_Item,
+                ...product
+            }
+
+
+            console.log(cart_Item);
+
+            cart = [ ...cart, cart_Item ]
+
+
+            console.log(cart)
+            controller_Cart.reception_Data_For_Cart(cart)
+
+
+            const filter_Max_Amount = cart.filter(item => console.log(item.amount, 'and id' ,item.id))
+
+            let total = 0
+            let itemsTotal = 0
+            cart.map(item => {
+                total += item.price * item.amount;
+                itemsTotal += item.amount
+            }
+            )
+        })
 
     }
 
@@ -145,14 +170,12 @@ class Drive_Data_Cart {
         return cart
     }
 
-    async send_Products_To_Controller(id) {
 
-        calls_To_API.get_All_Products('https://fakestoreapi.com/products').then(products => {
-            cart.push(products.find(item => item.id == id))
-            handle_Local_Storage.save_Cart_Db(cart)
-            controller_Cart.reception_Data_For_Cart(cart)
-        })
+    async send_Cart_To_Controller(id) {
+        const result = calls_To_API.get_Single_Product(id)
+        console.log(result)
     }
+
 }
 
 const data_Cart = new Drive_Data_Cart
@@ -177,6 +200,8 @@ class Control_Data {
         }
     }
 }
+
+
 
 const handle_Local_Storage = new Control_Data
 

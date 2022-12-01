@@ -1,6 +1,6 @@
 "use strict";
 
-import { controller, cart_Instance } from "./controller.js";
+import { controller, cart_Instance, controller_Cart } from "./controller.js";
 
 class Product {
     constructor(title, category, price, description, id, image) {
@@ -75,8 +75,8 @@ class Product {
                 <div class="content-sale__child">
                     <img src="${ data.image }" class="${ data.title } img-cards-product" alt="" srcset="">
                     <div class="content-text">
-                    <a href="#" class="content_names" id="${ data.id }">
-                        <h3 class="name_product">${ data.title.slice(0, 13) }</h3>
+                    <a href="#individual_product" class="content_names view_one_element individual_product" data-id="${ data.id }">
+                        <h3 data-id="${ data.id }" class="name_product">${ data.title.slice(0, 13) } </h3>
                     </a>                      
                         <h4>€ ${ data.price }</h4>  
                     </div>
@@ -99,47 +99,45 @@ class Product {
 
         const anchor_Name = document.querySelectorAll('.content_names')
 
-        anchor_Name.forEach((element) => {
-            element.addEventListener('click', (e) => {
-                controller.send_Id(e.target.parentNode.id)
+
+
+        const view_Element = document.querySelectorAll('.view_one_element')
+        view_Element.forEach((element) => {
+            element.addEventListener('click', () => {
+                const data_Id = element.dataset.id
+                return controller.send_Id(data_Id)
             })
         })
-
-        const btn_Push_Cart = document.querySelectorAll('.btn_push_element')
-        btn_Push_Cart.forEach((element) => {
-            element.addEventListener('click', (e) => {
-                cart_Instance.send_Id_To_Cart(parseInt(e.target.id))
-            });
-        })
-
     }
 
     uI_Individual_Card(product) {
         const content_Individual_Cards = document.querySelector('#individual_product')
-
         let model_Card = ''
-        model_Card =
+        product.forEach(item => {model_Card=
             `
-        <div class="content_title">
-        <h1> ${ product.title }</h1>
+        <div class="content_title___individual_item">
+        <h1> ${ item.title }</h1>
     </div>
-    <div class="content_price">
-        <h3>${ product.price }</h3>
+    <div class="content_price___individual_item">
+        <h3>${ item.price }</h3>
     </div>
-    <div class="content_description">
+    <div class="content_description___individual_item">
         <p>
 
-            ${ product.description }
+            ${ item.description }
         
         </p>
     </div>
-    <div class="content_image">
-        <img src="${ product.image }" alt="image${ product.title }" class="image_style">
+    <div class="content_image___individual_item">
+        <img src="${ item.image }" alt="image${ item.title }" class="image_style">
     </div>
-        `    }
+        `    })
+        console.log(model_Card);
+        content_Individual_Cards.insertAdjacentHTML('afterbegin', model_Card)
+        content_Individual_Cards.innerHTML=model_Card 
+    }
 }
-
-class Handler_Displayes_Ui {
+class Handler_Displays_Ui {
 
     handler_Display_(hash) {
         if (hash === 'categories') {
@@ -158,9 +156,7 @@ class Handler_Displayes_Ui {
         if (hash === 'cart') {
             return (
                 document.querySelector('.cart_style').style.display = 'grid',
-                document.querySelector('#home').style.display = 'none',
-
-                console.log('cart')
+                document.querySelector('#home').style.display = 'none'
             )
         }
 
@@ -188,15 +184,15 @@ class View_cart {
 
     }
 
-    model_UiCart_List(arr = "") {
+
+    model_UiCart_List(arr = "", units) {
         const section_Content_Data = document.querySelector('#view_section_cart')
-
+        let content_Data = ''
         arr.forEach(item => {
-            console.log(item)
-            content_Data_New_Product =
-                `
 
-            <div class="containt_card____cart" id="$containt_card____cart">
+            content_Data =
+                `
+                <div class="containt_card____cart" id="$containt_card____cart" data-id = ${ item.id }>
                 <button type="button" class="btn-close close btn_delete_element" aria-label="Close"></button>
             <div class="content_image_product_at_cart">
                 <img src="${ item.image }" alt="img" srcset="" class="img-card____cart">
@@ -207,28 +203,22 @@ class View_cart {
 
             </div>
 
-            <div class="price_and_cant">
+            <div class="price">
                 <h3>$${ item.price
                 }</h3>
             </div>
             <div class="content_select">
-
-            <input data-id-product = ${ item.id } type="number" class="item-count form-control" min="1" max="10" value=${ amount }
+                <a id="add">+</a> <a id="">-</a>
+            <input type="number" min="1" max="10" data-id = ${ item.id } type="number" 
+            class="count form-control" value=${ units }
             </div>
-            </div>`
+            </div>
+            `
 
-
-            view_total(item.price, amount)
         })
 
-        if (amount === 1) {
-
-            section_Content_Data.insertAdjacentHTML('afterbegin', content_Data_New_Product)
-        }
-
-        const count_item = document.querySelectorAll('.item-count')
-
-
+        //********--RENDER--- */
+        section_Content_Data.insertAdjacentHTML('afterbegin', content_Data)
 
         const btn_Delete_Cart = document.querySelectorAll('.btn_delete_element')
         btn_Delete_Cart.forEach((element) => {
@@ -236,11 +226,40 @@ class View_cart {
                 cart_Instance.handler_Delete_Element_Cart(parseInt(e.target.id))
             });
         })
+
+        const items_At_Card_Ui = document.querySelectorAll('.containt_card____cart')
+
+        items_At_Card_Ui.forEach(item => {
+            const quantity = item.querySelector('.count')
+            console.log(quantity.value);
+            const price_Ui = Number(item.querySelector('.price').textContent.replace('$', ''))
+            cart_Instance.calculate_Total_Cart(quantity.value, price_Ui)
+
+            quantity.addEventListener('change', (e) => {
+                const quantity = Number(e.target.value)
+
+            })
+
+
+
+        })
     }
 
+    render_Total(total) {
 
+        const $content_Total = document.querySelector('#content_total')
+        const model_Total =
+            `
+        <h4 class="total" id="total_at_cart">$${ total.toFixed(2) }</h4>
+        `
+        $content_Total.innerHTML = model_Total
+        //********----- */
+
+
+        //Listeners
+
+    }
 }
-
 
 
 class Category_ui {
@@ -277,19 +296,6 @@ class Category_ui {
 
 
 }
-
-// let content_Data_New_Product = ''
-// const view_total = (price, count) => {
-//     const total =+ price 
-//     console.log(total);
-//     const $content_Data = document.querySelector('#content_total')
-//     const model_Total =
-//         `
-//         <h4 class="total" id="total_at_cart">$${ total }</h4>
-//     `
-//     $content_Data.innerHTML = model_Total
-// }
-
 const cart_Ui = new View_cart();
 const products_Instance = new Product();
 
@@ -299,5 +305,5 @@ export {
     View_cart,
     Category_ui,
     Product, controller,
-    Handler_Displayes_Ui
+    Handler_Displays_Ui
 }
