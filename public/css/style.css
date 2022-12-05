@@ -97,6 +97,12 @@ ul {
   background-repeat: no-repeat;
 }
 
+.favorite,.favorite:hover{
+  color: black;
+}
+
+
+
 .title-content {
   width: 50%;
   height: 100%;
