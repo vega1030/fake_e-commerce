@@ -73,16 +73,15 @@ class Product {
                 global_Variable +=
                     `
                 <div class="content-sale__child">
+                <a class="favorite" href ="#"> <img src="../icon/favorite.svg"> </a>
                     <img src="${ data.image }" class="${ data.title } img-cards-product" alt="" srcset="">
                     <div class="content-text">
                     <a href="#individual_product" class="content_names view_one_element individual_product" data-id="${ data.id }">
                         <h3 data-id="${ data.id }" class="name_product">${ data.title.slice(0, 13) } </h3>
                     </a>                      
-                        <h4>€ ${ data.price }</h4>  
+                        <h4>€ ${ data.price.toLocaleString('es-AR', { style: 'currency', currency: 'EUR' }) }</h4>  
                     </div>
-                    <div class="content-buttons___card">
-                        <button type="button" id ="${ data.id }" class="btn btn-primary btn-card btn_push_element">Add</button>
-                    </div>
+
                 </div>
                 `;
                 return content_Data_In_DOM.innerHTML = global_Variable
@@ -113,13 +112,14 @@ class Product {
     uI_Individual_Card(product) {
         const content_Individual_Cards = document.querySelector('#individual_product')
         let model_Card = ''
-        product.forEach(item => {model_Card=
-            `
+        product.forEach(item => {
+            model_Card =
+                `
         <div class="content_title___individual_item">
         <h1> ${ item.title }</h1>
     </div>
     <div class="content_price___individual_item">
-        <h3>${ item.price }</h3>
+        <h3>${ item.price.toLocaleString('es-AR', { style: 'currency', currency: 'EUR' }) }</h3>
     </div>
     <div class="content_description___individual_item">
         <p>
@@ -130,11 +130,16 @@ class Product {
     </div>
     <div class="content_image___individual_item">
         <img src="${ item.image }" alt="image${ item.title }" class="image_style">
+
     </div>
+    <div class="content-buttons___card">
+    <button type="button" id ="${ item.id }" class="btn btn-primary btn-card btn_push_element">Add Cart</button>
+</div>
+ 
         `    })
         console.log(model_Card);
         content_Individual_Cards.insertAdjacentHTML('afterbegin', model_Card)
-        content_Individual_Cards.innerHTML=model_Card 
+        content_Individual_Cards.innerHTML = model_Card
     }
 }
 class Handler_Displays_Ui {
