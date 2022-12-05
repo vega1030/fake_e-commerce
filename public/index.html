@@ -170,6 +170,25 @@
     <script type="module" src="./js/view.js"></script>
     <script type="module" src="./js/controller.js"></script>
     <script type="module" src="./js/routers.js"></script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB6C0ZD9j_WGUd0Wwrygb0EOKaYB7T6JME",
+            authDomain: "fakecommerce-2022.firebaseapp.com",
+            projectId: "fakecommerce-2022",
+            storageBucket: "fakecommerce-2022.appspot.com",
+            messagingSenderId: "568390621800",
+            appId: "1:568390621800:web:061d04c4c3ca57fab579dd"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+    </script>
 </body>
 
 </html>
