@@ -91,7 +91,7 @@ ul {
 .banner {
   width: 50%;
   height: 700px;
-  background-image: url(/img/carrito.jpeg);
+  background-image: url(../img/carrito.jpeg);
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;

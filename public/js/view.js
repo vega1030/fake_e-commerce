@@ -73,7 +73,7 @@ class Product {
                 global_Variable +=
                     `
                 <div class="content-sale__child">
-                <a class="favorite" href ="#"> <img src="../icon/favorite.svg"> </a>
+                <a class="favorite" > <img class= 'hearts' src="../../public/icon/favorite.svg"> </a>
                     <img src="${ data.image }" class="${ data.title } img-cards-product" alt="" srcset="">
                     <div class="content-text">
                     <a href="#individual_product" class="content_names view_one_element individual_product" data-id="${ data.id }">
@@ -98,7 +98,16 @@ class Product {
 
         const anchor_Name = document.querySelectorAll('.content_names')
 
+        //change color of the heart when user click
 
+        const hearts = document.querySelectorAll('.favorite')
+        hearts.forEach((element) => {
+            element.addEventListener("click", (e) => {
+                const hearts = e.target
+                hearts.style.backgroundColor = 'red'
+                e.preventDefault()
+            })
+        })
 
         const view_Element = document.querySelectorAll('.view_one_element')
         view_Element.forEach((element) => {
