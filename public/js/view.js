@@ -73,7 +73,7 @@ class Product {
                 global_Variable +=
                     `
                 <div class="content-sale__child">
-                <a class="favorite" > 
+                <a class="favorite" data-id="${ data.id }"> 
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
                     </svg>
@@ -83,7 +83,7 @@ class Product {
                     <a href="#individual_product" class="content_names view_one_element individual_product" data-id="${ data.id }">
                         <h3 data-id="${ data.id }" class="name_product">${ data.title.slice(0, 13) } </h3>
                     </a>                      
-                        <h4>€ ${ data.price.toLocaleString('es-AR', { style: 'currency', currency: 'EUR' }) }</h4>  
+                        <h4> ${ data.price.toLocaleString('es-AR', { style: 'currency', currency: 'EUR' }) }</h4>  
                     </div>
 
                 </div>
@@ -107,8 +107,11 @@ class Product {
         const hearts = document.querySelectorAll('.favorite')
         hearts.forEach((element) => {
             element.addEventListener("click", (e) => {
+                const data_Id = element.dataset.id
+                console.log(data_Id)
                 const selection = e.target
-                selection.style.color = 'red'
+                const color_selection = selection.style.color ==='red'?'initial':'red'
+                selection.style.color = color_selection
                 e.preventDefault()
             })
         })
