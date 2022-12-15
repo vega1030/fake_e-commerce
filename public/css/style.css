@@ -5,7 +5,11 @@
   --font-size-navbar: 18px;
   --shadow_box: 0 1px 0 rgb(12 13 14 / 10%), 0 1px 3px rgb(12 13 14 / 10%),
     0 4px 20px rgb(12 13 14 / 4%), 0 1px 1px rgb(12 13 14 / 3%);
-}
+
+    --color_body_dark_mode: rgb(48, 56, 65);
+    --color_font_dark_mode: rgb(238, 238, 238);
+    --color_background_card_dark_mode: rgb(58, 71, 80);
+  }
 
 /* header style */
 .header {
@@ -21,7 +25,7 @@
 
 /*cart img */
 
-a{
+a {
   text-decoration: none;
 }
 
@@ -48,11 +52,11 @@ a{
   display: grid;
 }
 
-.total{
+.total {
   text-align: center;
 }
 
-.containt_card____cart{
+.containt_card____cart {
   box-shadow: var(--shadow_box);
   background-color: whitesmoke
 }
@@ -88,30 +92,15 @@ ul {
   box-shadow: var(--shadow_box);
 }
 
-.banner {
-  width: 50%;
-  height: 700px;
-  background-image: url(../img/carrito.jpeg);
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-}
 
-.favorite,.favorite:hover{
+.favorite,
+.favorite:hover {
   color: black;
 }
 
 
 
-.title-content {
-  width: 50%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto;
-}
+
 
 .title {
   width: 100%;
@@ -162,14 +151,7 @@ h2 {
   text-align: left;
 }
 
-.content-card__reverse {
-  width: 100%;
-  height: 400px;
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: center;
-  align-content: center;
-}
+
 
 .img-card {
   width: 100%;
@@ -186,32 +168,7 @@ h2 {
   padding: 2%;
 }
 
-/* cards */
-.content-sale {
-  width: 100%;
-  height: 100%;
-  padding: 2%;
-  display: grid;
-  grid-template-columns: 3fr 2fr 2fr 2fr 2fr;
-  margin: 0 0 0 0;
-  justify-items: center;
-  grid-auto-rows: 28rem;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-}
 
-
-
-
-
-.img-cards-product {
-  width: 50%;
-}
-
-.content-text {
-  padding: 4%;
-  text-align: center;
-}
 
 .content-sale__child__img {
   width: 100%;
@@ -263,5 +220,24 @@ h2 {
 @media (max-width:600px) {
   .nav>.nav-links {
     background-color: var(--color_2);
+
   }
+
+}
+@media (prefers-color-scheme: dark) {
+  img {
+    filter: brightness(.8) contrast(1.2);
+  }
+  body{
+    background-color:var(--color_body_dark_mode);
+    color: var(--color_font_dark_mode)
+  }
+  .favorite{
+    color: white;
+  }
+  .content-sale__child{
+    background-color: var(--color_background_card_dark_mode);
+    box-shadow: var(--shadow_box);
+  }
+  
 }

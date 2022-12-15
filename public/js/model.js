@@ -66,14 +66,14 @@ class Calls_API {
 
     async get_Single_Product(id) {
         let result = []
-        const url = `https://fakestoreapi.com/products/${ Number (id) }`
+        const url = `https://fakestoreapi.com/products/${ Number(id) }`
         try {
             if (id == '') {
                 console.log('error');
             }
             else {
                 result = await fetch(url)
-                const res = await result.json()
+                const res = result.json()
                 return res
             }
 
@@ -149,7 +149,7 @@ class Drive_Data_Cart {
             controller_Cart.reception_Data_For_Cart(cart)
 
 
-            const filter_Max_Amount = cart.filter(item => console.log(item.amount, 'and id' ,item.id))
+            const filter_Max_Amount = cart.filter(item => console.log(item.amount, 'and id', item.id))
 
             let total = 0
             let itemsTotal = 0
@@ -180,33 +180,90 @@ class Drive_Data_Cart {
 
 const data_Cart = new Drive_Data_Cart
 
-class Control_Data {
 
-    //save data at cart
+class Call_Api_LocalStorage {
 
-    save_Cart_Db(objCart) {
-        localStorage.setItem('cart', JSON.stringify(objCart, 3))
+    constructor(response_Cart, response_Favorites) {
+        this.response_Cart = response_Cart;
+        this.response_Favorites = response_Favorites;
     }
 
-    send_Cart_To_Controller() {
-        const cart_Local_Storage = JSON.parse(localStorage.getItem('cart'))
-        console.log(cart_Local_Storage)
+    static save_Cart(objCart) {
+        const CART = 'cart'
+        let cart = []
+        cart = JSON.parse(localStorage.getItem(CART)) || []
+        cart = [ ...cart, objCart ]
+        localStorage.setItem(CART, JSON.stringify(cart));
     }
 
-    //delete products at cart
+    static get_Cart() {
+        this.response_Cart = JSON.parse(localStorage.getItem('cart'));
 
-    delete_Cart_db(objCart) {
-        if (objCart.id === JSON.parse(localStorage.getItem('cart'))) {
-        }
+        return this.response_Cart;
     }
+
+
+    static save_Favorites_At_LocalStorage(product) {
+
+        /* Saving the favorites at localStorage. */
+        const FAVORITES = 'favorites';
+        let favorites = []
+        favorites = Call_Api_LocalStorage.get_Favorites() || []
+        favorites = [ ...favorites, product ]
+
+        /* Filtering the array of favorites to remove duplicates. */
+        favorites = favorites.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i)
+        console.log(favorites);
+        return localStorage.setItem(FAVORITES, JSON.stringify(favorites));
+
+    }
+
+    static delete_Favorites_At_LocalStorage(id) {
+        Call_Api_LocalStorage.get_Favorites().forEach(data =>
+            {
+                console.log(`${data} and ${id}`);
+            })
+    }
+
+    static get_Favorites() {
+        this.response_Favorites = JSON.parse(localStorage.getItem('favorites'))
+
+        return this.response_Favorites
+    }
+
 }
 
 
+class Control_Data {
+    constructor(favorites = []) {
+        this.favorites = favorites
+    }
 
-const handle_Local_Storage = new Control_Data
+    save_Favorites(items, id) {
+        const product = { ...items }
+        let arr_Favorites = []
+        arr_Favorites = [ ...arr_Favorites, product ]
+
+        this.favorites = arr_Favorites
+        Call_Api_LocalStorage.save_Favorites_At_LocalStorage(product, id)
+
+    }
+
+}
+
+const handler_Data_At_LocalStorage = new Control_Data
+
+//create server with express?
+
+
+
+
+
+
 
 export {
     calls_To_API,
-    Control_Data,
+    Call_Api_LocalStorage,
+    handler_Data_At_LocalStorage,
     data_Cart
 }

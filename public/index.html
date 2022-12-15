@@ -9,6 +9,8 @@
         integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <meta name="color-scheme" content="dark light">
 
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/structure.css">
@@ -35,6 +37,7 @@
 
             <div class="nav-links">
                 <a class="nav-link active" href="#home" aria-current="page" id="_home">Home</a>
+                <a class="nav-link active" href="#favorites" aria-current="page" id="_favorites">Favorites</a>
 
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
                     aria-expanded="false">
@@ -72,13 +75,12 @@
                 <div class="title-content">
                     <div class="title">
                         <h1>Empieza tu compra</h1>
-                        <h3>Ingresa tu e-mail</h3>
-                        <div class="mb-3 form-init">
-                            <label for="exampleFormControlInput1" class="form-label"></label>
-                            <input type="email" class="form-control" id="exampleFormControlInput1"
-                                placeholder="Ingresa tu correo electronico">
-                            <button type="button" class="btn btn-primary">Primary</button>
-                        </div>
+                    </div>
+                    <div class="mb-3 form-init">
+                        <label for="exampleFormControlInput1" class="form-label"></label>
+                        <input type="email" class="form-control" id="exampleFormControlInput1"
+                            placeholder="Ingresa tu correo electronico">
+                        <button type="button" class="btn btn-primary">Submit</button>
                     </div>
                 </div>
             </div>
@@ -86,9 +88,7 @@
                 <div class="legend">
                     <h2>Compra desde tu casa</h2>
                     <p> Lorem ipsum dolor, sit amet consectetur adipisicing elit. Mollitia inventore corrupti deserunt!
-                        Nemo
-                        aperiam nam officia libero vero aut quam, neque, cum natus quaerat minus quia exercitationem,
-                        distinctio
+
                         possimus commodi. </p>
                 </div>
                 <div class="img-content">
@@ -99,28 +99,26 @@
                 <div class="legend">
                     <h2>Compra desde tu casa</h2>
                     <p> Lorem ipsum dolor, sit amet consectetur adipisicing elit. Mollitia inventore corrupti deserunt!
-                        Nemo
-                        aperiam nam officia libero vero aut quam, neque, cum natus quaerat minus quia exercitationem,
-                        distinctio
+
                         possimus commodi. </p>
                 </div>
                 <div class="img-content">
                     <img src="./img/delivery-CT7IWRM7G5k-unsplash.jpeg" class="img-card" alt="">
                 </div>
             </div>
-            <h3 class="products-recomended">Productos recomendados</h3>
 
-            <div class=" content-sale" id="content_card">
-
-                <!-- DYNAMIC TEMPLATE AT VIEW.JS  -->
-
-            </div>
 
             <!-- MODAL-SALES -->
 
 
         </section>
 
+        <section class=" content-sale" id="content_card">
+            <h3 class="products-recomended">Productos recomendados</h3>
+
+            <!-- DYNAMIC TEMPLATE AT VIEW.JS  -->
+
+        </section>
 
 
     </section>

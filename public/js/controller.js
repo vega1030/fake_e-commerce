@@ -1,7 +1,7 @@
 'use strict'
 
-import { calls_To_API, data_Cart } from "./model.js";
-import { View_cart, Category_ui, products_Instance, Handler_Displays_Ui } from "./view.js";
+import { calls_To_API, data_Cart, handler_Data_At_LocalStorage, Call_Api_LocalStorage } from "./model.js";
+import { View_cart, Category_ui, products_Instance, Handler_Displays_Ui,Product } from "./view.js";
 
 
 
@@ -11,6 +11,7 @@ const handler_View = new Handler_Displays_Ui
 const view_Cart = new View_cart
 
 const categories_UI = new Category_ui
+
 //----------------------------------------------------------------
 class Control_View_Information_At_DOM {
 
@@ -18,9 +19,23 @@ class Control_View_Information_At_DOM {
         this._data = data
     }
 
-    async control_View_All_Products(products,) {
+    async control_View_All_Products(products) {
 
         products_Instance.create_Card(products, false)
+    }
+
+    async control_Favorites_Product(id) {
+        if (id === '') {
+            console.log('error')
+        }
+        else {
+            const res = await calls_To_API.get_Single_Product(id)
+            handler_Data_At_LocalStorage.save_Favorites(res, id)
+        }
+    }
+
+    delete_product_favorite_list(id) {
+        console.log(id);
     }
 
     async control_View_Categories(categories = '') {
@@ -66,12 +81,13 @@ class Control_View_Information_At_DOM {
     }
 
 
+
 }
 
 //----------------------------------------------------------------
 //-----------------------------------------------------------------------------//
-let total = 0;
 
+let total = 0;
 class Control_cart {
 
     constructor(total = 0) {

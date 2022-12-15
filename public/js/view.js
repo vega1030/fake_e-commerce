@@ -102,19 +102,11 @@ class Product {
 
         const anchor_Name = document.querySelectorAll('.content_names')
 
-        //change color of the heart when user click
 
-        const hearts = document.querySelectorAll('.favorite')
-        hearts.forEach((element) => {
-            element.addEventListener("click", (e) => {
-                const data_Id = element.dataset.id
-                console.log(data_Id)
-                const selection = e.target
-                const color_selection = selection.style.color ==='red'?'initial':'red'
-                selection.style.color = color_selection
-                e.preventDefault()
-            })
-        })
+        /* A function that change the color of the heart when user click,
+        and send id product to saving*/
+
+
 
         const view_Element = document.querySelectorAll('.view_one_element')
         view_Element.forEach((element) => {
@@ -123,6 +115,53 @@ class Product {
                 return controller.send_Id(data_Id)
             })
         })
+
+        Product.handler_Favorites()
+
+    }
+
+
+    static handler_Favorites() {
+        let hearts = document.querySelectorAll('.favorite')
+        hearts.forEach((element) => {
+            element.addEventListener("click", (e) => {
+                element.classList.forEach(data => {
+                    if (data.includes('activate')) {
+                        element.classList.remove('activate')
+                    }
+                    else {
+                        const data_Id = Number(element.dataset.id)
+                        controller.control_Favorites_Product(data_Id)
+                        element.classList.add('activate')
+                        console.log(data_Id);
+                    }
+                });
+                const selection = e.target
+                const color_selection = selection.style.color === 'red' ? 'initial' : 'red'
+                selection.style.color = color_selection
+
+                //add if and question: if class name is "activate add favorites"
+
+
+
+                e.preventDefault()
+
+            })
+
+
+
+        })
+
+    }
+
+    static create_Selected_Favorites(favorites) {
+
+        hearts.forEach((element) => {
+
+        })
+
+
+        console.log(checkEquals);
     }
 
     uI_Individual_Card(product) {
@@ -161,23 +200,31 @@ class Product {
 class Handler_Displays_Ui {
 
     handler_Display_(hash) {
+        console.log(hash);
         if (hash === 'categories') {
             return (
                 document.querySelector('#home').style.display = 'none',
-                document.querySelector('#_categories').style.display = 'grid'
+                document.querySelector('#_categories').style.display = 'grid',
+                document.querySelector('.cart_style').style.display = 'none',
+                document.querySelector('#content_card').style.display = 'none'
+
             )
         }
         if (hash === 'home') {
             return (
                 document.querySelector('#_categories').style.display = 'none',
                 document.querySelector('#home').style.display = 'grid',
-                document.querySelector('.cart_style').style.display = 'none'
+                document.querySelector('.cart_style').style.display = 'none',
+                document.querySelector('#content_card').style.display = 'grid'
+
             )
         }
         if (hash === 'cart') {
             return (
                 document.querySelector('.cart_style').style.display = 'grid',
-                document.querySelector('#home').style.display = 'none'
+                document.querySelector('#home').style.display = 'none',
+                document.querySelector('#content_card').style.display = 'none'
+
             )
         }
 
@@ -298,14 +345,14 @@ class Category_ui {
     }
 
     createDynamicCategoryNav(categories) {
-        const containt_Li_In_Header = document.querySelector('#ul_List')
+        const content_Li_In_Header = document.querySelector('#ul_List')
         let modelNavHeader = "";
         categories.forEach(elements => {
             modelNavHeader +=
                 `
             <li><a class="dropdown-item route" href="#_categories" id="${ elements }"> ${ elements } </a></li>
             `;
-            containt_Li_In_Header.innerHTML = modelNavHeader
+            content_Li_In_Header.innerHTML = modelNavHeader
 
         })
 
