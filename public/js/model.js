@@ -1,5 +1,5 @@
 'use strict'
-import { controller, controller_Cart } from "./controller.js";
+import { controller, controller_Cart, controller_Favorites } from "./controller.js";
 class Calls_API {
 
     constructor(response = '', response_Categories = [], response_Product_For_Category = []) {
@@ -183,6 +183,8 @@ const data_Cart = new Drive_Data_Cart
 
 class Call_Api_LocalStorage {
 
+    //***********--Cart--**************/ 
+
     constructor(response_Cart, response_Favorites) {
         this.response_Cart = response_Cart;
         this.response_Favorites = response_Favorites;
@@ -201,7 +203,10 @@ class Call_Api_LocalStorage {
 
         return this.response_Cart;
     }
+    //*************----*************************/
 
+
+    //***********--Favorites--**************/ 
 
     static save_Favorites_At_LocalStorage(product) {
 
@@ -213,23 +218,28 @@ class Call_Api_LocalStorage {
 
         /* Filtering the array of favorites to remove duplicates. */
         favorites = favorites.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i)
-        console.log(favorites);
         return localStorage.setItem(FAVORITES, JSON.stringify(favorites));
 
     }
 
-    static delete_Favorites_At_LocalStorage(id) {
-        Call_Api_LocalStorage.get_Favorites().forEach(data =>
-            {
-                console.log(`${data} and ${id}`);
-            })
-    }
+    //empty favorites, fix the value null at the first iteration
 
     static get_Favorites() {
         this.response_Favorites = JSON.parse(localStorage.getItem('favorites'))
-
+        console.log(JSON.parse(localStorage.getItem('favorites')))
+        console.log(this.response_Favorites)
+        controller_Favorites.receive_Favorite_Product(this.response_Favorites)
         return this.response_Favorites
     }
+
+    static delete_Favorites_At_LocalStorage(id) {
+        Call_Api_LocalStorage.get_Favorites().forEach(data => {
+            console.log(`${ data } and ${ id }`);
+        })
+    }
+
+
+    //*************----*************************/
 
 }
 

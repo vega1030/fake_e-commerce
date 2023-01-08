@@ -1,7 +1,7 @@
 'use strict'
 
 import { calls_To_API, data_Cart, handler_Data_At_LocalStorage, Call_Api_LocalStorage } from "./model.js";
-import { View_cart, Category_ui, products_Instance, Handler_Displays_Ui,Product } from "./view.js";
+import { View_cart, Category_ui, products_Instance, Handler_Displays_Ui, Product, View_Favorites } from "./view.js";
 
 
 
@@ -12,7 +12,40 @@ const view_Cart = new View_cart
 
 const categories_UI = new Category_ui
 
+const handler_Favorites = new View_Favorites
+
 //----------------------------------------------------------------
+
+
+class Control_Favorites {
+    constructor(favorites) {
+        this._favorites = favorites
+    }
+
+    get favorites() {
+        return this._favorites
+    }
+
+    set favorites(value) {
+        this._favorites = value
+    }
+
+    async send_Favorite_Product_To_LocalStorage(id) {
+        if (id === '') {
+            console.log('error')
+        }
+        else {
+            const res = await calls_To_API.get_Single_Product(id)
+            handler_Data_At_LocalStorage.save_Favorites(res, id)
+        }
+    }
+    receive_Favorite_Product(products) {
+        console.log(products);
+        products === "" ? console.log("error") : handler_Favorites._favorites = products;
+    }
+
+
+}
 class Control_View_Information_At_DOM {
 
     constructor(data = {}) {
@@ -24,15 +57,7 @@ class Control_View_Information_At_DOM {
         products_Instance.create_Card(products, false)
     }
 
-    async control_Favorites_Product(id) {
-        if (id === '') {
-            console.log('error')
-        }
-        else {
-            const res = await calls_To_API.get_Single_Product(id)
-            handler_Data_At_LocalStorage.save_Favorites(res, id)
-        }
-    }
+
 
     delete_product_favorite_list(id) {
         console.log(id);
@@ -160,11 +185,12 @@ const instance_Control_Routes = new Control_Routes
 const cart_Instance = new Control_cart(total)
 const controller = new Control_View_Information_At_DOM
 const controller_Cart = new Control_cart
-
+const controller_Favorites = new Control_Favorites
 
 export {
     instance_Control_Routes,
     cart_Instance,
     controller,
+    controller_Favorites,
     controller_Cart
 }

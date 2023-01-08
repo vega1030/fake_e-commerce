@@ -1,6 +1,6 @@
 "use strict";
 
-import { controller, cart_Instance, controller_Cart } from "./controller.js";
+import { controller, cart_Instance, controller_Cart, controller_Favorites } from "./controller.js";
 
 class Product {
     constructor(title, category, price, description, id, image) {
@@ -112,7 +112,7 @@ class Product {
         view_Element.forEach((element) => {
             element.addEventListener('click', () => {
                 const data_Id = element.dataset.id
-                return controller.send_Id(data_Id)
+                return controller_Favorites.send_Id(data_Id)
             })
         })
 
@@ -131,7 +131,7 @@ class Product {
                     }
                     else {
                         const data_Id = Number(element.dataset.id)
-                        controller.control_Favorites_Product(data_Id)
+                        controller_Favorites.send_Favorite_Product_To_LocalStorage(data_Id)
                         element.classList.add('activate')
                         console.log(data_Id);
                     }
@@ -154,15 +154,6 @@ class Product {
 
     }
 
-    static create_Selected_Favorites(favorites) {
-
-        hearts.forEach((element) => {
-
-        })
-
-
-        console.log(checkEquals);
-    }
 
     uI_Individual_Card(product) {
         const content_Individual_Cards = document.querySelector('#individual_product')
@@ -234,6 +225,23 @@ class Handler_Displays_Ui {
 
 }
 
+class View_Favorites {
+    constructor(favorites) {
+        this._favorites = favorites
+    }
+
+    display_Favorites() {
+        const content_Favorites = document.querySelector('#content_favorites')
+        let model_Favorites = ''
+        this._favorites.forEach(item => {
+            console.log(item)
+            model_Favorites =
+                `
+        <div class="content_title___individual_item">`
+        })
+
+    }
+}
 class View_cart {
 
     createListCart(products) {
@@ -367,11 +375,12 @@ class Category_ui {
 const cart_Ui = new View_cart();
 const products_Instance = new Product();
 
-document.querySelector('.dropdown-menu').addEventListener('click', (event) => { controller.send_Category(event.target.id) })
+document.querySelector('.dropdown-menu').addEventListener('click', (event) => { controller_Favorites.send_Category(event.target.id) })
 export {
     products_Instance,
     View_cart,
     Category_ui,
-    Product, controller,
-    Handler_Displays_Ui
+    Product, controller_Favorites as controller,
+    Handler_Displays_Ui,
+    View_Favorites
 }
