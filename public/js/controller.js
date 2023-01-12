@@ -6,28 +6,24 @@ import { View_cart, Category_ui, products_Instance, Handler_Displays_Ui, Product
 
 
 
-const handler_View = new Handler_Displays_Ui
+const handler_View = new Handler_Displays_Ui()
 
-const view_Cart = new View_cart
+const view_Cart = new View_cart()
 
-const categories_UI = new Category_ui
+const categories_UI = new Category_ui()
 
-const handler_Favorites = new View_Favorites
+
 
 //----------------------------------------------------------------
 
 
 class Control_Favorites {
     constructor(favorites) {
-        this._favorites = favorites
+        this._favorites_ = favorites
     }
 
     get favorites() {
-        return this._favorites
-    }
-
-    set favorites(value) {
-        this._favorites = value
+        return this._favorites_
     }
 
     async send_Favorite_Product_To_LocalStorage(id) {
@@ -39,13 +35,14 @@ class Control_Favorites {
             handler_Data_At_LocalStorage.save_Favorites(res, id)
         }
     }
-    receive_Favorite_Product(products) {
+    static receive_Favorite_Product(products) {
         console.log(products);
-        products === "" ? console.log("error") : handler_Favorites._favorites = products;
+        console.log(Call_Api_LocalStorage.get_Favorites()); 
+        return products === "" ? console.log("error") : this._favorites_=products;
     }
-
-
 }
+
+
 class Control_View_Information_At_DOM {
 
     constructor(data = {}) {
@@ -72,14 +69,12 @@ class Control_View_Information_At_DOM {
         }
     }
 
-    async send_Category(category) {
+    async send_Category(category= '') {
         if (category === '') {
             console.log('error')
         }
         else {
-            return await calls_To_API.get_View_Products_For_Category(category)
-                .then(data =>
-                    products_Instance.create_Card(data, true));
+            return  products_Instance.create_Card( await calls_To_API.get_View_Products_For_Category(category),true)
         }
     }
 
@@ -185,7 +180,7 @@ const instance_Control_Routes = new Control_Routes
 const cart_Instance = new Control_cart(total)
 const controller = new Control_View_Information_At_DOM
 const controller_Cart = new Control_cart
-const controller_Favorites = new Control_Favorites
+const controller_Favorites = new Control_Favorites()
 
 export {
     instance_Control_Routes,

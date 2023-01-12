@@ -7,10 +7,7 @@ class Calls_API {
         this._response = response,
             this._response_Categories = response_Categories,
             this._response_Product_For_Category = response_Product_For_Category
-
     }
-
-
 
     async get_All_Products(url = "") {
         let result = []
@@ -89,9 +86,8 @@ const calls_To_API = new Calls_API()
 
 let cart = []
 
-calls_To_API.get_All_Products('https://fakestoreapi.com/products').then(products => { controller.control_View_All_Products(products) })
-
-calls_To_API.get_Categories('https://fakestoreapi.com/products/categories').then(categories => controller.control_View_Categories(categories))
+controller.control_View_All_Products(await calls_To_API.get_All_Products('https://fakestoreapi.com/products'))
+controller.control_View_Categories(await calls_To_API.get_Categories('https://fakestoreapi.com/products/categories'))
 
 
 class Drive_Data_Cart {
@@ -226,9 +222,6 @@ class Call_Api_LocalStorage {
 
     static get_Favorites() {
         this.response_Favorites = JSON.parse(localStorage.getItem('favorites'))
-        console.log(JSON.parse(localStorage.getItem('favorites')))
-        console.log(this.response_Favorites)
-        controller_Favorites.receive_Favorite_Product(this.response_Favorites)
         return this.response_Favorites
     }
 
@@ -237,12 +230,10 @@ class Call_Api_LocalStorage {
             console.log(`${ data } and ${ id }`);
         })
     }
-
-
-    //*************----*************************/
-
 }
+window.addEventListener('DOMContentLoaded', console.log(Call_Api_LocalStorage.get_Favorites()))
 
+//*************----*************************/
 
 class Control_Data {
     constructor(favorites = []) {

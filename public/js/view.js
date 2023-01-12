@@ -69,6 +69,7 @@ class Product {
 
     create_Card(product, flag) {
         const card_Model = (products, content_Data_In_DOM, global_Variable) => {
+            console.log(products);
             products.forEach(data => {
                 global_Variable +=
                     `
@@ -106,8 +107,6 @@ class Product {
         /* A function that change the color of the heart when user click,
         and send id product to saving*/
 
-
-
         const view_Element = document.querySelectorAll('.view_one_element')
         view_Element.forEach((element) => {
             element.addEventListener('click', () => {
@@ -142,16 +141,9 @@ class Product {
 
                 //add if and question: if class name is "activate add favorites"
 
-
-
                 e.preventDefault()
-
             })
-
-
-
         })
-
     }
 
 
@@ -189,7 +181,6 @@ class Product {
     }
 }
 class Handler_Displays_Ui {
-
     handler_Display_(hash) {
         console.log(hash);
         if (hash === 'categories') {
@@ -230,18 +221,22 @@ class View_Favorites {
         this._favorites = favorites
     }
 
-    display_Favorites() {
+    static display_Favorites(newFavorites) {
         const content_Favorites = document.querySelector('#content_favorites')
         let model_Favorites = ''
-        this._favorites.forEach(item => {
+        
+        newFavorites.forEach(item => {
             console.log(item)
             model_Favorites =
-                `
-        <div class="content_title___individual_item">`
+            `
+            <div class="content_title___individual_item">`
         })
-
+        return this._favorites = newFavorites
+        
     }
 }
+
+
 class View_cart {
 
     createListCart(products) {
@@ -361,9 +356,7 @@ class Category_ui {
             <li><a class="dropdown-item route" href="#_categories" id="${ elements }"> ${ elements } </a></li>
             `;
             content_Li_In_Header.innerHTML = modelNavHeader
-
         })
-
     }
 
     create_Category_UI_Cards = (data) => {
@@ -375,7 +368,10 @@ class Category_ui {
 const cart_Ui = new View_cart();
 const products_Instance = new Product();
 
-document.querySelector('.dropdown-menu').addEventListener('click', (event) => { controller_Favorites.send_Category(event.target.id) })
+
+document.querySelector('.dropdown-menu').addEventListener('click', (event) => { 
+    controller.send_Category(event.target.id)
+})
 export {
     products_Instance,
     View_cart,
