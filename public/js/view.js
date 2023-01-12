@@ -69,7 +69,6 @@ class Product {
 
     create_Card(product, flag) {
         const card_Model = (products, content_Data_In_DOM, global_Variable) => {
-            console.log(products);
             products.forEach(data => {
                 global_Variable +=
                     `
@@ -114,36 +113,8 @@ class Product {
                 return controller_Favorites.send_Id(data_Id)
             })
         })
+        View_Favorites.handler_Favorites()
 
-        Product.handler_Favorites()
-
-    }
-
-
-    static handler_Favorites() {
-        let hearts = document.querySelectorAll('.favorite')
-        hearts.forEach((element) => {
-            element.addEventListener("click", (e) => {
-                element.classList.forEach(data => {
-                    if (data.includes('activate')) {
-                        element.classList.remove('activate')
-                    }
-                    else {
-                        const data_Id = Number(element.dataset.id)
-                        controller_Favorites.send_Favorite_Product_To_LocalStorage(data_Id)
-                        element.classList.add('activate')
-                        console.log(data_Id);
-                    }
-                });
-                const selection = e.target
-                const color_selection = selection.style.color === 'red' ? 'initial' : 'red'
-                selection.style.color = color_selection
-
-                //add if and question: if class name is "activate add favorites"
-
-                e.preventDefault()
-            })
-        })
     }
 
 
@@ -188,7 +159,8 @@ class Handler_Displays_Ui {
                 document.querySelector('#home').style.display = 'none',
                 document.querySelector('#_categories').style.display = 'grid',
                 document.querySelector('.cart_style').style.display = 'none',
-                document.querySelector('#content_card').style.display = 'none'
+                document.querySelector('#content_card').style.display = 'none',
+                document.querySelector('#favorites_section').style.display = 'none'
 
             )
         }
@@ -197,7 +169,8 @@ class Handler_Displays_Ui {
                 document.querySelector('#_categories').style.display = 'none',
                 document.querySelector('#home').style.display = 'grid',
                 document.querySelector('.cart_style').style.display = 'none',
-                document.querySelector('#content_card').style.display = 'grid'
+                document.querySelector('#content_card').style.display = 'grid',
+                document.querySelector('#favorites_section').style.display = 'none'
 
             )
         }
@@ -205,8 +178,19 @@ class Handler_Displays_Ui {
             return (
                 document.querySelector('.cart_style').style.display = 'grid',
                 document.querySelector('#home').style.display = 'none',
-                document.querySelector('#content_card').style.display = 'none'
+                document.querySelector('#content_card').style.display = 'none',
+                document.querySelector('#favorites_section').style.display = 'none'
 
+
+            )
+        }
+        if (hash === 'favorites') {
+            return(
+                document.querySelector('#_categories').style.display = 'none',
+                document.querySelector('.cart_style').style.display = 'none',
+                document.querySelector('#home').style.display = 'none',
+                document.querySelector('#content_card').style.display = 'none',
+                document.querySelector('#favorites_section').style.display = 'grid'
             )
         }
 
@@ -216,23 +200,49 @@ class Handler_Displays_Ui {
 
 }
 
+// create shopping cart with vanilla javascript?    
+
 class View_Favorites {
     constructor(favorites) {
         this._favorites = favorites
     }
+    static handler_Favorites() {
+        let hearts = document.querySelectorAll('.favorite')
+        hearts.forEach((element) => {
+            element.addEventListener("click", (e) => {
+                element.classList.forEach(data => {
+                    if (data.includes('activate')) {
+                        element.classList.remove('activate')
+                    }
+                    else {
+                        const data_Id = Number(element.dataset.id)
+                        controller_Favorites.send_Favorite_Product_To_LocalStorage(data_Id)
+                        element.classList.add('activate')
+                        console.log(data_Id);
+                    }
+                });
+                const selection = e.target
+                const color_selection = selection.style.color === 'red' ? 'initial' : 'red'
+                selection.style.color = color_selection
+                //add if and question: if class name is "activate add favorites"
+                e.preventDefault()
+            })
+        })
+    }
+
 
     static display_Favorites(newFavorites) {
         const content_Favorites = document.querySelector('#content_favorites')
         let model_Favorites = ''
-        
+
         newFavorites.forEach(item => {
             console.log(item)
             model_Favorites =
-            `
+                `
             <div class="content_title___individual_item">`
         })
         return this._favorites = newFavorites
-        
+
     }
 }
 
@@ -369,7 +379,7 @@ const cart_Ui = new View_cart();
 const products_Instance = new Product();
 
 
-document.querySelector('.dropdown-menu').addEventListener('click', (event) => { 
+document.querySelector('.dropdown-menu').addEventListener('click', (event) => {
     controller.send_Category(event.target.id)
 })
 export {
