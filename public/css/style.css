@@ -29,7 +29,13 @@ a {
   text-decoration: none;
 }
 
-
+.btn_add_to_cart{
+  border: none;
+  cursor: pointer;
+  width: 37%;
+  height: 10%;
+  border-radius: 10%;
+}
 
 .categories_style {
   width: 100%;

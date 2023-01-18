@@ -121,12 +121,11 @@ class Control_cart {
     }
     //filter element for search at API and later push into cartObject
 
-    send_Id_To_Cart(idElement = '') {
+    handle_Id_Cart(idElement = '') {
         if (idElement === '') {
             console.log('error');
         }
         else {
-
             data_Cart.save_Data_Into_Cart(idElement)
         }
     }
