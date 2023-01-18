@@ -73,19 +73,21 @@ class Product {
                 global_Variable +=
                     `
                 <div class="content-sale__child">
-                <a class="favorite" data-id="${ data.id }"> 
+                    <a class="favorite" data-id="${ data.id }"> 
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
                     </svg>
                 </a>
-                    <img src="${ data.image }" class="${ data.title } img-cards-product" alt="" srcset="">
-                    <div class="content-text">
+                <img src="${ data.image }" class="${ data.title } img-cards-product" alt="" srcset="">
+                <div class="content-text">
                     <a href="#individual_product" class="content_names view_one_element individual_product" data-id="${ data.id }">
                         <h3 data-id="${ data.id }" class="name_product">${ data.title.slice(0, 13) } </h3>
                     </a>                      
-                        <h4> ${ data.price.toLocaleString('es-AR', { style: 'currency', currency: 'EUR' }) }</h4>  
-                    </div>
-
+                    <h4> ${ data.price.toLocaleString('es-AR', { style: 'currency', currency: 'EUR' }) }</h4>  
+                </div>
+                <button class='btn_add_to_cart' id='${ data.id }'>
+                Add Cart 
+                </button>
                 </div>
                 `;
                 return content_Data_In_DOM.innerHTML = global_Variable
@@ -97,11 +99,15 @@ class Product {
         let cards = "";
         let filtered_cards = ""
 
-
         flag === true ? card_Model(product, $content_Categories, filtered_cards) : card_Model(product, content_Cards, cards)
 
         const anchor_Name = document.querySelectorAll('.content_names')
 
+        const btns_Cart = document.querySelectorAll('.btn_add_to_cart')
+        btns_Cart.forEach(item => item.addEventListener('click', (e) => {
+            const id = Number(e.target.id)
+            return controller_Cart.handle_Id_Cart(id)
+        }))
 
         /* A function that change the color of the heart when user click,
         and send id product to saving*/
@@ -146,7 +152,6 @@ class Product {
 </div>
  
         `    })
-        console.log(model_Card);
         content_Individual_Cards.insertAdjacentHTML('afterbegin', model_Card)
         content_Individual_Cards.innerHTML = model_Card
     }
@@ -185,7 +190,7 @@ class Handler_Displays_Ui {
             )
         }
         if (hash === 'favorites') {
-            return(
+            return (
                 document.querySelector('#_categories').style.display = 'none',
                 document.querySelector('.cart_style').style.display = 'none',
                 document.querySelector('#home').style.display = 'none',
@@ -236,7 +241,6 @@ class View_Favorites {
         let model_Favorites = ''
 
         newFavorites.forEach(item => {
-            console.log(item)
             model_Favorites =
                 `
             <div class="content_title___individual_item">`

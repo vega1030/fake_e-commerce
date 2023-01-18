@@ -22,7 +22,7 @@ class Control_Favorites {
         this._favorites_ = favorites
     }
 
-    get favorites() {
+    static get favorites() {
         return this._favorites_
     }
 
@@ -35,10 +35,9 @@ class Control_Favorites {
             handler_Data_At_LocalStorage.save_Favorites(res, id)
         }
     }
-    static receive_Favorite_Product(products) {
-        console.log(products);
-        console.log(Call_Api_LocalStorage.get_Favorites()); 
-        return products === "" ? console.log("error") : this._favorites_=products;
+    receive_Favorite_Product(products) {
+        products === "" ? console.log("error") : this._favorites_ = products;
+        return View_Favorites.display_Favorites(this._favorites_)
     }
 }
 
@@ -69,12 +68,12 @@ class Control_View_Information_At_DOM {
         }
     }
 
-    async send_Category(category= '') {
+    async send_Category(category = '') {
         if (category === '') {
             console.log('error')
         }
         else {
-            return  products_Instance.create_Card( await calls_To_API.get_View_Products_For_Category(category),true)
+            return products_Instance.create_Card(await calls_To_API.get_View_Products_For_Category(category), true)
         }
     }
 
@@ -159,24 +158,25 @@ class Control_cart {
 
 
 }
-//check update total sending total with input value
 
 
 class Control_Routes {
-
+    //reception hash to routers
     reception_Hash(hash = '') {
         const name_Hash = {
             "#home": 'home',
             "#section_cart": 'cart',
-            "#_categories": 'categories'
+            "#_categories": 'categories',
+            "#favorites_section": 'favorites'
+
         }
+        //send hash to controller
         return handler_View.handler_Display_(name_Hash[ hash ]);
     }
 
 }
 
 const instance_Control_Routes = new Control_Routes
-
 const cart_Instance = new Control_cart(total)
 const controller = new Control_View_Information_At_DOM
 const controller_Cart = new Control_cart

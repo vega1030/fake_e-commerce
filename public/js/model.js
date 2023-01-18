@@ -92,68 +92,24 @@ controller.control_View_Categories(await calls_To_API.get_Categories('https://fa
 
 class Drive_Data_Cart {
 
-    constructor(id, count, total) {
-        this._id = id,
-            this._count = count,
-            this._total = total
-    }
-
-    set item(item) {
-        this._id = item
-    }
-
-    get item() {
-        return this._id
-    }
-
-    set count(count) {
-        this._count = count
-    }
-
-    get count() {
-        return this._count
-    }
-
-    set total(total) {
-        this._total = total;
-    }
-    get total() {
-        return this._total
+    constructor() {
+        this._cart = []
     }
 
 
     async save_Data_Into_Cart(id) {
+        const result = await calls_To_API.get_Single_Product(id)
+        //search at cart the same product and add +1 unit
 
-        await calls_To_API.get_Single_Product(id).then(product => {
-
-            const amount_Item = cart.reduce((acc, item) => {
-                return item.id === id ? item.amount += 1 : acc
-            }, 1)
-
-            const cart_Item = {
-                amount: amount_Item,
-                ...product
-            }
-
-
-            console.log(cart_Item);
-
-            cart = [ ...cart, cart_Item ]
-
-
-            console.log(cart)
-            controller_Cart.reception_Data_For_Cart(cart)
-
-
-            const filter_Max_Amount = cart.filter(item => console.log(item.amount, 'and id', item.id))
-
-            let total = 0
-            let itemsTotal = 0
-            cart.map(item => {
-                total += item.price * item.amount;
-                itemsTotal += item.amount
-            }
-            )
+        if (this._cart.find(i => i.id === id)) {
+            const new_Cart = this._cart.map(i => i.id === id ? ({
+                ...i,
+                quantity: i.quantity + 1
+            }) : i)
+            return this._cart = new_Cart
+        }
+        return this._cart.concat({
+            ...result
         })
 
     }
@@ -170,11 +126,10 @@ class Drive_Data_Cart {
     async send_Cart_To_Controller(id) {
         const result = calls_To_API.get_Single_Product(id)
         console.log(result)
+
     }
 
 }
-
-const data_Cart = new Drive_Data_Cart
 
 
 class Call_Api_LocalStorage {
@@ -184,20 +139,6 @@ class Call_Api_LocalStorage {
     constructor(response_Cart, response_Favorites) {
         this.response_Cart = response_Cart;
         this.response_Favorites = response_Favorites;
-    }
-
-    static save_Cart(objCart) {
-        const CART = 'cart'
-        let cart = []
-        cart = JSON.parse(localStorage.getItem(CART)) || []
-        cart = [ ...cart, objCart ]
-        localStorage.setItem(CART, JSON.stringify(cart));
-    }
-
-    static get_Cart() {
-        this.response_Cart = JSON.parse(localStorage.getItem('cart'));
-
-        return this.response_Cart;
     }
     //*************----*************************/
 
@@ -231,7 +172,7 @@ class Call_Api_LocalStorage {
         })
     }
 }
-window.addEventListener('DOMContentLoaded', console.log(Call_Api_LocalStorage.get_Favorites()))
+Call_Api_LocalStorage.get_Favorites() != null ? window.addEventListener('DOMContentLoaded', controller_Favorites.receive_Favorite_Product(Call_Api_LocalStorage.get_Favorites())) : false
 
 //*************----*************************/
 
@@ -251,20 +192,13 @@ class Control_Data {
     }
 
 }
-
 const handler_Data_At_LocalStorage = new Control_Data
-
-//create server with express?
-
-
-
-
-
-
+const data_Cart = new Drive_Data_Cart
 
 export {
     calls_To_API,
     Call_Api_LocalStorage,
     handler_Data_At_LocalStorage,
-    data_Cart
+    data_Cart,
+
 }
