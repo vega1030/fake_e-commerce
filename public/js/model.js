@@ -93,39 +93,33 @@ controller.control_View_Categories(await calls_To_API.get_Categories('https://fa
 class Drive_Data_Cart {
 
     constructor() {
-        this._cart = [];
+        this._cart = []
     }
 
 
     async save_Data_Into_Cart(id) {
+        const result = await calls_To_API.get_Single_Product(id)
+        //search at cart the same product and add +1 unit
 
-        const product = {
-            amount: 1,
-            ...await calls_To_API.get_Single_Product(id),
+        if (this._cart.find(i => i.id === id)) {
+            const new_Cart = this._cart.map(i => i.id === id ? ({
+                ...i,
+                quantity: i.quantity + 1
+            }) : i)
+            return this._cart = new_Cart
         }
-
-        this._cart = [ ...this._cart, product ]
-
-        /* Filtering the array of products to remove duplicates. */
-        const newCart = this._cart.reduce((acc, e) => {
-            const delete_Repeats = acc.find(i => e.id === i.id)
-            delete_Repeats ? delete_Repeats.amount += e.amount : acc.push(e)
-            return acc
-        }, [])
-
-        this._cart = newCart
-        Call_Api_LocalStorage.save_Cart_Shopping_In_LocalStorage(this._cart)
+        return this._cart.concat({
+            ...result
+        })
     }
-
 
     delete_Product_At_Cart(id = "") {
-        const update_Cart = []
-        
-        update_Cart.push(cart.filter(item => item.id != id))
-        cart = update_Cart
+        const new_Cart = []
+        new_Cart.push(cart.filter(item => item.id != id))
+        cart = new_Cart
+        console.log(cart);
         return cart
     }
-
 
     async send_Cart_To_Controller(id) {
         const result = calls_To_API.get_Single_Product(id)
@@ -161,15 +155,6 @@ class Call_Api_LocalStorage {
         favorites = favorites.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i)
         return localStorage.setItem(FAVORITES, JSON.stringify(favorites));
 
-    }
-
-    static save_Cart_Shopping_In_LocalStorage(cart) {
-        localStorage.setItem('cart', JSON.stringify(cart))
-    }
-
-    static get_Cart_Shopping_In_LocalStorage() {
-        this.response_Cart = localStorage.getItem('cart')
-        return this.response_Cart
     }
 
     //empty favorites, fix the value null at the first iteration
