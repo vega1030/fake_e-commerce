@@ -117,8 +117,7 @@ class Control_cart {
         total = total + price * quantity
         // quantity === 1 ? total : total = quantity * price;
     }
-    async reception_Data_For_Cart(data) {
-        console.log(data)
+    reception_Data_For_Cart(data) {
         try {
             if (data === '') {
                 return console.log('error');

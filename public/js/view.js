@@ -217,11 +217,12 @@ class View_cart {
         })
     }
 
-    createCartCont(arr) {
+    createCartCont(data) {
         const counter = document.querySelector('#count_elements_at_cart')
         const content_Counter = document.querySelector('#section_cart')
+        data.forEach(i =>
+            i.quantity > 9 ? counter.innerText = '+9' : counter.innerText = JSON.stringify(i.quantity))
 
-        counter.innerText = JSON.stringify(arr.length)
         content_Counter.appendChild(counter)
 
     }
@@ -246,8 +247,7 @@ class View_cart {
             </div>
 
             <div class="price">
-                <h3>$${ item.price
-                }</h3>
+                <h3>$${ item.price }</h3>
             </div>
             <div class="content_select">
                 <a id="add">+</a> <a id="">-</a>
@@ -273,16 +273,10 @@ class View_cart {
         const items_At_Card_Ui = document.querySelectorAll('.containt_card____cart')
         items_At_Card_Ui.forEach(item => {
             const quantity = item.querySelector('.count')
-            console.log(quantity.value);
             const price_Ui = Number(item.querySelector('.price').textContent.replace('$', ''))
-
             quantity.addEventListener('change', (e) => {
                 const quantity = Number(e.target.value)
-
             })
-
-
-
         })
     }
 
