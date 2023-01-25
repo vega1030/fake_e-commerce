@@ -50,7 +50,7 @@ class Control_View_Information_At_DOM {
 
     async control_View_All_Products(products) {
 
-        products_Instance.create_Card(products, false)
+        return products_Instance.create_Card(await products, false)
     }
 
 
@@ -61,7 +61,7 @@ class Control_View_Information_At_DOM {
 
     async control_View_Categories(categories = '') {
         if (categories === '') {
-            console.log('error')
+            return console.log('error')
         }
         else {
             return categories_UI.createDynamicCategoryNav(categories)
@@ -78,47 +78,30 @@ class Control_View_Information_At_DOM {
     }
 
     async send_Id(id = '') {
-        let create_Iterable_Product = []
+
         if (id === '') {
-            console.log('error');
+            return console.log('error');
         }
-        else {
-            return await (
-                instance_Control_Routes.reception_Hash(id),
-                calls_To_API.get_Single_Product(id).then(
-                    data => {
-                        const product = {
-                            ...data
-                        }
-                        create_Iterable_Product = [ ...create_Iterable_Product, product ]
-                        products_Instance.uI_Individual_Card(create_Iterable_Product)
-                    }
-                )
-            )
+        let iterable_Product = []
+        const res = await calls_To_API.get_Single_Product(id)
+        const product = { ...res }
+        iterable_Product = [ ...iterable_Product, product ]
 
-        }
+        return (
+            products_Instance.uI_Individual_Card(iterable_Product))
     }
-
-
-
 }
 
 //----------------------------------------------------------------
 //-----------------------------------------------------------------------------//
 
-let total = 0;
 class Control_cart {
 
     constructor(total = 0) {
         this._total = total
     }
 
-    set total_At_Cart(newTotal) {
-        this._total = newTotal
-    }
-    get total_At_Cart() {
-        return this._total;
-    }
+
     //filter element for search at API and later push into cartObject
 
     handle_Id_Cart(idElement = '') {
@@ -134,8 +117,8 @@ class Control_cart {
         total = total + price * quantity
         // quantity === 1 ? total : total = quantity * price;
     }
-    async reception_Data_For_Cart(data, id) {
-
+    async reception_Data_For_Cart(data) {
+        console.log(data)
         try {
             if (data === '') {
                 return console.log('error');
@@ -144,7 +127,7 @@ class Control_cart {
 
                 return (
                     view_Cart.createCartCont(data),
-                    view_Cart.model_UiCart_List(data, units)
+                    view_Cart.model_UiCart_List(data)
 
                     // view_Cart.render_Total(total)
                 )
@@ -156,13 +139,16 @@ class Control_cart {
 
 
 
+
 }
 
 
 class Control_Routes {
     //reception hash to routers
     reception_Hash(hash = '') {
+        console.log(hash);
         const name_Hash = {
+            "#individual_product": 'individual_product',
             "#home": 'home',
             "#section_cart": 'cart',
             "#_categories": 'categories',
@@ -176,14 +162,12 @@ class Control_Routes {
 }
 
 const instance_Control_Routes = new Control_Routes
-const cart_Instance = new Control_cart(total)
-const controller = new Control_View_Information_At_DOM
 const controller_Cart = new Control_cart
+const controller = new Control_View_Information_At_DOM
 const controller_Favorites = new Control_Favorites()
 
 export {
     instance_Control_Routes,
-    cart_Instance,
     controller,
     controller_Favorites,
     controller_Cart
