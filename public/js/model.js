@@ -84,8 +84,6 @@ class Calls_API {
 const calls_To_API = new Calls_API()
 
 
-let cart = []
-
 controller.control_View_All_Products(await calls_To_API.get_All_Products('https://fakestoreapi.com/products'))
 controller.control_View_Categories(await calls_To_API.get_Categories('https://fakestoreapi.com/products/categories'))
 
@@ -99,18 +97,21 @@ class Drive_Data_Cart {
 
     async save_Data_Into_Cart(id) {
         const result = await calls_To_API.get_Single_Product(id)
-        //search at cart the same product and add +1 unit
 
-        if (this._cart.find(i => i.id === id)) {
-            const new_Cart = this._cart.map(i => i.id === id ? ({
-                ...i,
-                quantity: i.quantity + 1
-            }) : i)
-            return this._cart = new_Cart
-        }
-        return this._cart.concat({
+        const product = {
+            quantity: 1,
             ...result
-        })
+        }
+
+        this._cart.push(product)
+
+        const search_Repeat = this._cart.reduce((acc, e) => {
+            const new_Cart = acc.find(x => e.id === x.id)
+            new_Cart ? new_Cart.quantity += e.quantity : acc.push(e)
+            return acc
+        }, [])
+        this._cart = search_Repeat
+        return controller_Cart.reception_Data_For_Cart(this._cart)
     }
 
     delete_Product_At_Cart(id = "") {

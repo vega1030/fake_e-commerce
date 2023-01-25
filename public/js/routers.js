@@ -18,7 +18,7 @@ const new_Routes = new Create_Routes
 
 
 window.addEventListener('hashchange', (e) => {
-    console.log(location.hash)
+    console.log(e.oldURL)
     instance_Control_Routes.reception_Hash(location.hash);
 }, false);
 

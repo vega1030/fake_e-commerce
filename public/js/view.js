@@ -1,6 +1,6 @@
 "use strict";
 
-import { controller, cart_Instance, controller_Cart, controller_Favorites } from "./controller.js";
+import { controller, controller_Cart, controller_Favorites } from "./controller.js";
 
 class Product {
     constructor(title, category, price, description, id, image) {
@@ -101,8 +101,6 @@ class Product {
 
         flag === true ? card_Model(product, $content_Categories, filtered_cards) : card_Model(product, content_Cards, cards)
 
-        const anchor_Name = document.querySelectorAll('.content_names')
-
         const btns_Cart = document.querySelectorAll('.btn_add_to_cart')
         btns_Cart.forEach(item => item.addEventListener('click', (e) => {
             const id = Number(e.target.id)
@@ -114,17 +112,22 @@ class Product {
 
         const view_Element = document.querySelectorAll('.view_one_element')
         view_Element.forEach((element) => {
-            element.addEventListener('click', () => {
-                const data_Id = element.dataset.id
-                return controller_Favorites.send_Id(data_Id)
+            element.addEventListener('click', (e) => {
+                const data_Id = Number(element.dataset.id)
+                console.log(e.target.parentElement.attributes.href)
+                return controller.send_Id(data_Id)
+
             })
         })
+
+
         View_Favorites.handler_Favorites()
 
     }
 
 
     uI_Individual_Card(product) {
+        console.log(product)
         const content_Individual_Cards = document.querySelector('#individual_product')
         let model_Card = ''
         product.forEach(item => {
@@ -156,54 +159,7 @@ class Product {
         content_Individual_Cards.innerHTML = model_Card
     }
 }
-class Handler_Displays_Ui {
-    handler_Display_(hash) {
-        console.log(hash);
-        if (hash === 'categories') {
-            return (
-                document.querySelector('#home').style.display = 'none',
-                document.querySelector('#_categories').style.display = 'grid',
-                document.querySelector('.cart_style').style.display = 'none',
-                document.querySelector('#content_card').style.display = 'none',
-                document.querySelector('#favorites_section').style.display = 'none'
 
-            )
-        }
-        if (hash === 'home') {
-            return (
-                document.querySelector('#_categories').style.display = 'none',
-                document.querySelector('#home').style.display = 'grid',
-                document.querySelector('.cart_style').style.display = 'none',
-                document.querySelector('#content_card').style.display = 'grid',
-                document.querySelector('#favorites_section').style.display = 'none'
-
-            )
-        }
-        if (hash === 'cart') {
-            return (
-                document.querySelector('.cart_style').style.display = 'grid',
-                document.querySelector('#home').style.display = 'none',
-                document.querySelector('#content_card').style.display = 'none',
-                document.querySelector('#favorites_section').style.display = 'none'
-
-
-            )
-        }
-        if (hash === 'favorites') {
-            return (
-                document.querySelector('#_categories').style.display = 'none',
-                document.querySelector('.cart_style').style.display = 'none',
-                document.querySelector('#home').style.display = 'none',
-                document.querySelector('#content_card').style.display = 'none',
-                document.querySelector('#favorites_section').style.display = 'grid'
-            )
-        }
-
-    }
-
-
-
-}
 
 // create shopping cart with vanilla javascript?    
 
@@ -260,6 +216,7 @@ class View_cart {
             return (elements)
         })
     }
+
     createCartCont(arr) {
         const counter = document.querySelector('#count_elements_at_cart')
         const content_Counter = document.querySelector('#section_cart')
@@ -303,6 +260,7 @@ class View_cart {
         })
 
         //********--RENDER--- */
+
         section_Content_Data.insertAdjacentHTML('afterbegin', content_Data)
 
         const btn_Delete_Cart = document.querySelectorAll('.btn_delete_element')
@@ -313,12 +271,10 @@ class View_cart {
         })
 
         const items_At_Card_Ui = document.querySelectorAll('.containt_card____cart')
-
         items_At_Card_Ui.forEach(item => {
             const quantity = item.querySelector('.count')
             console.log(quantity.value);
             const price_Ui = Number(item.querySelector('.price').textContent.replace('$', ''))
-            cart_Instance.calculate_Total_Cart(quantity.value, price_Ui)
 
             quantity.addEventListener('change', (e) => {
                 const quantity = Number(e.target.value)
@@ -386,6 +342,64 @@ const products_Instance = new Product();
 document.querySelector('.dropdown-menu').addEventListener('click', (event) => {
     controller.send_Category(event.target.id)
 })
+class Handler_Displays_Ui {
+    handler_Display_(hash) {
+        console.log(hash)
+        if (hash === 'categories') {
+            return (
+                document.querySelector('#home').style.display = 'none',
+                document.querySelector('#_categories').style.display = 'grid',
+                document.querySelector('.cart_style').style.display = 'none',
+                document.querySelector('#content_card').style.display = 'none',
+                document.querySelector('#favorites_section').style.display = 'none',
+                document.querySelector('#individual_product').style.display = 'none'
+
+
+            )
+        }
+        if (hash === 'home') {
+            return (
+                document.querySelector('#_categories').style.display = 'none',
+                document.querySelector('#home').style.display = 'grid',
+                document.querySelector('.cart_style').style.display = 'none',
+                document.querySelector('#content_card').style.display = 'grid',
+                document.querySelector('#favorites_section').style.display = 'none'
+
+            )
+        }
+        if (hash === 'cart') {
+            return (
+                document.querySelector('.cart_style').style.display = 'grid',
+                document.querySelector('#home').style.display = 'none',
+                document.querySelector('#content_card').style.display = 'none',
+                document.querySelector('#favorites_section').style.display = 'none'
+
+
+            )
+        }
+        if (hash === 'favorites') {
+            return (
+                document.querySelector('#_categories').style.display = 'none',
+                document.querySelector('.cart_style').style.display = 'none',
+                document.querySelector('#home').style.display = 'none',
+                document.querySelector('#content_card').style.display = 'none',
+                document.querySelector('#favorites_section').style.display = 'grid'
+            )
+        }
+        if (hash === 'individual_product') {
+            return (
+                console.log(hash),
+                document.querySelector('#_categories').style.display = 'none',
+                document.querySelector('.cart_style').style.display = 'none',
+                document.querySelector('#home').style.display = 'none',
+                document.querySelector('#content_card').style.display = 'none',
+                document.querySelector('#favorites_section').style.display = 'none'
+
+            )
+        }
+
+    }
+}
 export {
     products_Instance,
     View_cart,
