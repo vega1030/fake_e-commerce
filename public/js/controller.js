@@ -1,6 +1,6 @@
 'use strict'
 
-import { calls_To_API, data_Cart, handler_Data_At_LocalStorage, Call_Api_LocalStorage } from "./model.js";
+import { calls_To_API, data_Cart, handler_Data_At_LocalStorage, api_LocalStorage } from "./model.js";
 import { View_cart, Category_ui, products_Instance, Handler_Displays_Ui, Product, View_Favorites } from "./view.js";
 
 
@@ -11,6 +11,9 @@ const handler_View = new Handler_Displays_Ui()
 const view_Cart = new View_cart()
 
 const categories_UI = new Category_ui()
+
+
+
 
 
 
@@ -97,15 +100,14 @@ class Control_View_Information_At_DOM {
 
 class Control_cart {
 
-    constructor(total = 0) {
+    constructor(total = 0, quantity = 0) {
+        this._quantity = quantity
         this._total = total
     }
 
+    handle_Id_Cart(idElement = '', flag) {
 
-    //filter element for search at API and later push into cartObject
-
-    handle_Id_Cart(idElement = '') {
-        if (idElement === '') {
+        if (idElement === '' && flag === null) {
             console.log('error');
         }
         else {
@@ -113,34 +115,29 @@ class Control_cart {
         }
     }
 
+    handle_Id_Cart_delete(id) {
+        if (id === '') {
+            console.log('error')
+        }
+        else {
+            api_LocalStorage.delete_Product_At_Cart(id)
+        }
+    }
+
     calculate_Total_Cart(quantity, price) {
         total = total + price * quantity
         // quantity === 1 ? total : total = quantity * price;
     }
-    reception_Data_For_Cart(data) {
-        try {
-            if (data === '') {
-                return console.log('error');
-            }
-            else {
 
-                return (
-                    view_Cart.createCartCont(data),
-                    view_Cart.model_UiCart_List(data)
 
-                    // view_Cart.render_Total(total)
-                )
-            }
-        } catch (error) {
-            console.log(error);
-        }
+    control_Data_For_Cart(data) {
+        console.log(data)
+        const acu = data === null ? 0 : data.reduce((previous, current) => {
+            return previous + current.quantity
+        }, 0)
+        return view_Cart.createCartCont(acu)
     }
-
-
-
-
 }
-
 
 class Control_Routes {
     //reception hash to routers
@@ -160,9 +157,9 @@ class Control_Routes {
 
 }
 
-const instance_Control_Routes = new Control_Routes
-const controller_Cart = new Control_cart
-const controller = new Control_View_Information_At_DOM
+const instance_Control_Routes = new Control_Routes()
+const controller_Cart = new Control_cart()
+const controller = new Control_View_Information_At_DOM()
 const controller_Favorites = new Control_Favorites()
 
 export {

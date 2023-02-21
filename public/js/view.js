@@ -2,6 +2,7 @@
 
 import { controller, controller_Cart, controller_Favorites } from "./controller.js";
 
+
 class Product {
     constructor(title, category, price, description, id, image) {
         this._title = title;
@@ -65,8 +66,8 @@ class Product {
     get description() {
         return this._description
     }
-    /* Creating a card with the information of the product. */
 
+    /* Creating a card with the information of the product. */
     create_Card(product, flag) {
         const card_Model = (products, content_Data_In_DOM, global_Variable) => {
             products.forEach(data => {
@@ -88,6 +89,10 @@ class Product {
                 <button class='btn_add_to_cart' id='${ data.id }'>
                 Add Cart 
                 </button>
+                <button class='btn_delete_element_cart' id='${ data.id }'>
+                delete 
+                </button>
+                
                 </div>
                 `;
                 return content_Data_In_DOM.innerHTML = global_Variable
@@ -99,12 +104,21 @@ class Product {
         let cards = "";
         let filtered_cards = ""
 
+        /* The above code is checking if the flag is true, if it is true, it will run the card_Model function
+        with the filtered_cards array, if it is false, it will run the card_Model function with the cards
+        array. */
         flag === true ? card_Model(product, $content_Categories, filtered_cards) : card_Model(product, content_Cards, cards)
 
         const btns_Cart = document.querySelectorAll('.btn_add_to_cart')
         btns_Cart.forEach(item => item.addEventListener('click', (e) => {
             const id = Number(e.target.id)
             return controller_Cart.handle_Id_Cart(id)
+        }))
+
+        const btns_Delete_Cart = document.querySelectorAll('.btn_delete_element_cart')
+        btns_Delete_Cart.forEach(i => i.addEventListener('click', (e) => {
+            const id = Number(e.target.id)
+            return controller_Cart.handle_Id_Cart_delete(id)
         }))
 
         /* A function that change the color of the heart when user click,
@@ -119,8 +133,6 @@ class Product {
 
             })
         })
-
-
         View_Favorites.handler_Favorites()
 
     }
@@ -210,59 +222,61 @@ class View_Favorites {
 class View_cart {
 
     createListCart(products) {
-        cart_Ui.createCartCont(products)
         products.forEach(elements => {
-            console.log(elements);
-            return (elements)
+            return (elements);
         })
     }
 
-    createCartCont(data) {
+    createCartCont(quantity) {
         const counter = document.querySelector('#count_elements_at_cart')
         const content_Counter = document.querySelector('#section_cart')
-        data.forEach(i =>
-            i.quantity > 9 ? counter.innerText = '+9' : counter.innerText = JSON.stringify(i.quantity))
-
+        quantity > 9 ? counter.innerText = '+9' : counter.innerText = JSON.stringify(quantity)
         content_Counter.appendChild(counter)
 
     }
 
-
-    model_UiCart_List(arr = "", units) {
+    model_UiCart_List = (arr = '') => {
         const section_Content_Data = document.querySelector('#view_section_cart')
         let content_Data = ''
+        let collect_Repeats_Elements = []
+
+        collect_Repeats_Elements = [ ...arr ]
+
+
         arr.forEach(item => {
 
             content_Data =
                 `
-                <div class="containt_card____cart" id="$containt_card____cart" data-id = ${ item.id }>
+            <div class="containt_card____cart" id="$containt_card____cart" data-id = ${ item.id }>
                 <button type="button" class="btn-close close btn_delete_element" aria-label="Close"></button>
             <div class="content_image_product_at_cart">
                 <img src="${ item.image }" alt="img" srcset="" class="img-card____cart">
             </div>
-
+            
             <div class="content_description">
                 <h2>${ item.title.slice(0, 13) }</h2>
-
             </div>
-
+            
             <div class="price">
                 <h3>$${ item.price }</h3>
             </div>
             <div class="content_select">
-                <a id="add">+</a> <a id="">-</a>
-            <input type="number" min="1" max="10" data-id = ${ item.id } type="number" 
-            class="count form-control" value=${ units }
+                <input type="number" min="1" max="10" data-id = ${ item.id } type="number" 
+                class="count form-control" value=${ item.quantity }>
+                <a class="add">+</a> <a class="minus">-</a>
             </div>
             </div>
             `
+            return section_Content_Data.innerHTML = content_Data
 
         })
 
+        const content_Card_Cart = document.querySelectorAll('.containt_card____cart')
+        content_Card_Cart.forEach(i => console.log(Number(i.dataset.id)))
+
+        /* return section_Content_Data.insertAdjacentHTML('afterbegin', content_Data)  */
+
         //********--RENDER--- */
-
-        section_Content_Data.insertAdjacentHTML('afterbegin', content_Data)
-
         const btn_Delete_Cart = document.querySelectorAll('.btn_delete_element')
         btn_Delete_Cart.forEach((element) => {
             element.addEventListener('click', (e) => {
@@ -297,6 +311,7 @@ class View_cart {
 }
 
 
+
 class Category_ui {
 
     constructor(category) {
@@ -312,15 +327,24 @@ class Category_ui {
     }
 
     createDynamicCategoryNav(categories) {
-        const content_Li_In_Header = document.querySelector('#ul_List')
+        const content_Li_In_Header = document.querySelector('#list_classification')
         let modelNavHeader = "";
         categories.forEach(elements => {
             modelNavHeader +=
                 `
-            <li><a class="dropdown-item route" href="#_categories" id="${ elements }"> ${ elements } </a></li>
-            `;
-            content_Li_In_Header.innerHTML = modelNavHeader
+                    <li class="dropdown-item_ul">
+                        <a class="dropdown-item listener_category route" href="#_categories" id="${ elements }"> ${ elements } </a>
+                    </li>
+                `;
+            return content_Li_In_Header.innerHTML = modelNavHeader
         })
+
+        const listener_category = document.querySelectorAll('.listener_category')
+        listener_category.forEach(i => i.addEventListener('click', (e) => {
+            console.log(e.target.href)
+            return controller.send_Category(e.target.id)
+        })
+        )
     }
 
     create_Category_UI_Cards = (data) => {
@@ -333,12 +357,11 @@ const cart_Ui = new View_cart();
 const products_Instance = new Product();
 
 
-document.querySelector('.dropdown-menu').addEventListener('click', (event) => {
-    controller.send_Category(event.target.id)
-})
+/* This class is responsible for displaying the correct section of the page based on the hash in the
+url */
+
 class Handler_Displays_Ui {
     handler_Display_(hash) {
-        console.log(hash)
         if (hash === 'categories') {
             return (
                 document.querySelector('#home').style.display = 'none',
