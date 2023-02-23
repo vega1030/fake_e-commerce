@@ -23,6 +23,10 @@ body {
   height: 21vh;
 }
 
+.nav-link>span{
+  margin: 0 0 0 6%;
+  color: black;
+}
 
 .title {
   width: 100%;
