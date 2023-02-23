@@ -129,6 +129,7 @@ class Drive_Data_Cart {
         }, []);
         api_LocalStorage.saveCartAtLocalStorage(this.responseCart);
         controller_Cart.control_Data_For_Cart(this.responseCart);
+        controller_Cart.calculate_Total_Cart(this.responseCart)
         return this.responseCart;
     }
 
@@ -248,14 +249,9 @@ favorites.get_Favorites() != null ? window.addEventListener('DOMContentLoaded', 
 controller_Cart.control_Data_For_Cart(api_LocalStorage.get_Cart());
 controller_Cart.calculate_Total_Cart(api_LocalStorage.get_Cart())
 
-
-/* controller_Cart.control_Data_For_Cart(api_LocalStorage.responseCart)
- */
-
 export {
     calls_To_API,
     api_LocalStorage,
     handler_Data_At_LocalStorage,
-    data_Cart,
-
+    data_Cart
 }

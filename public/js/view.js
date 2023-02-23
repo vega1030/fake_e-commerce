@@ -299,7 +299,7 @@ class View_cart {
         const $content_Total = document.querySelector('#content_total')
         const model_Total =
             `
-        <h4 class="total" id="total_at_cart">$${ total.toFixed(2) }</h4>
+        <h4 class="total" id="total_at_cart">$${ total }</h4>
         `
         $content_Total.innerHTML = model_Total
         //********----- */

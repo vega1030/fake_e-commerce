@@ -115,12 +115,14 @@ class Control_cart {
     }
 
     calculate_Total_Cart(data) {
+
         this.total = data.reduce((previous, current) => {
-            const total = (current.price*current.quantity)+previous
+            const total = (current.price * current.quantity) + previous
             return total
-        }, 0)
-        return this.total
-        
+        }, 0).toFixed(2)
+        console.log(this.total)
+        return Number(this.total)
+
     }
 
 
