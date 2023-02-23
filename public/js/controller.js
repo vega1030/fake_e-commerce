@@ -4,21 +4,13 @@ import { calls_To_API, data_Cart, handler_Data_At_LocalStorage, api_LocalStorage
 import { View_cart, Category_ui, products_Instance, Handler_Displays_Ui, Product, View_Favorites } from "./view.js";
 
 
-
-
 const handler_View = new Handler_Displays_Ui()
 
 const view_Cart = new View_cart()
 
 const categories_UI = new Category_ui()
 
-
-
-
-
-
 //----------------------------------------------------------------
-
 
 class Control_Favorites {
     constructor(favorites) {
@@ -52,7 +44,6 @@ class Control_View_Information_At_DOM {
     }
 
     async control_View_All_Products(products) {
-
         return products_Instance.create_Card(await products, false)
     }
 
@@ -100,9 +91,8 @@ class Control_View_Information_At_DOM {
 
 class Control_cart {
 
-    constructor(total = 0, quantity = 0) {
-        this._quantity = quantity
-        this._total = total
+    constructor(total = 0) {
+        this.total = total
     }
 
     handle_Id_Cart(idElement = '', flag) {
@@ -120,24 +110,30 @@ class Control_cart {
             console.log('error')
         }
         else {
-            api_LocalStorage.delete_Product_At_Cart(id)
+            data_Cart.delete_Product_At_Cart(id)
         }
     }
 
-    calculate_Total_Cart(quantity, price) {
-        total = total + price * quantity
-        // quantity === 1 ? total : total = quantity * price;
+    calculate_Total_Cart(data) {
+        this.total = data.reduce((previous, current) => {
+            const total = (current.price*current.quantity)+previous
+            return total
+        }, 0)
+        return this.total
+        
     }
 
 
     control_Data_For_Cart(data) {
-        console.log(data)
         const acu = data === null ? 0 : data.reduce((previous, current) => {
             return previous + current.quantity
         }, 0)
         return view_Cart.createCartCont(acu)
     }
 }
+
+
+//----------------------------------------------------------------
 
 class Control_Routes {
     //reception hash to routers

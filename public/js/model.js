@@ -1,4 +1,5 @@
 'use strict'
+
 import { controller, controller_Cart, controller_Favorites } from "./controller.js";
 class Calls_API {
 
@@ -87,7 +88,12 @@ controller.control_View_All_Products(await calls_To_API.get_All_Products('https:
 controller.control_View_Categories(await calls_To_API.get_Categories('https://fakestoreapi.com/products/categories'))
 
 
+/* It's a class that contains functions that are used to save data into the cart */
 class Drive_Data_Cart {
+
+    constructor(response_Cart) {
+        this.responseCart = response_Cart;
+    }
 
 
 
@@ -99,26 +105,7 @@ class Drive_Data_Cart {
             quantity: 1,
             ...result
         }
-
-        api_LocalStorage.addProductsInCart(product)
-    }
-
-
-
-    send_Cart_To_Controller = async (id) => {
-        const result = calls_To_API.get_Single_Product(id)
-
-    }
-
-}
-
-//create a function to add a product at localStorage
-
-class Call_Api_LocalStorage {
-
-    constructor(response_Cart, response_Favorites) {
-        this.responseCart = response_Cart;
-        this.responseCart = response_Favorites;
+        this.addProductsInCart(product)
     }
 
     //***********--Cart--**************/ 
@@ -129,39 +116,55 @@ class Call_Api_LocalStorage {
      * @param paramProduct - is the product that is added to the cart.
      * @returns the localStorage.setItem(CART, JSON.stringify(cart_LocalStorage))
      */
+
     addProductsInCart = (paramProduct) => {
         const CART = 'cart';
         this.responseCart = [];
-        this.responseCart = this.get_Cart() || [];
+        this.responseCart = api_LocalStorage.get_Cart() || [];
         const cart = [ ...this.responseCart, paramProduct ];
         this.responseCart = cart.reduce((acc, e) => {
             const searchRepeat = acc.find(x => e.id === x.id);
             searchRepeat ? searchRepeat.quantity += e.quantity : acc.push(e);
             return acc;
         }, []);
-        this.saveCartAtLocalStorage(this.responseCart);
-        /* localStorage.setItem(CART, JSON.stringify(this.responseCart)); */
+        api_LocalStorage.saveCartAtLocalStorage(this.responseCart);
         controller_Cart.control_Data_For_Cart(this.responseCart);
         return this.responseCart;
-
     }
 
-    //fix
-
+    /* A function that receives an id as a parameter, gets the cart from local storage, subtracts the
+    product from the cart, and then saves the cart back to local storage. */
     delete_Product_At_Cart = (id = "") => {
-        //filters the cart and deletes the product
-        const CART = 'cart';
-        const searchProductInCart = this.get_Cart().find((item => {
-            return item.id === id?item.quantity -=1:this.get_Cart();
-        }))
-        console.log(searchProductInCart)
 
-        //create a function to replace elements at an array of objects
-        const updateCart = this.get_Cart().map(i=>i.id===searchProductInCart.id?searchProductInCart:i)
-        return this.saveCartAtLocalStorage(updateCart)
+        const updateCart = api_LocalStorage.get_Cart().map(i => i.id === id
+            ? { ...i, quantity: i.quantity - 1 } : i).filter(i => i.quantity > 0);
+        this.responseCart = updateCart
+        return (api_LocalStorage.saveCartAtLocalStorage(this.responseCart),
+            controller_Cart.control_Data_For_Cart(this.responseCart)
+        )
     }
 
+    //***************** */
 
+
+
+    /* It's a function that receives an id as a parameter, calls the get_Single_Product function, which
+    returns
+    a product, and then adds the product to the cart. */
+    send_Cart_To_Controller = async (id) => {
+        const result = calls_To_API.get_Single_Product(id)
+
+    }
+
+}
+
+/***********--------------***************/
+
+/* It's a class that has a constructor that receives two parameters, and then has three methods that
+add, delete, and get products from local storage. */
+class Call_Api_LocalStorage {
+
+    /* A function that receives a parameter, which is the data, and then saves the data in localStorage. */
     saveCartAtLocalStorage = (data) => {
         const CART = 'cart';
         return localStorage.setItem(CART, JSON.stringify(data));
@@ -174,6 +177,12 @@ class Call_Api_LocalStorage {
 
     //***********--Favorites--**************/ 
 
+}
+
+/***********--------------***************/
+
+class Favorites_ {
+
     /* Saving the favorites at localStorage. */
     save_Favorites_At_LocalStorage = (product) => {
         const FAVORITES = 'favorites';
@@ -184,8 +193,6 @@ class Call_Api_LocalStorage {
         return localStorage.setItem(FAVORITES, JSON.stringify(favorites));
     };
 
-
-    //how create a function to subtract units an array of objects with vanilla javascript
 
     //save info to localStorage and no overwriting
 
@@ -204,9 +211,6 @@ class Call_Api_LocalStorage {
             console.log(`${ data } and ${ id }`);
         })
     }
-    //*************----*************************/
-
-
 }
 
 
@@ -230,14 +234,19 @@ class Control_Data {
     }
 
 }
+
+/***********--------------***************/
+
 const handler_Data_At_LocalStorage = new Control_Data
 const data_Cart = new Drive_Data_Cart
 const api_LocalStorage = new Call_Api_LocalStorage
+const favorites = new Favorites_
 
 
-api_LocalStorage.get_Favorites() != null ? window.addEventListener('DOMContentLoaded', controller_Favorites.receive_Favorite_Product(Call_Api_LocalStorage.get_Favorites())) : false
+favorites.get_Favorites() != null ? window.addEventListener('DOMContentLoaded', controller_Favorites.receive_Favorite_Product(Call_Api_LocalStorage.get_Favorites())) : false
 
 controller_Cart.control_Data_For_Cart(api_LocalStorage.get_Cart());
+controller_Cart.calculate_Total_Cart(api_LocalStorage.get_Cart())
 
 
 /* controller_Cart.control_Data_For_Cart(api_LocalStorage.responseCart)
