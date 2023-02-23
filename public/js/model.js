@@ -141,7 +141,8 @@ class Drive_Data_Cart {
             ? { ...i, quantity: i.quantity - 1 } : i).filter(i => i.quantity > 0);
         this.responseCart = updateCart
         return (api_LocalStorage.saveCartAtLocalStorage(this.responseCart),
-            controller_Cart.control_Data_For_Cart(this.responseCart)
+            controller_Cart.control_Data_For_Cart(this.responseCart),
+            controller_Cart.calculate_Total_Cart(this.responseCart)
         )
     }
 
@@ -247,8 +248,8 @@ const favorites = new Favorites_
 favorites.get_Favorites() != null ? window.addEventListener('DOMContentLoaded', controller_Favorites.receive_Favorite_Product(Call_Api_LocalStorage.get_Favorites())) : false
 
 controller_Cart.control_Data_For_Cart(api_LocalStorage.get_Cart());
-controller_Cart.calculate_Total_Cart(api_LocalStorage.get_Cart())
-
+/* controller_Cart.calculate_Total_Cart(api_LocalStorage.get_Cart())
+ */
 export {
     calls_To_API,
     api_LocalStorage,

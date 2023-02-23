@@ -114,9 +114,9 @@ class Control_cart {
         }
     }
 
-    calculate_Total_Cart(data) {
+    calculate_Total_Cart(data = 0) {
 
-        this.total = data.reduce((previous, current) => {
+        this.total = data === 0 ? null : data.reduce((previous, current) => {
             const total = (current.price * current.quantity) + previous
             return total
         }, 0).toFixed(2)
@@ -125,13 +125,14 @@ class Control_cart {
 
     }
 
-
     control_Data_For_Cart(data) {
+
         const acu = data === null ? 0 : data.reduce((previous, current) => {
             return previous + current.quantity
         }, 0)
         return view_Cart.createCartCont(acu)
     }
+
 }
 
 
