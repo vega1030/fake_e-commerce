@@ -21,18 +21,18 @@ class Control_Favorites {
         return this._favorites_
     }
 
-    async send_Favorite_Product_To_LocalStorage(id) {
+    async send_Favorite_Product_To_LocalStorage(id, flag) {
+        
         if (id === '') {
             console.log('error')
         }
         else {
             const res = await calls_To_API.get_Single_Product(id)
-            handler_Data_At_LocalStorage.save_Favorites(res, id)
+            handler_Data_At_LocalStorage.save_Favorites(res, flag)
         }
     }
     receive_Favorite_Product(products) {
-        products === "" ? console.log("error") : this._favorites_ = products;
-        return View_Favorites.display_Favorites(this._favorites_)
+        return View_Favorites.display_Favorites(products)
     }
 }
 

@@ -74,11 +74,13 @@ class Product {
                 global_Variable +=
                     `
                 <div class="content-sale__child">
-                    <a class="favorite" data-id="${ data.id }"> 
+                    <input type="checkbox" class="favorite" id=${ data.id } data-id="${ data.id }"> 
+                    <label for= ${ data.id } class = "favoriteLabel" >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                    <path class= "pathHeart" fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
                     </svg>
-                </a>
+                    </label>
+                </input>
                 <img src="${ data.image }" class="${ data.title } img-cards-product" alt="" srcset="">
                 <div class="content-text">
                     <a href="#individual_product" class="content_names view_one_element individual_product" data-id="${ data.id }">
@@ -180,24 +182,30 @@ class View_Favorites {
         this._favorites = favorites
     }
     static handler_Favorites() {
-        let hearts = document.querySelectorAll('.favorite')
+
+        const hearts = document.querySelectorAll('.favorite')
+        /* 
+                colorHearts.forEach(i => {
+                    i.addEventListener('click', (e) => {
+                        const selection = e.target
+                        const color_selection = selection.style.color === 'red' ? 'white' : 'red'
+                        selection.style.color = color_selection
+                    })
+                }) */
         hearts.forEach((element) => {
             element.addEventListener("click", (e) => {
-                element.classList.forEach(data => {
-                    if (data.includes('activate')) {
-                        element.classList.remove('activate')
-                    }
-                    else {
-                        const data_Id = Number(element.dataset.id)
-                        controller_Favorites.send_Favorite_Product_To_LocalStorage(data_Id)
-                        element.classList.add('activate')
-                        console.log(data_Id);
-                    }
-                });
-                const selection = e.target
-                const color_selection = selection.style.color === 'red' ? 'initial' : 'red'
-                selection.style.color = color_selection
-                //add if and question: if class name is "activate add favorites"
+                const data_Id = Number(element.dataset.id)
+
+                const selection = e.target.labels[ 0 ].children[ 0 ].lastElementChild
+                const valueFavorites = e.target.value === 'on' ? e.target.value = 'off' : e.target.value = 'on'
+
+                const changeColorHeart = (node, flag) => {
+                    flag === 'off' ? node.style.color = 'red' : node.style.color = 'white'
+                }
+                changeColorHeart(selection, valueFavorites)
+
+                controller_Favorites.send_Favorite_Product_To_LocalStorage(data_Id,valueFavorites)
+
                 e.preventDefault()
             })
         })
@@ -208,12 +216,7 @@ class View_Favorites {
         const content_Favorites = document.querySelector('#content_favorites')
         let model_Favorites = ''
 
-        newFavorites.forEach(item => {
-            model_Favorites =
-                `
-            <div class="content_title___individual_item">`
-        })
-        return this._favorites = newFavorites
+        console.log(newFavorites)
 
     }
 }
