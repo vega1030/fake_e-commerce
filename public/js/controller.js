@@ -1,9 +1,7 @@
 'use strict'
 
-import { calls_To_API, data_Cart, handler_Data_At_LocalStorage, Call_Api_LocalStorage } from "./model.js";
+import { calls_To_API, data_Cart, handler_Data_At_LocalStorage, api_LocalStorage } from "./model.js";
 import { View_cart, Category_ui, products_Instance, Handler_Displays_Ui, Product, View_Favorites } from "./view.js";
-
-
 
 
 const handler_View = new Handler_Displays_Ui()
@@ -12,10 +10,7 @@ const view_Cart = new View_cart()
 
 const categories_UI = new Category_ui()
 
-
-
 //----------------------------------------------------------------
-
 
 class Control_Favorites {
     constructor(favorites) {
@@ -26,18 +21,18 @@ class Control_Favorites {
         return this._favorites_
     }
 
-    async send_Favorite_Product_To_LocalStorage(id) {
+    async send_Favorite_Product_To_LocalStorage(id, flag) {
+        
         if (id === '') {
             console.log('error')
         }
         else {
             const res = await calls_To_API.get_Single_Product(id)
-            handler_Data_At_LocalStorage.save_Favorites(res, id)
+            handler_Data_At_LocalStorage.save_Favorites(res, flag)
         }
     }
     receive_Favorite_Product(products) {
-        products === "" ? console.log("error") : this._favorites_ = products;
-        return View_Favorites.display_Favorites(this._favorites_)
+        return View_Favorites.display_Favorites(products)
     }
 }
 
@@ -49,8 +44,7 @@ class Control_View_Information_At_DOM {
     }
 
     async control_View_All_Products(products) {
-
-        products_Instance.create_Card(products, false)
+        return products_Instance.create_Card(await products, false)
     }
 
 
@@ -61,7 +55,7 @@ class Control_View_Information_At_DOM {
 
     async control_View_Categories(categories = '') {
         if (categories === '') {
-            console.log('error')
+            return console.log('error')
         }
         else {
             return categories_UI.createDynamicCategoryNav(categories)
@@ -78,51 +72,32 @@ class Control_View_Information_At_DOM {
     }
 
     async send_Id(id = '') {
-        let create_Iterable_Product = []
+
         if (id === '') {
-            console.log('error');
+            return console.log('error');
         }
-        else {
-            return await (
-                instance_Control_Routes.reception_Hash(id),
-                calls_To_API.get_Single_Product(id).then(
-                    data => {
-                        const product = {
-                            ...data
-                        }
-                        create_Iterable_Product = [ ...create_Iterable_Product, product ]
-                        products_Instance.uI_Individual_Card(create_Iterable_Product)
-                    }
-                )
-            )
+        let iterable_Product = []
+        const res = await calls_To_API.get_Single_Product(id)
+        const product = { ...res }
+        iterable_Product = [ ...iterable_Product, product ]
 
-        }
+        return (
+            products_Instance.uI_Individual_Card(iterable_Product))
     }
-
-
-
 }
 
 //----------------------------------------------------------------
 //-----------------------------------------------------------------------------//
 
-let total = 0;
 class Control_cart {
 
     constructor(total = 0) {
-        this._total = total
+        this.total = total
     }
 
-    set total_At_Cart(newTotal) {
-        this._total = newTotal
-    }
-    get total_At_Cart() {
-        return this._total;
-    }
-    //filter element for search at API and later push into cartObject
+    handle_Id_Cart(idElement = '', flag) {
 
-    handle_Id_Cart(idElement = '') {
-        if (idElement === '') {
+        if (idElement === '' && flag === null) {
             console.log('error');
         }
         else {
@@ -130,39 +105,45 @@ class Control_cart {
         }
     }
 
-    calculate_Total_Cart(quantity, price) {
-        total = total + price * quantity
-        // quantity === 1 ? total : total = quantity * price;
-    }
-    async reception_Data_For_Cart(data, id) {
-
-        try {
-            if (data === '') {
-                return console.log('error');
-            }
-            else {
-
-                return (
-                    view_Cart.createCartCont(data),
-                    view_Cart.model_UiCart_List(data, units)
-
-                    // view_Cart.render_Total(total)
-                )
-            }
-        } catch (error) {
-            console.log(error);
+    handle_Id_Cart_delete(id) {
+        if (id === '') {
+            console.log('error')
+        }
+        else {
+            data_Cart.delete_Product_At_Cart(id)
         }
     }
 
+    calculate_Total_Cart(data = 0) {
 
+        this.total = data === 0 ? null : data.reduce((previous, current) => {
+            const total = (current.price * current.quantity) + previous
+            return total
+        }, 0).toFixed(2)
+        console.log(this.total)
+        return Number(this.total)
+
+    }
+
+    control_Data_For_Cart(data) {
+
+        const acu = data === null ? 0 : data.reduce((previous, current) => {
+            return previous + current.quantity
+        }, 0)
+        return view_Cart.createCartCont(acu)
+    }
 
 }
 
 
+//----------------------------------------------------------------
+
 class Control_Routes {
     //reception hash to routers
     reception_Hash(hash = '') {
+        console.log(hash);
         const name_Hash = {
+            "#individual_product": 'individual_product',
             "#home": 'home',
             "#section_cart": 'cart',
             "#_categories": 'categories',
@@ -175,15 +156,13 @@ class Control_Routes {
 
 }
 
-const instance_Control_Routes = new Control_Routes
-const cart_Instance = new Control_cart(total)
-const controller = new Control_View_Information_At_DOM
-const controller_Cart = new Control_cart
+const instance_Control_Routes = new Control_Routes()
+const controller_Cart = new Control_cart()
+const controller = new Control_View_Information_At_DOM()
 const controller_Favorites = new Control_Favorites()
 
 export {
     instance_Control_Routes,
-    cart_Instance,
     controller,
     controller_Favorites,
     controller_Cart

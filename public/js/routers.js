@@ -18,12 +18,13 @@ const new_Routes = new Create_Routes
 
 
 window.addEventListener('hashchange', (e) => {
-    console.log(location.hash)
+    console.log(e.oldURL)
     instance_Control_Routes.reception_Hash(location.hash);
+    console.log(location.hash)
 }, false);
 
 
-window.addEventListener("load", (e) => {
+window.addEventListener("load", (event) => {
     window[ "home" ].addEventListener("click", event => new_Routes.push_Id(event))
     window[ "_categories" ].addEventListener("click", event => new_Routes.push_Id(event))
     window[ "individual_product" ].addEventListener("click", event => new_Routes.push_Id(event))
