@@ -58,6 +58,9 @@ a {
 }
 
 
+.bi{
+  color: white;
+}
 
 .total {
   text-align: center;
@@ -68,11 +71,18 @@ a {
   background-color: greenyellow
 }
 
-
-
-.favorite {
-  fill: red;
+.favorite{
+  background-color: transparent;
+  outline: none;
+  border: none;
 }
+
+.red>svg{
+  fill: #e50010;
+}
+
+
+
 
 /********************************/
 
