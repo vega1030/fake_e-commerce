@@ -1,6 +1,6 @@
 'use strict'
 
-import { calls_To_API, data_Cart, handler_Data_At_LocalStorage, api_LocalStorage } from "./model.js";
+import { calls_To_API, data_Cart, handler_Data_At_LocalStorage } from "./model.js";
 import { View_cart, Category_ui, products_Instance, Handler_Displays_Ui, Product, View_Favorites } from "./view.js";
 
 
@@ -17,12 +17,8 @@ class Control_Favorites {
         this._favorites_ = favorites
     }
 
-    static get favorites() {
-        return this._favorites_
-    }
-
     async send_Favorite_Product_To_LocalStorage(id, flag) {
-        
+
         if (id === '') {
             console.log('error')
         }
@@ -31,11 +27,10 @@ class Control_Favorites {
             handler_Data_At_LocalStorage.save_Favorites(res, flag)
         }
     }
-    receive_Favorite_Product(products) {
-        return View_Favorites.display_Favorites(products)
+    reception_Favorite_Product(data) {
+        data ? View_Favorites.display_Favorites(data) : false
     }
 }
-
 
 class Control_View_Information_At_DOM {
 
@@ -47,11 +42,6 @@ class Control_View_Information_At_DOM {
         return products_Instance.create_Card(await products, false)
     }
 
-
-
-    delete_product_favorite_list(id) {
-        console.log(id);
-    }
 
     async control_View_Categories(categories = '') {
         if (categories === '') {

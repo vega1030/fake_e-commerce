@@ -74,13 +74,11 @@ class Product {
                 global_Variable +=
                     `
                 <div class="content-sale__child">
-                    <input type="checkbox" class="favorite" id=${ data.id } data-id="${ data.id }"> 
-                    <label for= ${ data.id } class = "favoriteLabel" >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
-                    <path class= "pathHeart" fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
-                    </svg>
-                    </label>
-                </input>
+                    <button  type="button" class="favorite" id=${ data.id } data-id="${ data.id }" value = "on"> 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                            <path class= "pathHeart" fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                            </svg>
+                    </button>
                 <img src="${ data.image }" class="${ data.title } img-cards-product" alt="" srcset="">
                 <div class="content-text">
                     <a href="#individual_product" class="content_names view_one_element individual_product" data-id="${ data.id }">
@@ -141,7 +139,6 @@ class Product {
 
 
     uI_Individual_Card(product) {
-        console.log(product)
         const content_Individual_Cards = document.querySelector('#individual_product')
         let model_Card = ''
         product.forEach(item => {
@@ -178,49 +175,52 @@ class Product {
 // create shopping cart with vanilla javascript?    
 
 class View_Favorites {
+
     constructor(favorites) {
         this._favorites = favorites
     }
-    static handler_Favorites() {
 
+    static handler_Favorites() {
         const hearts = document.querySelectorAll('.favorite')
-        /* 
-                colorHearts.forEach(i => {
-                    i.addEventListener('click', (e) => {
-                        const selection = e.target
-                        const color_selection = selection.style.color === 'red' ? 'white' : 'red'
-                        selection.style.color = color_selection
-                    })
-                }) */
         hearts.forEach((element) => {
             element.addEventListener("click", (e) => {
                 const data_Id = Number(element.dataset.id)
+                console.log( e.target.style)
+                e.target.style.fill === 'red'? e.target.style.fill = 'white' : e.target.style.fill ='red'
 
-                const selection = e.target.labels[ 0 ].children[ 0 ].lastElementChild
-                const valueFavorites = e.target.value === 'on' ? e.target.value = 'off' : e.target.value = 'on'
-
-                const changeColorHeart = (node, flag) => {
-                    flag === 'off' ? node.style.color = 'red' : node.style.color = 'white'
-                }
-                changeColorHeart(selection, valueFavorites)
-
-                controller_Favorites.send_Favorite_Product_To_LocalStorage(data_Id,valueFavorites)
-
-                e.preventDefault()
+                const valueFavorites = element.value === 'on' ? element.value = 'off' : element.value = 'on'
+                controller_Favorites.send_Favorite_Product_To_LocalStorage(data_Id, valueFavorites)
+                e.stopPropagation()
             })
         })
     }
 
 
-    static display_Favorites(newFavorites) {
-        const content_Favorites = document.querySelector('#content_favorites')
-        let model_Favorites = ''
+    static display_Favorites(product) {
+        const model_Favorites = [ ...document.querySelectorAll('.favorite') ]
+        model_Favorites.reduce((previous, current) => {
+            if(product.find(i=>i.id===Number(current.dataset.id))){
+                current.classList.add('red')
+                
+            }
+        }, [])
 
-        console.log(newFavorites)
+
+
+
+        /*         
+        */
+        /* if (confirm === 'yes') {
+            return i.nextElementSibling.childNodes[ 1 ].style.color = 'red'
+        }
+        return i.nextElementSibling.childNodes[ 1 ].style.color = 'white' */
+
+        /*         const content_Favorites = document.querySelector('#content_favorites')
+                let model_Favorites = '' */
 
     }
-}
 
+}
 
 class View_cart {
 
@@ -420,6 +420,8 @@ class Handler_Displays_Ui {
 
     }
 }
+
+
 export {
     products_Instance,
     View_cart,

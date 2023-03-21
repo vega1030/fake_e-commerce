@@ -187,11 +187,10 @@ class Favorites_ {
 
     /* Saving the favorites at localStorage. */
     static save_Favorites_At_LocalStorage = (favorite) => {
+
         const FAVORITES = 'favorites';
-        let favorites = [];
-        favorites = this.get_Favorites() || [];
-        favorites = [ ...favorite ];
-        return localStorage.setItem(FAVORITES, JSON.stringify(favorites));
+
+        return localStorage.setItem(FAVORITES, JSON.stringify(favorite));
     };
 
 
@@ -199,6 +198,7 @@ class Favorites_ {
 
     static get_Favorites = () => {
         const cart_response_Favorites = JSON.parse(localStorage.getItem('favorites'));
+
         return cart_response_Favorites;
     };
 
@@ -213,29 +213,32 @@ class Control_Data {
     }
 
     save_Favorites = (object, flag) => {
-
         if (flag === 'off') {
-            const product = { ...object }
-            this.favorites = [ ...this.favorites, product ]
-            this.favorites = this.favorites.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i)
+            this.favorites = []
+            this.favorites = Favorites_.get_Favorites() || []
+            const favorites = [ ...this.favorites, object ]
+
+            this.favorites = favorites.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i)
+
+            controller_Favorites.reception_Favorite_Product(this.favorites)
+
             return Favorites_.save_Favorites_At_LocalStorage(this.favorites)
         }
         else {
-            this.favorites = this.favorites.filter(data => data.id !== object.id)
+            this.favorites = []
+            this.favorites = Favorites_.get_Favorites() || []
+            const favorites = [ ...this.favorites, object ]
+            this.favorites = favorites.filter(data => data.id !== object.id)
+
+            controller_Favorites.reception_Favorite_Product(this.favorites)
             return Favorites_.save_Favorites_At_LocalStorage(this.favorites)
+
         }
 
-        return this.favorites
 
-
-
-        Favorites_.save_Favorites_At_LocalStorage(this.favorites)
-    }
-    delete_Favorites = (id) => {
-        return this.favorites = this.favorites.filter(data => data.id !== id)
     }
 }
-
+controller_Favorites.reception_Favorite_Product(Favorites_.get_Favorites())
 
 
 /***********--------------***************/
@@ -246,7 +249,6 @@ const api_LocalStorage = new Call_Api_LocalStorage
 const favorites = new Favorites_
 
 
-Favorites_.get_Favorites() != null ? window.addEventListener('DOMContentLoaded', controller_Favorites.receive_Favorite_Product(Favorites_.get_Favorites())) : false
 
 controller_Cart.control_Data_For_Cart(api_LocalStorage.get_Cart());
 /* controller_Cart.calculate_Total_Cart(api_LocalStorage.get_Cart())
@@ -255,5 +257,6 @@ export {
     calls_To_API,
     api_LocalStorage,
     handler_Data_At_LocalStorage,
-    data_Cart
+    data_Cart,
+
 }
