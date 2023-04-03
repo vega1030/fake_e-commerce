@@ -251,6 +251,8 @@ const favorites = new Favorites_
 
 
 controller_Cart.control_Data_For_Cart(api_LocalStorage.get_Cart());
+controller_Cart.handle_View_Products_At_Cart (api_LocalStorage.get_Cart())
+
 /* controller_Cart.calculate_Total_Cart(api_LocalStorage.get_Cart())
  */
 export {

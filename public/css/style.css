@@ -1,6 +1,6 @@
 /*Variables*/
 :root {
-  --color_2: rgba(255, 175, 1);
+  --color_2: rgb(245, 242, 237);
   --color_3: rgba(255, 175, 1, 0.4);
   --font-size-navbar: 18px;
   --shadow_box: 0 1px 0 rgb(12 13 14 / 10%), 0 1px 3px rgb(12 13 14 / 10%),
@@ -8,9 +8,14 @@
   --color_body_dark_mode: rgb(48, 56, 65);
   --color_font_dark_mode: rgb(238, 238, 238);
   --color_background_card_dark_mode: rgb(58, 71, 80);
+  --color_font: #242424;
+
 }
 
 /* header style */
+*{
+  color: var(--color_font);
+}
 .header {
   background-color: var(--color_2);
   box-shadow: var(--shadow_box);
@@ -21,6 +26,10 @@
   color: black;
 }
 
+.content-sale__child{
+  background-color: #ffffff;
+
+}
 
 /*cart img */
 
@@ -28,26 +37,6 @@ a {
   text-decoration: none;
 }
 
-.btn_add_to_cart {
-  border: none;
-  cursor: pointer;
-  width: 37%;
-  height: 10%;
-  border-radius: 10%;
-}
-
-.categories_style {
-  width: 100%;
-  height: 100%;
-  padding: 2%;
-  display: none;
-  grid-template-columns: 3fr 2fr 2fr 2fr 2fr;
-  margin: 0 0 0 0;
-  justify-items: center;
-  grid-auto-rows: 28rem;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-}
 
 .name_product {
   font-size: 1.3rem;
@@ -68,7 +57,7 @@ a {
 
 .containt_card____cart {
   box-shadow: var(--shadow_box);
-  background-color: greenyellow
+  background-color: #ffffff;
 }
 
 .favorite{
@@ -206,6 +195,10 @@ h2 {
   color: red;
 }
 
+.style_content_card_individual_product{
+  background-color: #ffffff;
+}
+
 .btn-card {
   background-color: #666;
 }
@@ -262,8 +255,9 @@ h2 {
   }
 
   .content-sale__child {
-    background-color: var(--color_background_card_dark_mode);
-    box-shadow: var(--shadow_box);
+    background-color:   #ffffff;
+/*     background-color: var(--color_background_card_dark_mode);
+ */    box-shadow: var(--shadow_box);
   }
 
 }

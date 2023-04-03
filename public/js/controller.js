@@ -105,9 +105,9 @@ class Control_cart {
     }
 
     calculate_Total_Cart(data = 0) {
-
         this.total = data === 0 ? null : data.reduce((previous, current) => {
             const total = (current.price * current.quantity) + previous
+            console.log(total)
             return total
         }, 0).toFixed(2)
         console.log(this.total)
@@ -115,8 +115,15 @@ class Control_cart {
 
     }
 
-    control_Data_For_Cart(data) {
+    handle_View_Products_At_Cart(data = '') {
+        if (data === null) {
+            console.log('error')
+        }
+        return view_Cart.model_UiCart_List(data)
+    }
 
+    control_Data_For_Cart(data) {
+        console.log(data)
         const acu = data === null ? 0 : data.reduce((previous, current) => {
             return previous + current.quantity
         }, 0)

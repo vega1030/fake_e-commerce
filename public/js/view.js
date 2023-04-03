@@ -75,11 +75,13 @@ class Product {
                     `
                 <div class="content-sale__child">
                     <button  type="button" class="favorite" id=${ data.id } data-id="${ data.id }" value = "on"> 
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
                             <path class= "pathHeart" fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
                             </svg>
                     </button>
-                <img src="${ data.image }" class="${ data.title } img-cards-product" alt="" srcset="">
+                    <div class="content_photo">
+                        <img src="${ data.image }" class="${ data.title } img-cards-product" alt="" srcset="">
+                    </div>
                 <div class="content-text">
                     <a href="#individual_product" class="content_names view_one_element individual_product" data-id="${ data.id }">
                         <h3 data-id="${ data.id }" class="name_product">${ data.title.slice(0, 13) } </h3>
@@ -185,8 +187,8 @@ class View_Favorites {
         hearts.forEach((element) => {
             element.addEventListener("click", (e) => {
                 const data_Id = Number(element.dataset.id)
-                console.log( e.target.style)
-                e.target.style.fill === 'red'? e.target.style.fill = 'white' : e.target.style.fill ='red'
+                console.log(e.target.style)
+                e.target.style.fill === 'red' ? e.target.style.fill = 'white' : e.target.style.fill = 'red'
 
                 const valueFavorites = element.value === 'on' ? element.value = 'off' : element.value = 'on'
                 controller_Favorites.send_Favorite_Product_To_LocalStorage(data_Id, valueFavorites)
@@ -199,9 +201,8 @@ class View_Favorites {
     static display_Favorites(product) {
         const model_Favorites = [ ...document.querySelectorAll('.favorite') ]
         model_Favorites.reduce((previous, current) => {
-            if(product.find(i=>i.id===Number(current.dataset.id))){
+            if (product.find(i => i.id === Number(current.dataset.id))) {
                 current.classList.add('red')
-                
             }
         }, [])
 
@@ -226,10 +227,15 @@ class View_cart {
 
     createListCart(products) {
         products.forEach(elements => {
+            console.log(elements)
             return (elements);
         })
     }
 
+    /**
+     * It creates a counter for the cart and appends it to the cart section
+     * @param quantity - the number of items in the cart
+     */
     createCartCont(quantity) {
         const counter = document.querySelector('#count_elements_at_cart')
         const content_Counter = document.querySelector('#section_cart')
@@ -239,6 +245,38 @@ class View_cart {
     }
 
     model_UiCart_List = (arr = '') => {
+
+        const btn_cart = document.querySelector('#section_cart')
+
+        btn_cart.addEventListener('click', () => {
+            arr.forEach(item => {
+
+                content_Data +=
+                    `
+                <div class="containt_card____cart" id="$containt_card____cart" data-id = ${ item.id }>
+                    <button type="button" class="btn-close close btn_delete_element" aria-label="Close"></button>
+                <div class="content_image_product_at_cart">
+                    <img src="${ item.image }" alt="img" srcset="" class="img-card____cart">
+                </div>
+                
+                <div class="content_description">
+                    <h2>${ item.title.slice(0, 13) }</h2>
+                </div>
+                
+                <div class="price">
+                    <h3>$${ item.price }</h3>
+                </div>
+                <div class="content_select">
+                    <input type="number" min="1" max="10" data-id = ${ item.id } type="number" 
+                    class="count form-control" value=${ item.quantity }>
+                    <a class="add">+</a> <a class="minus">-</a>
+                </div>
+                </div>
+                `
+                return section_Content_Data.innerHTML = content_Data
+
+            })
+        })
         const section_Content_Data = document.querySelector('#view_section_cart')
         let content_Data = ''
         let collect_Repeats_Elements = []
@@ -246,36 +284,9 @@ class View_cart {
         collect_Repeats_Elements = [ ...arr ]
 
 
-        arr.forEach(item => {
 
-            content_Data =
-                `
-            <div class="containt_card____cart" id="$containt_card____cart" data-id = ${ item.id }>
-                <button type="button" class="btn-close close btn_delete_element" aria-label="Close"></button>
-            <div class="content_image_product_at_cart">
-                <img src="${ item.image }" alt="img" srcset="" class="img-card____cart">
-            </div>
-            
-            <div class="content_description">
-                <h2>${ item.title.slice(0, 13) }</h2>
-            </div>
-            
-            <div class="price">
-                <h3>$${ item.price }</h3>
-            </div>
-            <div class="content_select">
-                <input type="number" min="1" max="10" data-id = ${ item.id } type="number" 
-                class="count form-control" value=${ item.quantity }>
-                <a class="add">+</a> <a class="minus">-</a>
-            </div>
-            </div>
-            `
-            return section_Content_Data.innerHTML = content_Data
 
-        })
 
-        const content_Card_Cart = document.querySelectorAll('.containt_card____cart')
-        content_Card_Cart.forEach(i => console.log(Number(i.dataset.id)))
 
         /* return section_Content_Data.insertAdjacentHTML('afterbegin', content_Data)  */
 
@@ -307,13 +318,10 @@ class View_cart {
         $content_Total.innerHTML = model_Total
         //********----- */
 
-
-        //Listeners
-
     }
 }
 
-
+//listeners
 
 class Category_ui {
 
@@ -356,14 +364,20 @@ class Category_ui {
 
 
 }
-const cart_Ui = new View_cart();
-const products_Instance = new Product();
-
 
 /* This class is responsible for displaying the correct section of the page based on the hash in the
 url */
 
 class Handler_Displays_Ui {
+
+
+   static reload_Page=()=>{
+        const reload_Handler = document.querySelector('#init')
+        reload_Handler.addEventListener('click',()=>{
+            window.location.reload()
+        })
+    }
+
     handler_Display_(hash) {
         if (hash === 'categories') {
             return (
@@ -392,8 +406,9 @@ class Handler_Displays_Ui {
                 document.querySelector('.cart_style').style.display = 'grid',
                 document.querySelector('#home').style.display = 'none',
                 document.querySelector('#content_card').style.display = 'none',
-                document.querySelector('#favorites_section').style.display = 'none'
-
+                document.querySelector('#favorites_section').style.display = 'none',
+                document.querySelector('#_categories').style.display = 'none',
+                document.querySelector('#section_cart').style.display = 'flex'
 
             )
         }
@@ -409,6 +424,7 @@ class Handler_Displays_Ui {
         if (hash === 'individual_product') {
             return (
                 console.log(hash),
+                document.querySelector('#individual_product').style.display='grid',
                 document.querySelector('#_categories').style.display = 'none',
                 document.querySelector('.cart_style').style.display = 'none',
                 document.querySelector('#home').style.display = 'none',
@@ -421,6 +437,10 @@ class Handler_Displays_Ui {
     }
 }
 
+Handler_Displays_Ui.reload_Page()
+
+const cart_Ui = new View_cart();
+const products_Instance = new Product();
 
 export {
     products_Instance,
