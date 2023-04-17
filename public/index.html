@@ -22,6 +22,11 @@
 <body>
     <header class="header sticky-top">
         <nav class="nav">
+
+            <form class="d-flex">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
             <input type="checkbox" id="nav-check">
             <div class="nav-btn">
                 <label for="nav-check">
@@ -45,10 +50,6 @@
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id="ul_List">
 
                 </ul>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
             </div>
             <a class="nav-link" href="#section_cart" id="section_cart">
                 <span id="content_count_cart">
@@ -67,6 +68,12 @@
 
     <section id="content" class="content_style">
 
+
+        <div class="d-flex justify-content-center content-spinner">
+            <div class="spinner-border " role="status">
+                <span class="sr-only"></span>
+            </div>
+        </div>
         <section class="section_home_page" id="home">
             <div class="content_section">
                 <div class="title-content">
@@ -121,10 +128,10 @@
     <section class="cart_style" id="view_section_cart">
         <!-- Dynamic template view.js -->
 
-
-        <div id="content_total" class="content_total">
+        <div id="ui_Cart" class="ui_Cart">
 
         </div>
+
 
     </section>
 
@@ -165,10 +172,14 @@
     <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8"
         crossorigin="anonymous"></script>
+
+    <script type="module" src="./js/api.js"></script>
     <script type="module" src="./js/model.js"></script>
-    <script type="module" src="./js/view.js"></script>
     <script type="module" src="./js/controller.js"></script>
+    <script type="module" src="./js/view.js"></script>
     <script type="module" src="./js/routers.js"></script>
+
+
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";

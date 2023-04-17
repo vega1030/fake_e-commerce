@@ -11,67 +11,14 @@ class Calls_API {
     }
 
 
-
-    get_All_Products = async (url = "") => {
-        let result = []
-        try {
-            if (url === "") {
-                console.error('error')
-            }
-            else {
-                result = await fetch(url)
-                const res = await result.json()
-                return res
-            }
-        }
-        catch (e) {
-            console.log(e)
-        }
-    }
-
-    get_Categories = async (url = "") => {
-        let result = []
-
-        try {
-            if (url === '') {
-                console.log('error');
-            } else {
-                result = await fetch(url)
-                const res = await result.json()
-                return res
-            }
-
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    get_View_Products_For_Category = async (category) => {
-        let result = [];
-        const url = `https://fakestoreapi.com/products/category/${ category }`
-        try {
-            if (category == '') {
-                console.log('error');
-            }
-            else {
-                result = await fetch(url)
-                const res = await result.json()
-                return res
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    get_Single_Product = async (id) => {
-        let result = []
+/*     get_Single_Product = async (id) => {
         const url = `https://fakestoreapi.com/products/${ Number(id) }`
         try {
             if (id == '') {
                 console.log('error');
             }
             else {
-                result = await fetch(url)
+              const  result = await fetch(url)
                 const res = result.json()
                 return res
             }
@@ -79,13 +26,11 @@ class Calls_API {
         } catch (error) {
             console.log(error);
         }
-    }
-}
+    }*/
+} 
 
 const calls_To_API = new Calls_API()
 
-controller.control_View_All_Products(await calls_To_API.get_All_Products('https://fakestoreapi.com/products'))
-controller.control_View_Categories(await calls_To_API.get_Categories('https://fakestoreapi.com/products/categories'))
 
 
 /* It's a class that contains functions that are used to save data into the cart */
@@ -251,7 +196,7 @@ const favorites = new Favorites_
 
 
 controller_Cart.control_Data_For_Cart(api_LocalStorage.get_Cart());
-controller_Cart.handle_View_Products_At_Cart (api_LocalStorage.get_Cart())
+controller_Cart.handle_View_Products_At_Cart(api_LocalStorage.get_Cart())
 
 /* controller_Cart.calculate_Total_Cart(api_LocalStorage.get_Cart())
  */

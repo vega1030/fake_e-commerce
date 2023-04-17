@@ -69,6 +69,7 @@ class Product {
 
     /* Creating a card with the information of the product. */
     create_Card(product, flag) {
+
         const card_Model = (products, content_Data_In_DOM, global_Variable) => {
             products.forEach(data => {
                 global_Variable +=
@@ -84,9 +85,9 @@ class Product {
                     </div>
                 <div class="content-text">
                     <a href="#individual_product" class="content_names view_one_element individual_product" data-id="${ data.id }">
-                        <h3 data-id="${ data.id }" class="name_product">${ data.title.slice(0, 13) } </h3>
+                        <h3 data-id="${ data.id }" class="name_product">${ data.title.slice(0, 20) }... </h3>
                     </a>                      
-                    <h4> ${ data.price.toLocaleString('es-AR', { style: 'currency', currency: 'EUR' }) }</h4>  
+                    <h4 class= price> ${ data.price.toLocaleString('es-AR', { style: 'currency', currency: 'EUR' }) }</h4>  
                 </div>
                 <button class='btn_add_to_cart' id='${ data.id }'>
                 Add Cart 
@@ -150,7 +151,7 @@ class Product {
         <h1> ${ item.title }</h1>
     </div>
     <div class="content_price___individual_item">
-        <h3>${ item.price.toLocaleString('es-AR', { style: 'currency', currency: 'EUR' }) }</h3>
+        <h3>${ item.price }\u20AC</h3>
     </div>
     <div class="content_description___individual_item">
         <p>
@@ -171,6 +172,35 @@ class Product {
         content_Individual_Cards.insertAdjacentHTML('afterbegin', model_Card)
         content_Individual_Cards.innerHTML = model_Card
     }
+
+    ui_Before_Load_Elements(flag) {
+
+
+        //view spinner with html or use template string
+
+        const display_Spinner = () => {
+
+
+
+            document.querySelector('content-spinner').style.display = 'flex'
+        }
+
+        const hide_Spinner = () => {
+            document.querySelector('content-spinner').style.display = 'none'
+        }
+
+        flag === true ? display_Spinner() : hide_Spinner()
+
+        const template_Div_Load =
+            `
+        
+        
+        `
+
+    }
+
+
+
 }
 
 
@@ -225,13 +255,6 @@ class View_Favorites {
 
 class View_cart {
 
-    createListCart(products) {
-        products.forEach(elements => {
-            console.log(elements)
-            return (elements);
-        })
-    }
-
     /**
      * It creates a counter for the cart and appends it to the cart section
      * @param quantity - the number of items in the cart
@@ -244,48 +267,78 @@ class View_cart {
 
     }
 
-    model_UiCart_List = (arr = '') => {
+    model_UiCart_List = (arr = '', total) => {
 
+        let content_Data = ''
+        const section_Content_Data = document.querySelector('#ui_Cart')
         const btn_cart = document.querySelector('#section_cart')
+        /****************************** */
+        const acu_render = arr.reduce((previous, current) => {
+            return previous + current.quantity
+
+        }, 0)
+        /****************************** */
+
+        const render_Total = (total, quantity) => {
+            const $total = document.querySelector('#view_section_cart')
+            const template_total =
+                `
+                    <div id="content_total" class="content_total">
+                    <h3>Subtotal ${ total.toFixed(2) }\u20AC</h3>
+                        <a href="#" class="btn_confirm_buy">
+                        Pagar pedido (${ quantity > 9 ? '+9' : String(quantity) } productos)
+                        </a>
+                    </div>
+                    `
+            return $total.insertAdjacentHTML('afterbegin', template_total)
+                ;
+
+        }
+        render_Total(total, acu_render)
+
+        /****************************** */
+
+        /****************************** */
+
 
         btn_cart.addEventListener('click', () => {
+
             arr.forEach(item => {
 
-                content_Data +=
+                content_Data =
                     `
-                <div class="containt_card____cart" id="$containt_card____cart" data-id = ${ item.id }>
+                <div class="content_card____cart" id="$containt_card____cart" data-id = ${ item.id }>
                     <button type="button" class="btn-close close btn_delete_element" aria-label="Close"></button>
-                <div class="content_image_product_at_cart">
+                
+                <div class="content_image_product_at_cart content_photo">
                     <img src="${ item.image }" alt="img" srcset="" class="img-card____cart">
                 </div>
                 
                 <div class="content_description">
-                    <h2>${ item.title.slice(0, 13) }</h2>
-                </div>
+                    <h5>${ item.title.slice(0, 20) }</h5>
+                    </div>
+                    <div class="price">
+                        <h4>${ item.price }\u20AC </h4>
+                    </div>
                 
-                <div class="price">
-                    <h3>$${ item.price }</h3>
-                </div>
                 <div class="content_select">
-                    <input type="number" min="1" max="10" data-id = ${ item.id } type="number" 
-                    class="count form-control" value=${ item.quantity }>
-                    <a class="add">+</a> <a class="minus">-</a>
+                <a class="subtract">-</a>
+                <input type="number" min="1" max="10" data-id = ${ item.id } type="number" 
+                class="count form-control" value=${ item.quantity }>
+                <a class="add">+</a>   
+
                 </div>
+
                 </div>
+
                 `
-                return section_Content_Data.innerHTML = content_Data
 
+
+                return section_Content_Data.insertAdjacentHTML('beforeend', content_Data)
             })
+            /******************************/
+
         })
-        const section_Content_Data = document.querySelector('#view_section_cart')
-        let content_Data = ''
-        let collect_Repeats_Elements = []
-
-        collect_Repeats_Elements = [ ...arr ]
-
-
-
-
 
 
         /* return section_Content_Data.insertAdjacentHTML('afterbegin', content_Data)  */
@@ -298,7 +351,7 @@ class View_cart {
             });
         })
 
-        const items_At_Card_Ui = document.querySelectorAll('.containt_card____cart')
+        const items_At_Card_Ui = document.querySelectorAll('.content_card____cart')
         items_At_Card_Ui.forEach(item => {
             const quantity = item.querySelector('.count')
             const price_Ui = Number(item.querySelector('.price').textContent.replace('$', ''))
@@ -306,20 +359,30 @@ class View_cart {
                 const quantity = Number(e.target.value)
             })
         })
+
+        const btn_Add_Quantity = document.querySelectorAll('.add')
+        console.log(btn_Add_Quantity)
+        btn_Add_Quantity.forEach(items => {
+            console.log(items)
+            items.addEventListener('click', () => {
+                console.log('add')
+            })
+        })
+
+        const btn_Subtract_Amount = document.querySelectorAll('.subtract')
+        btn_Subtract_Amount.forEach(elements => {
+            elements.addEventListener('click', (e) => {
+                console.log(e.target.id)
+
+                console.log(elements)
+            })
+
+        });
     }
 
-    render_Total(total) {
 
-        const $content_Total = document.querySelector('#content_total')
-        const model_Total =
-            `
-        <h4 class="total" id="total_at_cart">$${ total }</h4>
-        `
-        $content_Total.innerHTML = model_Total
-        //********----- */
-
-    }
 }
+
 
 //listeners
 
@@ -361,8 +424,6 @@ class Category_ui {
     create_Category_UI_Cards = (data) => {
         products_Instance.create_Card(data)
     }
-
-
 }
 
 /* This class is responsible for displaying the correct section of the page based on the hash in the
@@ -371,9 +432,9 @@ url */
 class Handler_Displays_Ui {
 
 
-   static reload_Page=()=>{
+    static reload_Page = () => {
         const reload_Handler = document.querySelector('#init')
-        reload_Handler.addEventListener('click',()=>{
+        reload_Handler.addEventListener('click', () => {
             window.location.reload()
         })
     }
@@ -408,7 +469,8 @@ class Handler_Displays_Ui {
                 document.querySelector('#content_card').style.display = 'none',
                 document.querySelector('#favorites_section').style.display = 'none',
                 document.querySelector('#_categories').style.display = 'none',
-                document.querySelector('#section_cart').style.display = 'flex'
+                document.querySelector('#section_cart').style.display = 'flex',
+                document.querySelector('#content').style.display = 'none'
 
             )
         }
@@ -424,7 +486,7 @@ class Handler_Displays_Ui {
         if (hash === 'individual_product') {
             return (
                 console.log(hash),
-                document.querySelector('#individual_product').style.display='grid',
+                document.querySelector('#individual_product').style.display = 'grid',
                 document.querySelector('#_categories').style.display = 'none',
                 document.querySelector('.cart_style').style.display = 'none',
                 document.querySelector('#home').style.display = 'none',
@@ -441,6 +503,7 @@ Handler_Displays_Ui.reload_Page()
 
 const cart_Ui = new View_cart();
 const products_Instance = new Product();
+
 
 export {
     products_Instance,
