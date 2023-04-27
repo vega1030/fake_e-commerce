@@ -8,6 +8,7 @@
  */
 const get_All_Products = async () => {
     try {
+
         const url_view_all_products = 'https://fakestoreapi.com/products'
         const result = await fetch(url_view_all_products)
         const res = await result.json()
@@ -59,6 +60,17 @@ const get_View_Products_For_Category = async (category) => {
 
 }
 
+/**
+ * This is an asynchronous function that retrieves a single product from a fake store API based on the
+ * provided ID.
+ * @param id - The `id` parameter is a number that represents the unique identifier of a product in the
+ * fakestoreapi.com database. The function `get_Single_Product` uses this parameter to construct a URL
+ * and fetch the corresponding product data from the API.
+ * @returns a Promise that resolves to the JSON data of a single product from the fakestoreapi.com,
+ * based on the provided `id`. If the `id` is an empty string, the function logs an error message to
+ * the console and does not return anything.
+ */
+
 const get_Single_Product = async (id) => {
     const url = `https://fakestoreapi.com/products/${ Number(id) }`
     try {
@@ -67,7 +79,7 @@ const get_Single_Product = async (id) => {
         }
         else {
             const result = await fetch(url)
-            const res = result.json()
+            const res =  await result.json()
             return res
         }
 
@@ -76,7 +88,17 @@ const get_Single_Product = async (id) => {
     }
 }
 
+
+/* `await get_All_Products()` is calling the `get_All_Products` function, which retrieves all products
+from a fake store API using async/await and returns the result as a JSON object. The `await` keyword
+is used to wait for the function to complete and return a value before moving on to the next line of
+code. */
 await get_All_Products()
+
+
+/* `await get_Categories()` is calling the `get_Categories` function, which retrieves a list of
+categories from a fake store API using asynchronous JavaScript. The `await` keyword is used to wait
+for the function to complete and return a value before moving on to the next line of code. */
 await get_Categories()
 
 

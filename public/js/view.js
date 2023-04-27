@@ -1,72 +1,8 @@
 "use strict";
 
-import { controller, controller_Cart, controller_Favorites } from "./controller.js";
 
 
 class Product {
-    constructor(title, category, price, description, id, image) {
-        this._title = title;
-        this._category = category;
-        this._price = price;
-        this._description = description;
-        this._id = id
-        this._image = image
-    }
-
-    set image(image) {
-        this._image = image
-    }
-
-    get image() {
-        return this._image;
-    }
-
-    ////******** ---------------------- ******************/
-
-
-    /* Creating a getter and setter for the title property. */
-
-    set title(title) {
-        this.title = title
-    }
-
-    get title() {
-        return this._title
-    }
-
-    ////********----------------------- */
-
-    /* A getter and setter for the category property. */
-    set category(category) {
-        this._category = category
-    }
-    get category() {
-        return this._category
-    }
-
-    ////********----------------------- */
-
-
-    /* A getter and setter for the price property. */
-    set price(price) {
-        this._price = price
-    }
-    get price() {
-
-        return this._price
-    }
-
-    ////********----------------------- */
-
-
-    /* A getter and setter for the description property. */
-    set description(description) {
-        this._description = description
-    }
-    get description() {
-        return this._description
-    }
-
     /* Creating a card with the information of the product. */
     create_Card(product, flag) {
 
@@ -112,11 +48,7 @@ class Product {
         array. */
         flag === true ? card_Model(product, $content_Categories, filtered_cards) : card_Model(product, content_Cards, cards)
 
-        const btns_Cart = document.querySelectorAll('.btn_add_to_cart')
-        btns_Cart.forEach(item => item.addEventListener('click', (e) => {
-            const id = Number(e.target.id)
-            return controller_Cart.handle_Id_Cart(id)
-        }))
+       
 
         const btns_Delete_Cart = document.querySelectorAll('.btn_delete_element_cart')
         btns_Delete_Cart.forEach(i => i.addEventListener('click', (e) => {
@@ -171,32 +103,6 @@ class Product {
         `    })
         content_Individual_Cards.insertAdjacentHTML('afterbegin', model_Card)
         content_Individual_Cards.innerHTML = model_Card
-    }
-
-    ui_Before_Load_Elements(flag) {
-
-
-        //view spinner with html or use template string
-
-        const display_Spinner = () => {
-
-
-
-            document.querySelector('content-spinner').style.display = 'flex'
-        }
-
-        const hide_Spinner = () => {
-            document.querySelector('content-spinner').style.display = 'none'
-        }
-
-        flag === true ? display_Spinner() : hide_Spinner()
-
-        const template_Div_Load =
-            `
-        
-        
-        `
-
     }
 
 
@@ -255,10 +161,15 @@ class View_Favorites {
 
 class View_cart {
 
+    
+
     /**
      * It creates a counter for the cart and appends it to the cart section
      * @param quantity - the number of items in the cart
      */
+
+
+
     createCartCont(quantity) {
         const counter = document.querySelector('#count_elements_at_cart')
         const content_Counter = document.querySelector('#section_cart')
@@ -267,124 +178,93 @@ class View_cart {
 
     }
 
-    model_UiCart_List = (arr = '', total) => {
+    cart_In_Controller = (newCart) => {
+        //here is cart
+        this.model_UiCart_List(newCart)
+        
+    }
 
+
+    model_UiCart_List = (cart) => {
         let content_Data = ''
         const section_Content_Data = document.querySelector('#ui_Cart')
-        const btn_cart = document.querySelector('#section_cart')
-        /****************************** */
-        const acu_render = arr.reduce((previous, current) => {
-            return previous + current.quantity
 
-        }, 0)
         /****************************** */
 
-        const render_Total = (total, quantity) => {
-            const $total = document.querySelector('#view_section_cart')
-            const template_total =
-                `
-                    <div id="content_total" class="content_total">
-                    <h3>Subtotal ${ total.toFixed(2) }\u20AC</h3>
-                        <a href="#" class="btn_confirm_buy">
-                        Pagar pedido (${ quantity > 9 ? '+9' : String(quantity) } productos)
-                        </a>
-                    </div>
-                    `
-            return $total.insertAdjacentHTML('afterbegin', template_total)
-                ;
 
+        let ac = 0
+        let total = 0
+
+        if (cart === null) {
+            const model_Empty = `<h1>El carro esta vacio</h1>`
+            return section_Content_Data.innerHTML = model_Empty
         }
-        render_Total(total, acu_render)
 
-        /****************************** */
-
-        /****************************** */
-
-
-        btn_cart.addEventListener('click', () => {
-
-            arr.forEach(item => {
-
-                content_Data =
-                    `
+        cart.forEach(item => {
+            console.log(item)
+            ac = item.quantity + ac
+            total = total + item.price
+            content_Data =
+                `
                 <div class="content_card____cart" id="$containt_card____cart" data-id = ${ item.id }>
-                    <button type="button" class="btn-close close btn_delete_element" aria-label="Close"></button>
+                    <div class="content_image_product_at_cart content_photo">
+                        <img src="${ item.image }" alt="img" srcset="" class="img-card____cart">
+                    </div>
                 
-                <div class="content_image_product_at_cart content_photo">
-                    <img src="${ item.image }" alt="img" srcset="" class="img-card____cart">
-                </div>
-                
-                <div class="content_description">
-                    <h5>${ item.title.slice(0, 20) }</h5>
+                    <div class="content_description">
+                        <h5>${ item.title.slice(0, 20) }</h5>
                     </div>
                     <div class="price">
                         <h4>${ item.price }\u20AC </h4>
                     </div>
                 
-                <div class="content_select">
-                <a class="subtract">-</a>
-                <input type="number" min="1" max="10" data-id = ${ item.id } type="number" 
-                class="count form-control" value=${ item.quantity }>
-                <a class="add">+</a>   
+                    <div class="content_select">
+                        <a class="subtract" data-id=${ item.id }> - </a>
+                        <input type="number" min="0" max="10" data-id = ${ item.id } type="number" 
+                        class="count form-control" value=${ item.quantity }>
+                        <a class="add" data-id=${ item.id }> + </a>   
+                    </div>
 
                 </div>
-
-                </div>
-
                 `
-
-
-                return section_Content_Data.insertAdjacentHTML('beforeend', content_Data)
-            })
-            /******************************/
-
+            return section_Content_Data.insertAdjacentHTML('beforeend', content_Data)
         })
+        /******************************/
+        const model_Total =
+            `
+            <div id="content_total" class="content_total">
+                <h3>Subtotal ${ total }\u20AC</h3>º
+                    <a href="#" class="btn_confirm_buy">
+                        Pagar pedido (${ ac } productos)
+                    </a>
+            </div>`
 
-
-        /* return section_Content_Data.insertAdjacentHTML('afterbegin', content_Data)  */
-
-        //********--RENDER--- */
-        const btn_Delete_Cart = document.querySelectorAll('.btn_delete_element')
-        btn_Delete_Cart.forEach((element) => {
-            element.addEventListener('click', (e) => {
-                cart_Instance.handler_Delete_Element_Cart(parseInt(e.target.id))
-            });
-        })
-
-        const items_At_Card_Ui = document.querySelectorAll('.content_card____cart')
-        items_At_Card_Ui.forEach(item => {
-            const quantity = item.querySelector('.count')
-            const price_Ui = Number(item.querySelector('.price').textContent.replace('$', ''))
-            quantity.addEventListener('change', (e) => {
-                const quantity = Number(e.target.value)
-            })
-        })
-
+        const $total = document.querySelector('#view_section_cart')
         const btn_Add_Quantity = document.querySelectorAll('.add')
-        console.log(btn_Add_Quantity)
-        btn_Add_Quantity.forEach(items => {
-            console.log(items)
-            items.addEventListener('click', () => {
-                console.log('add')
-            })
-        })
 
-        const btn_Subtract_Amount = document.querySelectorAll('.subtract')
-        btn_Subtract_Amount.forEach(elements => {
-            elements.addEventListener('click', (e) => {
-                console.log(e.target.id)
+        const btns_Subtract = document.querySelectorAll('.subtract')
 
-                console.log(elements)
-            })
+        return $total.insertAdjacentHTML('afterbegin', model_Total)
+        /******************************/
 
-        });
     }
 
+    handle_Delete_Element_In_DOM(element) {
+        return element.remove()
+    }
 
 }
 
 
-//listeners
+const replace_Minus_Symbol_For_Trash_Basket = (content_trash, flag) => {
+    const dataSetId = content_trash.dataset.id
+    const model_Trash_Basket =
+        `<img src="../../public/icon/trash_basket.svg" alt="trash" class='trash_count' data-id=${ dataSetId }>`
+    return flag ? content_trash.innerHTML = model_Trash_Basket : content_trash.innerHTML = '-'
+
+
+}
+
 
 class Category_ui {
 
@@ -502,14 +382,19 @@ class Handler_Displays_Ui {
 Handler_Displays_Ui.reload_Page()
 
 const cart_Ui = new View_cart();
+
+
 const products_Instance = new Product();
+
 
 
 export {
     products_Instance,
-    View_cart,
+    cart_Ui,
     Category_ui,
-    Product, controller_Favorites as controller,
+    Product, 
     Handler_Displays_Ui,
-    View_Favorites
+    View_Favorites,
+    replace_Minus_Symbol_For_Trash_Basket,
+    View_cart
 }
