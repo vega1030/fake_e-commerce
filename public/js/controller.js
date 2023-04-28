@@ -1,35 +1,18 @@
 'use strict'
 
 import { get_All_Products, get_Categories, get_View_Products_For_Category, get_Single_Product } from './api.js'
-import { Drive_Data_Cart } from './model.js';
-import { cart_Ui, Category_ui, products_Instance, Handler_Displays_Ui, View_Favorites, replace_Minus_Symbol_For_Trash_Basket } from "./view.js";
+import { Drive_Data_Cart, Call_Api_LocalStorage } from './model.js';
+import {
+   cart_Ui, Category_ui, products_Instance, Handler_Displays_Ui, View_Favorites, replace_Minus_Symbol_For_Trash_Basket, render_Total_And_Pay
+} from "./view.js";
 
 const handler_View = new Handler_Displays_Ui()
-const handler_Cart_Controller = new Drive_Data_Cart()
-const categories_UI = new Category_ui()
+/* const handler_Cart_Model = new Drive_Data_Cart()
+ */const categories_UI = new Category_ui()
+const api_LocalStorage = new Call_Api_LocalStorage()
 
 
 //----------------------------------------------------------------
-
-class Control_Favorites {
-   constructor(favorites) {
-      this._favorites_ = favorites
-   }
-
-   async send_Favorite_Product_To_LocalStorage(id, flag) {
-
-      if (id === '') {
-         console.log('error')
-      }
-      else {
-         const res = await calls_To_API.get_Single_Product(id)
-         handler_Data_At_LocalStorage.save_Favorites(res, flag)
-      }
-   }
-   reception_Favorite_Product(data) {
-      data ? View_Favorites.display_Favorites(data) : false
-   }
-}
 
 class Control_View_Information_At_DOM {
 
@@ -90,6 +73,15 @@ class Control_View_Information_At_DOM {
 
    }
 
+   listener_Category() {
+      const listener_category = document.querySelectorAll('.listener_category')
+      listener_category.forEach(i => i.addEventListener('click', (e) => {
+         console.log(e.target.href)
+         return this.send_Category(e.target.id)
+      })
+      )
+   }
+
    async send_Id(id = '') {
 
       try {
@@ -103,57 +95,29 @@ class Control_View_Information_At_DOM {
          console.error(error)
       }
 
+
    }
 }
 //----------------------------------------------------------------
+
+
 //-----------------------------------------------------------------------------//
-const controller_Init_Page = new Control_View_Information_At_DOM()
-
-
-
-
-//----------------------------------------------------------------
-await controller_Init_Page.controller_get_All_Products()
-await controller_Init_Page.control_View_Categories()
-
+const handler_Init_Page = new Control_View_Information_At_DOM()
+await handler_Init_Page.controller_get_All_Products()
+await handler_Init_Page.control_View_Categories()
+handler_Init_Page.listener_Category()
+//-----------------------------------------------------------------------------//
 
 class Control_cart {
 
    constructor(total = 0, cart, elementDom) {
-      this.cart = cart
       this.elementDom = elementDom
       this.single_Product = null
       this.id = null;
-      
+      this.model = new Drive_Data_Cart()
+
 
    }
-
-
-
-   /* ------------------------------------ */
-
-   handle_View_Products_At_Cart_ = (data = '') => {
-      if (data === null) {
-         console.log('error')
-      }
-
-      /* this.cart is ok  */
-      this.cart = data
-
-      cart_Ui.cart_In_Controller(this.cart)
-   }
-
-   /* ------------------------------------ */
-
-   send_Cart_To_View = () => {
-      console.log(this.cart)
-      return this.cart
-
-   }
-
-   /* ------------------------------------ */
-
-
 
    /**
     * This function calculates the total quantity of items in a shopping cart and returns a cart container
@@ -165,7 +129,9 @@ class Control_cart {
     * @returns the result of calling the `createCartCont` function from the `cart_Ui` module, passing in
     * the accumulated quantity (`acu`) as an argument.
     */
+
    control_Quantity = (data) => {
+
       if (!data) {
          return console.warn('cart is empty')
       }
@@ -175,26 +141,56 @@ class Control_cart {
 
       return cart_Ui.createCartCont(acu)
    }
-   async send_Id_To_Api() {
-      if (this.id) {
-         const result = await get_Single_Product(this.id);
+
+   controller_Cart(cart) {
+
+      return this.control_Quantity(cart)
+   }
+
+
+   send_Id_To_Api = async (id) => {
+      if (id) {
+         const result = await get_Single_Product(id);
          this.single_Product = result
-         handler_Cart_Controller.create_A_New_Array_Of_Object(this.single_Product)
-         return this.single_Product;
+         this.model.create_A_New_Array_Of_Object(this.single_Product)
+         return this.controller_Cart(this.model.responseCart)
       }
       return console.error('the id not exist');
-   }   
-   /* ------------------------------------ */
+   }
 
    add_Cart_Listener = () => {
       const btns_Cart = document.querySelectorAll('.btn_add_to_cart')
-      const result = btns_Cart.forEach(item => item.addEventListener('click', (e) => {
-         this.id = Number(e.target.id);
-         this.send_Id_To_Api();
-      console.log(handler_Cart_Controller.responseCart);
-         return this.id;
+      btns_Cart.forEach(item => item.addEventListener('click', (e) => {
+         const id = Number(e.target.id);
+         return this.send_Id_To_Api(id);;
       }))
    }
+
+   /* This is a method in the `Control_cart` class that adds a click event listener to the `#section_cart`
+   element in the DOM. When the element is clicked, it checks the value of the `flag` parameter. If
+   `flag` is `false`, it calls the `model_UiCart_List` method from the `cart_Ui` module, passing in the
+   cart data retrieved from the local storage using the `api_LocalStorage.get_Cart()` method. If `flag`
+   is not `false`, it calls the `model_UiCart_List` method from the `cart_Ui` module, passing in the
+   cart data stored in the `responseCart` property of the `Control_cart` instance. The purpose of this
+   method is to update the cart UI with the latest cart data when the `#section_cart` element is
+   clicked. */
+
+   handler_Listener_Display_Cart = (flag = false) => {
+      const TRUE = true
+      const section_Content_Data = document.querySelector('#section_cart')
+      section_Content_Data.addEventListener('click', () => {
+
+         !flag ? cart_Ui.model_UiCart_List(api_LocalStorage.get_Cart()) :
+            cart_Ui.model_UiCart_List(this.model.responseCart)
+         this.controller_Cart(this.model.responseCart)
+         return this.cart_Quantity()
+
+
+      })
+   }
+
+   /* ------------------------------------ */
+
 
 
 
@@ -204,35 +200,69 @@ class Control_cart {
    listeners to these elements, so that when they are clicked, it updates the quantity of the
    corresponding product in the cart and updates the cart UI accordingly. */
 
-   cart_Quantity = (minus, add) => {
-      let acu = 0
-      minus.forEach(elements => {
 
+
+   cart_Quantity = () => {
+      const btn_Add_Quantity = document.querySelectorAll('.add')
+      let acu = 0
+      //--------------------------------------------------------------
+      /* This code block is selecting all elements with the class "subtract" and adding a click event
+      listener to each of them. When one of these elements is clicked, it checks if the next element
+      sibling is null. If it is null, it means that the clicked element is associated with the last
+      product in the cart, and the function calls the `update_Quantity_Cart` method from the `model`
+      object, passing in the `id_Delete_Product_In_Cart` and `true` as arguments. It then calls the
+      `handle_Delete_Element_In_DOM` function from the `cart_Ui` module, passing in the
+      `element_Delete_In_DOM` as an argument to remove the corresponding product from the cart UI. If the
+      next element sibling is not null, it retrieves the `id` of the product associated with the clicked
+      element from the `data-id` attribute of the next element sibling. It then decrements the quantity
+      value of the input element that is the next element sibling of the clicked element, and updates the
+      cart with the new quantity value using the `update_Quantity_Cart` method. If the quantity value is
+      1, it replaces the trash basket icon with a minus symbol */
+      const btns_Subtract = document.querySelectorAll('.subtract')
+
+      btns_Subtract.forEach(elements => {
          elements.addEventListener('click', (e) => {
+
+
+            /* The above code is checking if the next element sibling of the target element is null. If
+            it is null, it retrieves the parent element of the parent element of the target element
+            and assigns it to a variable. It also retrieves the ID of the product to be deleted from
+            the dataset of the target element and assigns it to a variable. Then it updates the
+            quantity of the product in the cart by calling a method of the model object and passing
+            the ID of the product and a boolean value as arguments. After that, it calls a method of
+            the controller object and passes the responseCart property of the model */
 
             if (e.target.nextElementSibling === null) {
                const element_Delete_In_DOM = e.target.parentElement.parentElement.parentElement
-               const id_Delete_Product_In_Cart = e.target.dataset.id
-               data_Cart.update_Quantity_Cart(parseInt(id_Delete_Product_In_Cart), true)
+               const id_Delete_Product_In_Cart = Number(e.target.dataset.id)
+               //Update quantity
+               this.model.update_Quantity_Cart(id_Delete_Product_In_Cart, true)
+               //Update quantity
+               this.controller_Cart(this.model.responseCart)
+               render_Total_And_Pay(this.model.responseCart)
                return cart_Ui.handle_Delete_Element_In_DOM(element_Delete_In_DOM)
             }
 
             const id = Number(e.target.nextElementSibling.dataset.id)
             acu = Number(e.target.nextElementSibling.value) - 1
-
+            console.log(acu)
             if (acu === 1) {
-               console.log()
-               replace_Minus_Symbol_For_Trash_Basket(elements, true)
+               this.elementDom = elements
+               replace_Minus_Symbol_For_Trash_Basket(this.elementDom, true)
             }
+
 
             e.target.nextElementSibling.value = String(acu)
 
-            return data_Cart.update_Quantity_Cart(parseInt(id), true)
+            return (this.model.update_Quantity_Cart(id, true),
+               this.controller_Cart(this.model.responseCart,
+                  render_Total_And_Pay(this.model.responseCart))
+            )
          })
-
       })
 
 
+      //--------------------------------------------------------------
       /* This code block is adding event listeners to a set of elements with the class `add`. When one of
       these elements is clicked, it retrieves the `id` of the product associated with the clicked element
       from the `data-id` attribute of the previous sibling element. It then increments the quantity value
@@ -241,30 +271,65 @@ class Control_cart {
       2, it replaces the minus symbol with a trash basket icon using the `replace_Minus_Symbol_For_Trash_Basket`
       function. Finally, it returns the updated cart data. */
 
-      add.forEach(elements => {
-
+      btn_Add_Quantity.forEach(elements => {
          elements.addEventListener('click', (e) => {
             const id = Number(e.target.previousElementSibling.dataset.id)
             acu = Number(e.target.previousElementSibling.value) + 1
             if (acu === 2) {
                this.elementDom = e.target.previousElementSibling.previousElementSibling
-               replace_Minus_Symbol_For_Trash_Basket(elements, false)
+               replace_Minus_Symbol_For_Trash_Basket(this.elementDom, false)
             }
-            e.target.previousElementSibling.value = String(acu)
-            return data_Cart.update_Quantity_Cart(parseInt(id), false)
+            return (this.model.update_Quantity_Cart(id, false),
+               e.target.previousElementSibling.value = String(acu),
+               this.controller_Cart(this.model.responseCart),
+               render_Total_And_Pay(this.model.responseCart)
+            )
          })
 
       })
 
    }
-
 }
+
 
 const controller_Cart_Instance = new Control_cart()
 controller_Cart_Instance.add_Cart_Listener()
+controller_Cart_Instance.controller_Cart(api_LocalStorage.get_Cart())
+controller_Cart_Instance.handler_Listener_Display_Cart()
+controller_Cart_Instance.cart_Quantity()
+
+class Control_Favorites {
+   constructor(favorites) {
+      this._favorites_ = favorites
+   }
+
+   async send_Favorite_Product_To_LocalStorage(id, flag) {
+
+      if (id === '') {
+         console.log('error')
+      }
+      else {
+         const res = await calls_To_API.get_Single_Product(id)
+         handler_Data_At_LocalStorage.save_Favorites(res, flag)
+      }
+   }
+   reception_Favorite_Product(data) {
+      data ? View_Favorites.display_Favorites(data) : false
+   }
+}
+
+
+//----------------------------------------------------------------
+//-----------------------------------------------------------------------------//
+
+
+
+//----------------------------------------------------------------
+
+
+
 
 /* separar la asignacion de la rederizacion */
-
 
 
 

@@ -1,7 +1,5 @@
 "use strict";
 
-
-
 class Product {
     /* Creating a card with the information of the product. */
     create_Card(product, flag) {
@@ -48,7 +46,7 @@ class Product {
         array. */
         flag === true ? card_Model(product, $content_Categories, filtered_cards) : card_Model(product, content_Cards, cards)
 
-       
+
 
         const btns_Delete_Cart = document.querySelectorAll('.btn_delete_element_cart')
         btns_Delete_Cart.forEach(i => i.addEventListener('click', (e) => {
@@ -109,6 +107,40 @@ class Product {
 
 }
 
+class Category_ui {
+
+    constructor(category) {
+        this._category = category;
+    }
+
+    set category(newCategory) {
+        this._category = newCategory;
+    }
+
+    get category() {
+        return this._category;
+    }
+
+    createDynamicCategoryNav(categories) {
+        const content_Li_In_Header = document.querySelector('#list_classification')
+        let modelNavHeader = "";
+        categories.forEach(elements => {
+            modelNavHeader +=
+                `
+                    <li class="dropdown-item_ul">
+                        <a class="dropdown-item listener_category route" href="#_categories" id="${ elements }"> ${ elements } </a>
+                    </li>
+                `;
+            return content_Li_In_Header.innerHTML = modelNavHeader
+        })
+
+
+    }
+
+    create_Category_UI_Cards = (data) => {
+        products_Instance.create_Card(data)
+    }
+}
 
 // create shopping cart with vanilla javascript?    
 
@@ -161,7 +193,7 @@ class View_Favorites {
 
 class View_cart {
 
-    
+
 
     /**
      * It creates a counter for the cart and appends it to the cart section
@@ -181,32 +213,25 @@ class View_cart {
     cart_In_Controller = (newCart) => {
         //here is cart
         this.model_UiCart_List(newCart)
-        
+
     }
 
 
     model_UiCart_List = (cart) => {
+        render_Total_And_Pay(cart)
         let content_Data = ''
         const section_Content_Data = document.querySelector('#ui_Cart')
 
         /****************************** */
 
 
-        let ac = 0
-        let total = 0
-
-        if (cart === null) {
-            const model_Empty = `<h1>El carro esta vacio</h1>`
-            return section_Content_Data.innerHTML = model_Empty
-        }
 
         cart.forEach(item => {
-            console.log(item)
-            ac = item.quantity + ac
-            total = total + item.price
+            const model_Trash_Basket =
+                `<img src="../../public/icon/trash_basket.svg" alt="trash" class='trash_count' data-id=${ item.id }>`;
             content_Data =
                 `
-                <div class="content_card____cart" id="$containt_card____cart" data-id = ${ item.id }>
+                <div class="content_card____cart" id="$content_card____cart" data-id = ${ item.id }>
                     <div class="content_image_product_at_cart content_photo">
                         <img src="${ item.image }" alt="img" srcset="" class="img-card____cart">
                     </div>
@@ -219,7 +244,7 @@ class View_cart {
                     </div>
                 
                     <div class="content_select">
-                        <a class="subtract" data-id=${ item.id }> - </a>
+                        <a class="subtract" data-id=${ item.id }> ${ item.quantity === 1 ? model_Trash_Basket : '-' } </a>
                         <input type="number" min="0" max="10" data-id = ${ item.id } type="number" 
                         class="count form-control" value=${ item.quantity }>
                         <a class="add" data-id=${ item.id }> + </a>   
@@ -230,21 +255,7 @@ class View_cart {
             return section_Content_Data.insertAdjacentHTML('beforeend', content_Data)
         })
         /******************************/
-        const model_Total =
-            `
-            <div id="content_total" class="content_total">
-                <h3>Subtotal ${ total }\u20AC</h3>º
-                    <a href="#" class="btn_confirm_buy">
-                        Pagar pedido (${ ac } productos)
-                    </a>
-            </div>`
 
-        const $total = document.querySelector('#view_section_cart')
-        const btn_Add_Quantity = document.querySelectorAll('.add')
-
-        const btns_Subtract = document.querySelectorAll('.subtract')
-
-        return $total.insertAdjacentHTML('afterbegin', model_Total)
         /******************************/
 
     }
@@ -256,54 +267,51 @@ class View_cart {
 }
 
 
-const replace_Minus_Symbol_For_Trash_Basket = (content_trash, flag) => {
-    const dataSetId = content_trash.dataset.id
-    const model_Trash_Basket =
-        `<img src="../../public/icon/trash_basket.svg" alt="trash" class='trash_count' data-id=${ dataSetId }>`
-    return flag ? content_trash.innerHTML = model_Trash_Basket : content_trash.innerHTML = '-'
+const replace_Minus_Symbol_For_Trash_Basket = (content_trash, flag = false) => {
 
+    const inputValue = content_trash.value
+
+    if (flag === true) {
+        const dataSetId = content_trash.dataset.id;
+        const model_Trash_Basket =
+            `<img src="../../public/icon/trash_basket.svg" alt="trash" class='trash_count' data-id=${ dataSetId }>`;
+        return content_trash.innerHTML = model_Trash_Basket;
+    }
+    else {
+        return content_trash.innerHTML = '-'
+    }
 
 }
 
+const render_Total_And_Pay = (cart) => {
 
-class Category_ui {
+    if (cart === '') {
+        const model_Empty = `<h1>El carro esta vacio</h1>`
+        return section_Content_Data.innerHTML = model_Empty
+    }
+    const total_Render = document.querySelector('#content_total')
 
-    constructor(category) {
-        this._category = category;
+    if (total_Render) {
+        total_Render.remove()
     }
 
-    set category(newCategory) {
-        this._category = newCategory;
-    }
+    const model_Total = cart.reduce((previous, current) => {
+        return `
+        <div id="content_total" class="content_total">
+        <h3>Subtotal ${ parseFloat(current.price * current.quantity).toFixed(2) }\u20AC</h3>º
+        <a href="#" class="btn_confirm_buy">
+        Pagar pedido (${ current.quantity + previous } productos)
+        </a>
+        </div>`
+    }, 0)
+    console.log(model_Total);
+    // Añadir el nuevo contenido HTML al inicio del elemento
+    const $total = document.querySelector('#view_section_cart')
+    $total.insertAdjacentHTML('afterbegin', model_Total);
+    console.log(total_Render);
 
-    get category() {
-        return this._category;
-    }
 
-    createDynamicCategoryNav(categories) {
-        const content_Li_In_Header = document.querySelector('#list_classification')
-        let modelNavHeader = "";
-        categories.forEach(elements => {
-            modelNavHeader +=
-                `
-                    <li class="dropdown-item_ul">
-                        <a class="dropdown-item listener_category route" href="#_categories" id="${ elements }"> ${ elements } </a>
-                    </li>
-                `;
-            return content_Li_In_Header.innerHTML = modelNavHeader
-        })
 
-        const listener_category = document.querySelectorAll('.listener_category')
-        listener_category.forEach(i => i.addEventListener('click', (e) => {
-            console.log(e.target.href)
-            return controller.send_Category(e.target.id)
-        })
-        )
-    }
-
-    create_Category_UI_Cards = (data) => {
-        products_Instance.create_Card(data)
-    }
 }
 
 /* This class is responsible for displaying the correct section of the page based on the hash in the
@@ -392,9 +400,10 @@ export {
     products_Instance,
     cart_Ui,
     Category_ui,
-    Product, 
+    Product,
     Handler_Displays_Ui,
     View_Favorites,
     replace_Minus_Symbol_For_Trash_Basket,
+    render_Total_And_Pay,
     View_cart
 }
