@@ -33,7 +33,7 @@ class Control_View_Information_At_DOM {
 
          this.products = await get_All_Products()
 
-         const res = products_Instance.create_Card(this.products, false)
+         const res = products_Instance.createCard(this.products, false)
          if (!res) {
 
             throw new Error('Network response was not ok')
@@ -66,7 +66,7 @@ class Control_View_Information_At_DOM {
    async send_Category(category = '') {
       try {
          const result = await get_View_Products_For_Category(category)
-         return products_Instance.create_Card(result, true)
+         return products_Instance.createCard(result, true)
       }
       catch (error) {
          console.error(error)
@@ -122,7 +122,7 @@ class Control_cart {
 
 
    controller_Cart(cart) {
-      return this.control_Quantity(cart);
+      return this.quantity_In_Cart(cart);
 
    };
 
@@ -140,7 +140,7 @@ class Control_cart {
          this.single_Product = result;
          this.model.create_A_New_Array_Of_Object(this.single_Product);
          return (this.controller_Cart(this.model.responseCart),
-            cart_Ui.model_UiCart_List(this.model.responseCart, this))
+            cart_Ui.model_UiCart_List(this.model.responseCart))
       };
       return console.error('the id not exist');
    };
@@ -155,15 +155,6 @@ class Control_cart {
 
 
 
-
-   /*    controller_Cart(cart) {
-         this.cart = cart
-         this.control_Quantity(cart)
-   
-      } */
-
-
-
    /**
     * This function calculates the total quantity of items in a shopping cart and returns a cart container
     * element with the updated quantity.
@@ -175,7 +166,7 @@ class Control_cart {
     * the accumulated quantity (`acu`) as an argument.
     */
 
-   control_Quantity = (data) => {
+   quantity_In_Cart = (data) => {
       render_Total_And_Pay(data)
 
       if (!data) {
@@ -213,7 +204,7 @@ class Control_cart {
 
 
 
-   cart_Quantity = () => {
+   modify_Quantity = () => {
       const btn_Add_Quantity = document.querySelectorAll('.add')
       let acu = 0
       //--------------------------------------------------------------
@@ -232,6 +223,9 @@ class Control_cart {
       const btns_Subtract = document.querySelectorAll('.subtract')
       btns_Subtract.forEach(elements => {
          elements.addEventListener('click', (e) => {
+
+            console.log(elements.nextElementSibling)
+
             /* The above code is checking if the next element sibling of the target element is null. If
             it is null, it retrieves the parent element of the parent element of the target element
             and assigns it to a variable. It also retrieves the ID of the product to be deleted from
@@ -244,6 +238,7 @@ class Control_cart {
                const element_Delete_In_DOM = e.target.parentElement.parentElement.parentElement
                const id_Delete_Product_In_Cart = Number(e.target.dataset.id)
                //Update quantity
+
                this.model.update_Quantity_Cart(id_Delete_Product_In_Cart, true)
                this.controller_Cart(this.model.responseCart)
 
@@ -254,14 +249,13 @@ class Control_cart {
             const id = Number(e.target.nextElementSibling.dataset.id)
             console.log(e.target.nextElementSibling.value);
             acu = Number(e.target.nextElementSibling.value) - 1
-            console.log(acu);
             if (acu === 1) {
                this.elementDom = elements
                replace_Minus_Symbol_For_Trash_Basket(this.elementDom, true)
             }
 
             e.target.nextElementSibling.value = String(acu)
-
+            this.confirm_Pay()
             return (this.model.update_Quantity_Cart(id, true),
                this.controller_Cart(this.model.responseCart)
             )
@@ -280,16 +274,17 @@ class Control_cart {
 
       btn_Add_Quantity.forEach(elements => {
          elements.addEventListener('click', (e) => {
+            this.confirm_Pay()
             const id = Number(e.target.previousElementSibling.dataset.id)
             acu = Number(e.target.previousElementSibling.value) + 1
             if (acu === 2) {
                this.elementDom = e.target.previousElementSibling.previousElementSibling
                replace_Minus_Symbol_For_Trash_Basket(this.elementDom, false)
+               this.confirm_Pay()
             }
             return (
                this.model.update_Quantity_Cart(id, false),
                this.controller_Cart(this.model.responseCart),
-
                e.target.previousElementSibling.value = String(acu)
             )
          })
@@ -297,18 +292,33 @@ class Control_cart {
       })
 
    }
+
+   confirm_Pay = () => {
+      const btn_ConfirmPay = document.querySelector('#pay_confirm')
+      btn_ConfirmPay.addEventListener('click', (e) => {
+         alert('tu compra esta lista')
+      })
+
+   }
+
+   //--------------------------------------------------------------
 }
 
 
 
 const controller_Cart_Instance = new Control_cart()
 
-controller_Cart_Instance.control_Quantity(controller_Cart_Instance.get_Cart_Data_LocalStorage())
+controller_Cart_Instance.quantity_In_Cart(controller_Cart_Instance.get_Cart_Data_LocalStorage())
 controller_Cart_Instance.add_Cart_Listener()
 cart_Ui.model_UiCart_List(controller_Cart_Instance.get_Cart_Data_LocalStorage())
 
 
 
+
+document.querySelector('#cart').addEventListener('click', () => {
+   controller_Cart_Instance.modify_Quantity()
+   controller_Cart_Instance.confirm_Pay()
+})
 
 
 
@@ -358,7 +368,15 @@ class Control_Routes {
 
 const instance_Control_Routes = new Control_Routes()
 
+const view_Element = document.querySelectorAll('.view_one_element')
+view_Element.forEach((element) => {
+    element.addEventListener('click', (e) => {
+        const data_Id = Number(element.dataset.id)
+        console.log(e.target.parentElement.attributes.href)
+        return controller.send_Id(data_Id)
 
+    })
+})
 
 //----------------------------------------------------------------
 

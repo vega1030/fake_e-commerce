@@ -3,10 +3,17 @@
 
 class Product {
     /* Creating a card with the information of the product. */
-    create_Card(product, flag) {
+    createCard(product, flag) {
 
         const card_Model = (products, content_Data_In_DOM, global_Variable) => {
+            const $content_Categories = document.querySelector('#_categories')
+            if ($content_Categories) {
+                $content_Categories.remove()
+            }
             products.forEach(data => {
+                if ($cards) { $cards.remove() }
+                const $cards = document.createElement('div')
+                $cards.classList.add('card_category')
                 global_Variable +=
                     `
                 <div class="content-sale__child">
@@ -27,10 +34,6 @@ class Product {
                 <button class='btn_add_to_cart' id='${ data.id }'>
                 Add Cart 
                 </button>
-                <button class='btn_delete_element_cart' id='${ data.id }'>
-                delete 
-                </button>
-                
                 </div>
                 `;
                 return content_Data_In_DOM.innerHTML = global_Variable
@@ -38,6 +41,7 @@ class Product {
         }
         const content_Cards = document.querySelector("#content_card");
         const $content_Categories = document.querySelector('#_categories')
+
 
         let cards = "";
         let filtered_cards = ""
@@ -47,13 +51,6 @@ class Product {
         array. */
         flag === true ? card_Model(product, $content_Categories, filtered_cards) : card_Model(product, content_Cards, cards)
 
-
-
-        const btns_Delete_Cart = document.querySelectorAll('.btn_delete_element_cart')
-        btns_Delete_Cart.forEach(i => i.addEventListener('click', (e) => {
-            const id = Number(e.target.id)
-            return controller_Cart.handle_Id_Cart_delete(id)
-        }))
 
         /* A function that change the color of the heart when user click,
         and send id product to saving*/
@@ -139,7 +136,7 @@ class Category_ui {
     }
 
     create_Category_UI_Cards = (data) => {
-        products_Instance.create_Card(data)
+        products_Instance.createCard(data)
     }
 }
 
@@ -207,7 +204,6 @@ class View_cart {
         const counter = document.querySelector('#count_elements_at_cart')
         const content_Counter = document.querySelector('#section_cart')
         quantity > 9 ? counter.innerText = '+9' : counter.innerText = JSON.stringify(quantity)
-        console.log(quantity);
         content_Counter.appendChild(counter)
 
     }
@@ -218,55 +214,93 @@ class View_cart {
     model_UiCart_List = (cart) => {
 
         const section_Content_Data = document.querySelector('#ui_Cart')
+
         section_Content_Data.innerHTML = ''
-        /****************************** */
 
-        cart.map(item => {
+        //create a new container
+        const container = document.createElement('div');
 
-            const model_Trash_Basket =
-                `<img src="../../public/icon/trash_basket.svg" alt="trash" class='trash_count' data-id=${ item.id }>`;
-            const content_Data =
-                `
-                <div class="content_card____cart" id="$content_card____cart" data-id = ${ item.id }>
-                    <div class="content_image_product_at_cart content_photo">
-                        <img src="${ item.image }" alt="img" srcset="" class="img-card____cart">
-                    </div>
-                
-                    <div class="content_description">
-                        <h5>${ item.title.slice(0, 20) }</h5>
-                    </div>
-                    <div class="price">
-                        <h4>${ item.price }\u20AC </h4>
-                    </div>
-                
-                    <div class="content_select">
-                        <a class="subtract" data-id=${ item.id }> ${ item.quantity === 1 ? model_Trash_Basket : '-' } </a>
-                        <input type="number" min="0" max="10" data-id = ${ item.id } type="number" 
-                        class="count form-control" value=${ item.quantity }>
-                        <a class="add" data-id=${ item.id }> + </a>   
-                    </div>
+        //create dynamic elements
 
-                </div>
-                `
-            section_Content_Data.innerHTML += content_Data
+        const newCart = cart.map(item => {
+            const contentTrash = document.createElement('img')
+            contentTrash.src = "../../public/icon/trash_basket.svg"
+            contentTrash.alt = 'trash basket'
+            contentTrash.classList.add('trash_count')
+            contentTrash.setAttribute('data-id', item.id);
 
 
 
-            const content_card = section_Content_Data.querySelector(`[data-id="${ item.id }"]`);
-            const subtractButton = content_card.querySelector('.subtract');
-            const addButton = content_card.querySelector('.add');
-            console.log(content_card);
-            subtractButton.addEventListener('click', () => {
 
-                console.log('add');
-            });
-            addButton.addEventListener('click', () => {
-                console.log('subtract');
-            });
+            const content_Data = document.createElement('div');
+            content_Data.classList.add('content_card____cart');
+            content_Data.setAttribute('data-id', item.id);
 
+
+
+            const content_Image_Product = document.createElement('div');
+            content_Image_Product.classList.add('content_image_product_at_cart', 'content_photo');
+
+            const img_Product = document.createElement('img');
+            img_Product.classList.add('img-card____cart');
+            img_Product.src = item.image;
+            img_Product.alt = 'img';
+
+            content_Image_Product.appendChild(img_Product);
+
+            const content_Description = document.createElement('div');
+            content_Description.classList.add('content_description');
+
+            const h5 = document.createElement('h5');
+            h5.textContent = item.title.slice(0, 20);
+            content_Description.appendChild(h5);
+
+            const price = document.createElement('div');
+            price.classList.add('price');
+
+            const h4 = document.createElement('h4');
+            h4.textContent = `${ item.price }\u20AC`;
+            price.appendChild(h4);
+
+            const content_Select = document.createElement('div');
+            content_Select.classList.add('content_select');
+
+            const subtractBtn = document.createElement('a');
+            subtractBtn.classList.add('subtract');
+            subtractBtn.setAttribute('data-id', item.id);
+
+
+            const countInput = document.createElement('input');
+            countInput.classList.add('count', 'form-control');
+            countInput.setAttribute('type', 'number');
+            countInput.setAttribute('min', '0');
+            countInput.setAttribute('max', '10');
+            countInput.setAttribute('data-id', item.id);
+            countInput.value = item.quantity;
+
+            const addBtn = document.createElement('a');
+            addBtn.classList.add('add');
+            addBtn.setAttribute('data-id', item.id);
+            addBtn.textContent = '+';
+
+            content_Select.appendChild(subtractBtn);
+            content_Select.appendChild(countInput);
+            content_Select.appendChild(addBtn);
+
+            content_Data.appendChild(content_Image_Product);
+            content_Data.appendChild(content_Description);
+            content_Data.appendChild(price);
+            content_Data.appendChild(content_Select);
+
+            container.appendChild(content_Data);
+            item.quantity === 1 ? subtractBtn.appendChild(contentTrash) : subtractBtn.textContent = '-';
+
+            return { ...item, content_Data };
         });
 
+        section_Content_Data.appendChild(container);
     }
+
 
     handle_Delete_Element_In_DOM(element) {
         return element.remove()
@@ -301,29 +335,31 @@ const render_Total_And_Pay = (cart) => {
 
     }, { total: 0, quantity: 0 })
 
-    const render_Function = () => {
-        const flag_Delete_Element = document.querySelector('#content_total')
-        if (flag_Delete_Element) {
-            flag_Delete_Element.remove()
-        }
-        const model_Total =
-            `
-        <div id="content_total" class="content_total">
-                <h3 class=total>Subtotal 
-                    ${ parseFloat(total_And_Quantity.total.toFixed(2)) }\u20AC
-                </h3>
-                <a href="#" class="btn_confirm_buy" class='quantity'>
-                    Pagar pedido (${ total_And_Quantity.quantity } productos)
-                </a>
-            </div>`
+    const content_Model_Total = document.querySelector('#content_total')
 
-        const $total = document.querySelector('#view_section_cart')
-        return $total.insertAdjacentHTML('afterbegin', model_Total)
+    const render_Function = () => {
+
+        if (content_Model_Total) {
+            content_Model_Total.remove();
+        }
+
+        const $total = document.querySelector('#view_section_cart');
+        const model_Total = `
+          <div id="content_total" class="content_total">
+            <h3 class="total">Subtotal ${ parseFloat(total_And_Quantity.total.toFixed(2)) }\u20AC</h3>
+            <a href="#" class="btn_confirm_buy quantity"  id="pay_confirm">
+              Pagar pedido (${ total_And_Quantity.quantity } productos)
+            </a>
+          </div>
+        `;
+
+        $total.insertAdjacentHTML('afterbegin', model_Total);
     }
 
     render_Function()
-
 }
+
+
 
 /* This class is responsible for displaying the correct section of the page based on the hash in the
 url */

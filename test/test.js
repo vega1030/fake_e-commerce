@@ -14,7 +14,7 @@ describe('Control_cart', () => {
       ];
 
       // Llamamos al método control_Quantity con la data de prueba
-      const result = controlCart.control_Quantity(data);
+      const result = controlCart.quantity_In_Cart(data);
 
       // Comprobamos que el resultado sea el esperado
       assert.equal(result, 7);
@@ -24,7 +24,7 @@ describe('Control_cart', () => {
       const controlCart = new Control_cart();
 
       // Llamamos al método control_Quantity sin pasar data
-      const result = controlCart.control_Quantity();
+      const result = controlCart.quantity_In_Cart();
 
       // Comprobamos que el resultado sea 0
       assert.equal(result, 0);
@@ -34,7 +34,7 @@ describe('Control_cart', () => {
       const controlCart = new Control_cart();
 
       // Llamamos al método control_Quantity con data falsy
-      const result = controlCart.control_Quantity(null);
+      const result = controlCart.quantity_In_Cart(null);
 
       // Comprobamos que el método haya llamado a console.warn()
       assert.equal(console.warn.calledOnce, true);
