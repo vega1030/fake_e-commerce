@@ -3,13 +3,14 @@
 import { get_All_Products, get_Categories, get_View_Products_For_Category, get_Single_Product } from './api.js'
 import { Drive_Data_Cart, Call_Api_LocalStorage } from './model.js';
 import {
-   cart_Ui, Category_ui, products_Instance, Handler_Displays_Ui, View_Favorites, replace_Minus_Symbol_For_Trash_Basket, render_Total_And_Pay
+   Category_ui, products_Instance, Handler_Displays_Ui, View_Favorites, View_cart, replace_Minus_Symbol_For_Trash_Basket, render_Total_And_Pay,
 } from "./view.js";
 
 const handler_View = new Handler_Displays_Ui()
 /* const handler_Cart_Model = new Drive_Data_Cart()
  */const categories_UI = new Category_ui()
 const api_LocalStorage = new Call_Api_LocalStorage()
+const cart_Ui = new View_cart()
 
 
 //----------------------------------------------------------------
@@ -110,14 +111,58 @@ handler_Init_Page.listener_Category()
 
 class Control_cart {
 
-   constructor(total = 0, cart, elementDom) {
+   constructor(total = 0, elementDom) {
+      this.cart
       this.elementDom = elementDom
       this.single_Product = null
       this.id = null;
       this.model = new Drive_Data_Cart()
-
-
+      this.get_Cart_Data_LocalStorage()
    }
+
+
+   controller_Cart(cart) {
+      return this.control_Quantity(cart);
+
+   };
+
+
+   get_Cart_Data_LocalStorage = () => {
+      this.model.send_Cart_LocalStorage()
+
+      return this.model.send_Cart_LocalStorage()
+   }
+
+   send_Id_To_Api = async (id) => {
+      if (id) {
+
+         const result = await get_Single_Product(id);
+         this.single_Product = result;
+         this.model.create_A_New_Array_Of_Object(this.single_Product);
+         return (this.controller_Cart(this.model.responseCart),
+            cart_Ui.model_UiCart_List(this.model.responseCart, this))
+      };
+      return console.error('the id not exist');
+   };
+
+   add_Cart_Listener = () => {
+      const btns_Cart = document.querySelectorAll('.btn_add_to_cart')
+      btns_Cart.forEach(item => item.addEventListener('click', (e) => {
+         const id = Number(e.target.id);
+         return this.send_Id_To_Api(id);;
+      }))
+   }
+
+
+
+
+   /*    controller_Cart(cart) {
+         this.cart = cart
+         this.control_Quantity(cart)
+   
+      } */
+
+
 
    /**
     * This function calculates the total quantity of items in a shopping cart and returns a cart container
@@ -131,6 +176,7 @@ class Control_cart {
     */
 
    control_Quantity = (data) => {
+      render_Total_And_Pay(data)
 
       if (!data) {
          return console.warn('cart is empty')
@@ -142,29 +188,8 @@ class Control_cart {
       return cart_Ui.createCartCont(acu)
    }
 
-   controller_Cart(cart) {
-
-      return this.control_Quantity(cart)
-   }
 
 
-   send_Id_To_Api = async (id) => {
-      if (id) {
-         const result = await get_Single_Product(id);
-         this.single_Product = result
-         this.model.create_A_New_Array_Of_Object(this.single_Product)
-         return this.controller_Cart(this.model.responseCart)
-      }
-      return console.error('the id not exist');
-   }
-
-   add_Cart_Listener = () => {
-      const btns_Cart = document.querySelectorAll('.btn_add_to_cart')
-      btns_Cart.forEach(item => item.addEventListener('click', (e) => {
-         const id = Number(e.target.id);
-         return this.send_Id_To_Api(id);;
-      }))
-   }
 
    /* This is a method in the `Control_cart` class that adds a click event listener to the `#section_cart`
    element in the DOM. When the element is clicked, it checks the value of the `flag` parameter. If
@@ -174,20 +199,6 @@ class Control_cart {
    cart data stored in the `responseCart` property of the `Control_cart` instance. The purpose of this
    method is to update the cart UI with the latest cart data when the `#section_cart` element is
    clicked. */
-
-   handler_Listener_Display_Cart = (flag = false) => {
-      const TRUE = true
-      const section_Content_Data = document.querySelector('#section_cart')
-      section_Content_Data.addEventListener('click', () => {
-
-         !flag ? cart_Ui.model_UiCart_List(api_LocalStorage.get_Cart()) :
-            cart_Ui.model_UiCart_List(this.model.responseCart)
-         this.controller_Cart(this.model.responseCart)
-         return this.cart_Quantity()
-
-
-      })
-   }
 
    /* ------------------------------------ */
 
@@ -219,11 +230,8 @@ class Control_cart {
       cart with the new quantity value using the `update_Quantity_Cart` method. If the quantity value is
       1, it replaces the trash basket icon with a minus symbol */
       const btns_Subtract = document.querySelectorAll('.subtract')
-
       btns_Subtract.forEach(elements => {
          elements.addEventListener('click', (e) => {
-
-
             /* The above code is checking if the next element sibling of the target element is null. If
             it is null, it retrieves the parent element of the parent element of the target element
             and assigns it to a variable. It also retrieves the ID of the product to be deleted from
@@ -237,26 +245,25 @@ class Control_cart {
                const id_Delete_Product_In_Cart = Number(e.target.dataset.id)
                //Update quantity
                this.model.update_Quantity_Cart(id_Delete_Product_In_Cart, true)
-               //Update quantity
                this.controller_Cart(this.model.responseCart)
-               render_Total_And_Pay(this.model.responseCart)
+
                return cart_Ui.handle_Delete_Element_In_DOM(element_Delete_In_DOM)
+
             }
 
             const id = Number(e.target.nextElementSibling.dataset.id)
+            console.log(e.target.nextElementSibling.value);
             acu = Number(e.target.nextElementSibling.value) - 1
-            console.log(acu)
+            console.log(acu);
             if (acu === 1) {
                this.elementDom = elements
                replace_Minus_Symbol_For_Trash_Basket(this.elementDom, true)
             }
 
-
             e.target.nextElementSibling.value = String(acu)
 
             return (this.model.update_Quantity_Cart(id, true),
-               this.controller_Cart(this.model.responseCart,
-                  render_Total_And_Pay(this.model.responseCart))
+               this.controller_Cart(this.model.responseCart)
             )
          })
       })
@@ -279,10 +286,11 @@ class Control_cart {
                this.elementDom = e.target.previousElementSibling.previousElementSibling
                replace_Minus_Symbol_For_Trash_Basket(this.elementDom, false)
             }
-            return (this.model.update_Quantity_Cart(id, false),
-               e.target.previousElementSibling.value = String(acu),
+            return (
+               this.model.update_Quantity_Cart(id, false),
                this.controller_Cart(this.model.responseCart),
-               render_Total_And_Pay(this.model.responseCart)
+
+               e.target.previousElementSibling.value = String(acu)
             )
          })
 
@@ -292,11 +300,17 @@ class Control_cart {
 }
 
 
+
 const controller_Cart_Instance = new Control_cart()
+
+controller_Cart_Instance.control_Quantity(controller_Cart_Instance.get_Cart_Data_LocalStorage())
 controller_Cart_Instance.add_Cart_Listener()
-controller_Cart_Instance.controller_Cart(api_LocalStorage.get_Cart())
-controller_Cart_Instance.handler_Listener_Display_Cart()
-controller_Cart_Instance.cart_Quantity()
+cart_Ui.model_UiCart_List(controller_Cart_Instance.get_Cart_Data_LocalStorage())
+
+
+
+
+
 
 class Control_Favorites {
    constructor(favorites) {
@@ -320,20 +334,6 @@ class Control_Favorites {
 
 
 //----------------------------------------------------------------
-//-----------------------------------------------------------------------------//
-
-
-
-//----------------------------------------------------------------
-
-
-
-
-/* separar la asignacion de la rederizacion */
-
-
-
-
 
 
 //----------------------------------------------------------------
@@ -357,7 +357,6 @@ class Control_Routes {
 }
 
 const instance_Control_Routes = new Control_Routes()
-
 
 
 

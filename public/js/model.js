@@ -2,23 +2,48 @@
 /* It's a class that has a constructor that receives two parameters, and then has three methods that
 add, delete, and get products from local storage. */
 
-class Drive_Data_Cart {
 
-    constructor() {
-        this.responseCart
+
+
+class Call_Api_LocalStorage {
+
+    /* A function that receives a parameter, which is the data, and then saves the data in localStorage. */
+    saveCartAtLocalStorage = (data) => {
+        const CART = 'cart';
+        return localStorage.setItem(CART, JSON.stringify(data));
+    }
+
+
+    get_Cart = () => {
+        return JSON.parse(localStorage.getItem('cart'))
 
     }
 
-    assign_Cart = (newCart) => {
+
+}
+
+const api_LocalStorage = new Call_Api_LocalStorage()
+
+class Drive_Data_Cart {
+
+    constructor(cart) {
+        this.responseCart = cart
+
+    }
+
+    send_Cart_LocalStorage = () => {
+        return api_LocalStorage.get_Cart();
+    };
+
+    assign_Cart_Without_LocalStorage = (newCart) => {
+
         this.responseCart = newCart
     }
 
-
-
-    send_Cart_ = () => {
+    send_Cart_Without_LocalStorage = () => {
         return this.responseCart
-    }
 
+    }
 
     /* A function that receives an id as a parameter, calls the get_Single_Product function, which returns
     a product, and then adds the product to the cart. */
@@ -50,10 +75,9 @@ class Drive_Data_Cart {
             searchRepeat ? searchRepeat.quantity += e.quantity : acc.push(e);
             return acc;
         }, []);
-        /*         controller_Cart.control_Quantity(send_Cart)
-         */
+
         api_LocalStorage.saveCartAtLocalStorage(cart_Model)
-        return this.assign_Cart(cart_Model) ;
+        return this.assign_Cart_Without_LocalStorage(cart_Model);
 
     }
 
@@ -63,53 +87,33 @@ class Drive_Data_Cart {
     update_Quantity_Cart = (id = "", flag) => {
         if (flag === true) {
             const updateCart_Minus = api_LocalStorage.get_Cart().map
-            (i => i.id === id ? { ...i, quantity: i.quantity - 1 } : i).filter(i => i.quantity > 0);
+                (i => i.id === id ? { ...i, quantity: i.quantity - 1 } : i).filter(i => i.quantity > 0);
             return (
                 api_LocalStorage.saveCartAtLocalStorage(updateCart_Minus),
-                this.assign_Cart(updateCart_Minus),
-                this.send_Cart_()
-                )
-
-
-
-
+                this.send_Cart_LocalStorage(),
+                this.assign_Cart_Without_LocalStorage(updateCart_Minus)
+            )
         }
-
         const updateCart_Add = api_LocalStorage.get_Cart().map(i => i.id === id
             ? { ...i, quantity: i.quantity + 1 } : i).filter(i => i.quantity > 0);
 
         return (
             api_LocalStorage.saveCartAtLocalStorage(updateCart_Add),
-            this.assign_Cart(updateCart_Add)
-            )
+            this.send_Cart_LocalStorage(),
+            this.assign_Cart_Without_LocalStorage(updateCart_Add)
+        )
 
 
     }
 
-    //***************** */
+    //*****************//***************** */
 
 
 }
-
-class Call_Api_LocalStorage {
-
-    /* A function that receives a parameter, which is the data, and then saves the data in localStorage. */
-    saveCartAtLocalStorage = (data) => {
-        const CART = 'cart';
-        return localStorage.setItem(CART, JSON.stringify(data));
-    }
-
-
-    get_Cart = () => {
-        return JSON.parse(localStorage.getItem('cart'))
-
-    }
-
-
-}
-
 /***********--------------***************/
+const handler_Cart_Model = new Drive_Data_Cart()
 
+handler_Cart_Model.send_Cart_Without_LocalStorage()
 //***********--Favorites--**************/ 
 class Favorites_ {
 
@@ -174,21 +178,9 @@ class Control_Data {
 
 const favorites = new Favorites_()
 
-const api_LocalStorage = new Call_Api_LocalStorage()
-const handler_Cart_Model = new Drive_Data_Cart()
-handler_Cart_Model.assign_Cart(api_LocalStorage.get_Cart())
 
+handler_Cart_Model.send_Cart_LocalStorage()
 
-
-//____controller.js____
-
-//------------------------
-
-
-
-
-/* controller_Cart.calculate_Total_Cart(api_LocalStorage.get_Cart())
- */
 export {
 
     Drive_Data_Cart,

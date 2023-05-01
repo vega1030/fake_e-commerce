@@ -1,5 +1,6 @@
 "use strict";
 
+
 class Product {
     /* Creating a card with the information of the product. */
     create_Card(product, flag) {
@@ -206,30 +207,25 @@ class View_cart {
         const counter = document.querySelector('#count_elements_at_cart')
         const content_Counter = document.querySelector('#section_cart')
         quantity > 9 ? counter.innerText = '+9' : counter.innerText = JSON.stringify(quantity)
+        console.log(quantity);
         content_Counter.appendChild(counter)
 
     }
 
-    cart_In_Controller = (newCart) => {
-        //here is cart
-        this.model_UiCart_List(newCart)
 
-    }
 
 
     model_UiCart_List = (cart) => {
-        render_Total_And_Pay(cart)
-        let content_Data = ''
-        const section_Content_Data = document.querySelector('#ui_Cart')
 
+        const section_Content_Data = document.querySelector('#ui_Cart')
+        section_Content_Data.innerHTML = ''
         /****************************** */
 
+        cart.map(item => {
 
-
-        cart.forEach(item => {
             const model_Trash_Basket =
                 `<img src="../../public/icon/trash_basket.svg" alt="trash" class='trash_count' data-id=${ item.id }>`;
-            content_Data =
+            const content_Data =
                 `
                 <div class="content_card____cart" id="$content_card____cart" data-id = ${ item.id }>
                     <div class="content_image_product_at_cart content_photo">
@@ -252,11 +248,23 @@ class View_cart {
 
                 </div>
                 `
-            return section_Content_Data.insertAdjacentHTML('beforeend', content_Data)
-        })
-        /******************************/
+            section_Content_Data.innerHTML += content_Data
 
-        /******************************/
+
+
+            const content_card = section_Content_Data.querySelector(`[data-id="${ item.id }"]`);
+            const subtractButton = content_card.querySelector('.subtract');
+            const addButton = content_card.querySelector('.add');
+            console.log(content_card);
+            subtractButton.addEventListener('click', () => {
+
+                console.log('add');
+            });
+            addButton.addEventListener('click', () => {
+                console.log('subtract');
+            });
+
+        });
 
     }
 
@@ -285,32 +293,35 @@ const replace_Minus_Symbol_For_Trash_Basket = (content_trash, flag = false) => {
 
 const render_Total_And_Pay = (cart) => {
 
-    if (cart === '') {
-        const model_Empty = `<h1>El carro esta vacio</h1>`
-        return section_Content_Data.innerHTML = model_Empty
-    }
-    const total_Render = document.querySelector('#content_total')
+    const total_And_Quantity = cart.reduce((previous, current) => {
 
-    if (total_Render) {
-        total_Render.remove()
-    }
+        previous.quantity = current.quantity + previous.quantity;
+        previous.total += current.quantity * current.price;
+        return previous
 
-    const model_Total = cart.reduce((previous, current) => {
-        return `
+    }, { total: 0, quantity: 0 })
+
+    const render_Function = () => {
+        const flag_Delete_Element = document.querySelector('#content_total')
+        if (flag_Delete_Element) {
+            flag_Delete_Element.remove()
+        }
+        const model_Total =
+            `
         <div id="content_total" class="content_total">
-        <h3>Subtotal ${ parseFloat(current.price * current.quantity).toFixed(2) }\u20AC</h3>º
-        <a href="#" class="btn_confirm_buy">
-        Pagar pedido (${ current.quantity + previous } productos)
-        </a>
-        </div>`
-    }, 0)
-    console.log(model_Total);
-    // Añadir el nuevo contenido HTML al inicio del elemento
-    const $total = document.querySelector('#view_section_cart')
-    $total.insertAdjacentHTML('afterbegin', model_Total);
-    console.log(total_Render);
+                <h3 class=total>Subtotal 
+                    ${ parseFloat(total_And_Quantity.total.toFixed(2)) }\u20AC
+                </h3>
+                <a href="#" class="btn_confirm_buy" class='quantity'>
+                    Pagar pedido (${ total_And_Quantity.quantity } productos)
+                </a>
+            </div>`
 
+        const $total = document.querySelector('#view_section_cart')
+        return $total.insertAdjacentHTML('afterbegin', model_Total)
+    }
 
+    render_Function()
 
 }
 
@@ -389,7 +400,8 @@ class Handler_Displays_Ui {
 
 Handler_Displays_Ui.reload_Page()
 
-const cart_Ui = new View_cart();
+const cart = new View_cart()
+
 
 
 const products_Instance = new Product();
@@ -398,7 +410,6 @@ const products_Instance = new Product();
 
 export {
     products_Instance,
-    cart_Ui,
     Category_ui,
     Product,
     Handler_Displays_Ui,
