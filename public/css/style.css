@@ -65,7 +65,18 @@ a {
    text-align: center;
 }
 
-.containt_card____cart {
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+   -webkit-appearance: none;
+   margin: 0;
+}
+
+input[type=number] {
+   -moz-appearance: textfield;
+}
+
+
+.content_card____cart {
    box-shadow: var(--shadow_box);
    background-color: #ffffff;
 }
@@ -283,6 +294,15 @@ h2 {
 
    }
 
+   
+   
+}
+
+@media (min-width: 375px) and (max-width: 600px){
+   
+   .trash_count{
+      width: 65%;
+   }
 }
 
 @media (prefers-color-scheme: dark) {
