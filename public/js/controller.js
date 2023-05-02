@@ -33,7 +33,7 @@ class Control_View_Information_At_DOM {
 
          this.products = await get_All_Products()
 
-         const res = products_Instance.createCard(this.products, false)
+         const res = products_Instance.create_Card(this.products, false)
          if (!res) {
 
             throw new Error('Network response was not ok')
@@ -66,7 +66,7 @@ class Control_View_Information_At_DOM {
    async send_Category(category = '') {
       try {
          const result = await get_View_Products_For_Category(category)
-         return products_Instance.createCard(result, true)
+         return products_Instance.create_Card(result, true)
       }
       catch (error) {
          console.error(error)

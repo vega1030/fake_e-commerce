@@ -3,17 +3,10 @@
 
 class Product {
     /* Creating a card with the information of the product. */
-    createCard(product, flag) {
+    create_Card(product, flag) {
 
         const card_Model = (products, content_Data_In_DOM, global_Variable) => {
-            const $content_Categories = document.querySelector('#_categories')
-            if ($content_Categories) {
-                $content_Categories.remove()
-            }
             products.forEach(data => {
-                if ($cards) { $cards.remove() }
-                const $cards = document.createElement('div')
-                $cards.classList.add('card_category')
                 global_Variable +=
                     `
                 <div class="content-sale__child">
@@ -34,6 +27,8 @@ class Product {
                 <button class='btn_add_to_cart' id='${ data.id }'>
                 Add Cart 
                 </button>
+
+                
                 </div>
                 `;
                 return content_Data_In_DOM.innerHTML = global_Variable
@@ -41,7 +36,6 @@ class Product {
         }
         const content_Cards = document.querySelector("#content_card");
         const $content_Categories = document.querySelector('#_categories')
-
 
         let cards = "";
         let filtered_cards = ""
@@ -136,7 +130,7 @@ class Category_ui {
     }
 
     create_Category_UI_Cards = (data) => {
-        products_Instance.createCard(data)
+        products_Instance.create_Card(data)
     }
 }
 
@@ -212,7 +206,7 @@ class View_cart {
 
 
     model_UiCart_List = (cart) => {
-
+        if(cart===null){return}
         const section_Content_Data = document.querySelector('#ui_Cart')
 
         section_Content_Data.innerHTML = ''
@@ -224,7 +218,7 @@ class View_cart {
 
         const newCart = cart.map(item => {
             const contentTrash = document.createElement('img')
-            contentTrash.src = "../../public/icon/trash_basket.svg"
+            contentTrash.src = '../../public/icon/trash_basket.svg'
             contentTrash.alt = 'trash basket'
             contentTrash.classList.add('trash_count')
             contentTrash.setAttribute('data-id', item.id);
@@ -326,7 +320,7 @@ const replace_Minus_Symbol_For_Trash_Basket = (content_trash, flag = false) => {
 }
 
 const render_Total_And_Pay = (cart) => {
-
+    if (cart === null) { return  }
     const total_And_Quantity = cart.reduce((previous, current) => {
 
         previous.quantity = current.quantity + previous.quantity;
