@@ -154,33 +154,58 @@ class Control_cart {
 
 
 
+   /* The above code is defining an event listener for the click event on an element with the ID
+   "ui_Cart". When a click event occurs, the code checks the class name of the clicked element and
+   calls the corresponding function in the "cartHandler" object. The "cartHandler" object contains
+   functions to handle subtracting, adding, and deleting items from a shopping cart. These functions
+   update the quantity of items in the cart and call the "modify_Quantity" function. */
+
    assign_Events_Products = () => {
 
       const section_Content_Data = document.querySelector('#ui_Cart');
       section_Content_Data.addEventListener('click', (event) => {
          const target = event.target;
 
-         if (target.classList.contains('subtract')) {
-            // Se hizo clic en el botón de restar cantidad
-            const id = target.getAttribute('data-id');
-            const input = target.nextElementSibling;
-            const count = parseInt(input.value, 10);
-            const newCount = Math.max(count - 1, 0);
-            input.value = newCount;
-            this.modify_Quantity()
-         } else if (target.classList.contains('add')) {
-            // Se hizo clic en el botón de añadir cantidad
-            const id = target.getAttribute('data-id');
-            const input = target.previousElementSibling;
-            const count = parseInt(input.value, 10);
-            const newCount = Math.min(count + 1, 10);
-            input.value = newCount;
-            this.modify_Quantity()
-         } else if (target.classList.contains('trash_count')) {
-            // Se hizo clic en el botón de eliminar producto
-            const id = target.getAttribute('data-id');
-            this.modify_Quantity()
+         /* The above code defines an object called `cartHandler` with three methods: `subtract`, `add`, and
+         `trash_count`. These methods are used to modify the quantity of items in a shopping cart. The
+         `subtract` method decreases the quantity of an item by 1, the `add` method increases the quantity of
+         an item by 1, and the `trash_count` method removes an item from the cart. The code then loops
+         through the class list of a given target element and calls the corresponding method in `cartHandler`
+         based on the class name. */
+         const cartHandler = {
+
+            subtract: (target) => {
+               const id = target.getAttribute('data-id');
+               const input = target.nextElementSibling;
+               const count = parseInt(input.value, 10);
+               const newCount = Math.max(count - 1, 0);
+               input.value = newCount;
+               this.modify_Quantity();
+            },
+
+            add: (target) => {
+               const id = target.getAttribute('data-id');
+               const input = target.previousElementSibling;
+               const count = parseInt(input.value, 10);
+               const newCount = Math.min(count + 1, 10);
+               input.value = newCount;
+               this.modify_Quantity();
+            },
+
+            trash_count: (target) => {
+               const id = target.getAttribute('data-id');
+               this.modify_Quantity();
+            },
+
+         };
+
+         for (const className of target.classList) {
+            if (className in cartHandler) {
+               cartHandler[ className ](target);
+               break;
+            }
          }
+
       });
    }
 
@@ -269,8 +294,6 @@ class Control_cart {
       const btns_Subtract = document.querySelectorAll('.subtract')
       btns_Subtract.forEach(elements => {
          elements.addEventListener('click', (e) => {
-
-            console.log(elements.nextElementSibling)
 
             /* The above code is checking if the next element sibling of the target element is null. If
             it is null, it retrieves the parent element of the parent element of the target element
