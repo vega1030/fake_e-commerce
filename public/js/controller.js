@@ -7,8 +7,7 @@ import {
 } from "./view.js";
 
 const handler_View = new Handler_Displays_Ui()
-/* const handler_Cart_Model = new Drive_Data_Cart()
- */const categories_UI = new Category_ui()
+const categories_UI = new Category_ui()
 const api_LocalStorage = new Call_Api_LocalStorage()
 const cart_Ui = new View_cart()
 
@@ -45,7 +44,6 @@ class Control_View_Information_At_DOM {
       }
       finally {
          flag_Load = true
-         console.log(flag_Load)
       }
    }
 
@@ -117,20 +115,21 @@ class Control_cart {
       this.single_Product = null
       this.id = null;
       this.model = new Drive_Data_Cart()
-      this.get_Cart_Data_LocalStorage()
    }
 
 
    controller_Cart(cart) {
+      console.log(cart);
+      cart_Ui.model_UiCart_List(cart)
       return this.quantity_In_Cart(cart);
 
    };
 
 
    get_Cart_Data_LocalStorage = () => {
-      this.model.send_Cart_LocalStorage()
-
-      return this.model.send_Cart_LocalStorage()
+      console.log(this.model.send_Cart_LocalStorage());
+      return this.model.send_Cart_LocalStorage() === 0 ? 0 :
+         this.controller_Cart(this.model.send_Cart_LocalStorage())
    }
 
    send_Id_To_Api = async (id) => {
@@ -155,6 +154,55 @@ class Control_cart {
 
 
 
+   assign_Events_Products = () => {
+
+      const section_Content_Data = document.querySelector('#ui_Cart');
+      section_Content_Data.addEventListener('click', (event) => {
+         const target = event.target;
+
+         if (target.classList.contains('subtract')) {
+            // Se hizo clic en el botón de restar cantidad
+            const id = target.getAttribute('data-id');
+            const input = target.nextElementSibling;
+            const count = parseInt(input.value, 10);
+            const newCount = Math.max(count - 1, 0);
+            input.value = newCount;
+            this.modify_Quantity()
+         } else if (target.classList.contains('add')) {
+            // Se hizo clic en el botón de añadir cantidad
+            const id = target.getAttribute('data-id');
+            const input = target.previousElementSibling;
+            const count = parseInt(input.value, 10);
+            const newCount = Math.min(count + 1, 10);
+            input.value = newCount;
+            this.modify_Quantity()
+         } else if (target.classList.contains('trash_count')) {
+            // Se hizo clic en el botón de eliminar producto
+            const id = target.getAttribute('data-id');
+            this.modify_Quantity()
+         }
+      });
+   }
+
+   confirm_Pay = () => {
+      const btn_ConfirmPay = document.querySelector('#pay_confirm')
+      btn_ConfirmPay.addEventListener('click', (e) => {
+         alert('alert');
+      })
+   }
+
+   assign_Event_Btn_Pay = () => {
+      const payEvent = document.querySelector('#view_section_cart')
+      payEvent.addEventListener('click', (event) => {
+         const target = event.target
+         if (target.classList.contains('btn_confirm_buy')) {
+            this.confirm_Pay()
+         }
+      })
+   }
+
+
+
    /**
     * This function calculates the total quantity of items in a shopping cart and returns a cart container
     * element with the updated quantity.
@@ -167,16 +215,14 @@ class Control_cart {
     */
 
    quantity_In_Cart = (data) => {
-      render_Total_And_Pay(data)
 
       if (!data) {
-         return console.warn('cart is empty')
+         return 0
       }
       const acu = data === undefined ? 0 : data.reduce((previous, current) => {
          return previous + current.quantity
       }, 0)
-
-      return cart_Ui.createCartCont(acu)
+      return (cart_Ui.createCartCont(acu), render_Total_And_Pay(data))
    }
 
 
@@ -293,32 +339,25 @@ class Control_cart {
 
    }
 
-   confirm_Pay = () => {
-      const btn_ConfirmPay = document.querySelector('#pay_confirm')
-      btn_ConfirmPay.addEventListener('click', (e) => {
-         alert('tu compra esta lista')
-      })
-
-   }
 
    //--------------------------------------------------------------
 }
-
-
-
 const controller_Cart_Instance = new Control_cart()
+controller_Cart_Instance.assign_Events_Products()
 
-controller_Cart_Instance.quantity_In_Cart(controller_Cart_Instance.get_Cart_Data_LocalStorage())
 controller_Cart_Instance.add_Cart_Listener()
-cart_Ui.model_UiCart_List(controller_Cart_Instance.get_Cart_Data_LocalStorage())
+controller_Cart_Instance.assign_Event_Btn_Pay()
+controller_Cart_Instance.get_Cart_Data_LocalStorage()
 
 
+if (document.querySelector('#cart')) {
 
+   document.querySelector('#cart').addEventListener('click', () => {
+      controller_Cart_Instance.modify_Quantity()
+      controller_Cart_Instance.confirm_Pay()
+   })
+}
 
-document.querySelector('#cart').addEventListener('click', () => {
-   controller_Cart_Instance.modify_Quantity()
-   controller_Cart_Instance.confirm_Pay()
-})
 
 
 
@@ -370,12 +409,12 @@ const instance_Control_Routes = new Control_Routes()
 
 const view_Element = document.querySelectorAll('.view_one_element')
 view_Element.forEach((element) => {
-    element.addEventListener('click', (e) => {
-        const data_Id = Number(element.dataset.id)
-        console.log(e.target.parentElement.attributes.href)
-        return controller.send_Id(data_Id)
+   element.addEventListener('click', (e) => {
+      const data_Id = Number(element.dataset.id)
+      console.log(e.target.parentElement.attributes.href)
+      return controller.send_Id(data_Id)
 
-    })
+   })
 })
 
 //----------------------------------------------------------------

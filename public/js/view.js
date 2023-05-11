@@ -7,6 +7,7 @@ class Product {
 
         const card_Model = (products, content_Data_In_DOM, global_Variable) => {
             products.forEach(data => {
+
                 global_Variable +=
                     `
                 <div class="content-sale__child">
@@ -31,7 +32,9 @@ class Product {
                 
                 </div>
                 `;
-                return content_Data_In_DOM.innerHTML = global_Variable
+                if (content_Data_In_DOM) {
+                    return content_Data_In_DOM.innerHTML = global_Variable
+                }
             })
         }
         const content_Cards = document.querySelector("#content_card");
@@ -122,8 +125,10 @@ class Category_ui {
                     <li class="dropdown-item_ul">
                         <a class="dropdown-item listener_category route" href="#_categories" id="${ elements }"> ${ elements } </a>
                     </li>
-                `;
-            return content_Li_In_Header.innerHTML = modelNavHeader
+                    `;
+            if (content_Li_In_Header) {
+                return content_Li_In_Header.innerHTML = modelNavHeader
+            }
         })
 
 
@@ -187,26 +192,38 @@ class View_cart {
 
 
 
+
+
     /**
-     * It creates a counter for the cart and appends it to the cart section
-     * @param quantity - the number of items in the cart
+     * The function creates a cart container and updates the quantity of items in the cart.
+     * @param quantity - The quantity parameter is a number that represents the number of items in a
+     * shopping cart.
      */
-
-
-
     createCartCont(quantity) {
+
         const counter = document.querySelector('#count_elements_at_cart')
         const content_Counter = document.querySelector('#section_cart')
-        quantity > 9 ? counter.innerText = '+9' : counter.innerText = JSON.stringify(quantity)
-        content_Counter.appendChild(counter)
+        if (counter) {
+            quantity > 9 ? counter.innerText = '+9' : counter.innerText = JSON.stringify(quantity)
+            return content_Counter.appendChild(counter)
+        }
 
     }
 
 
 
 
+    /* The above code defines a function `model_UiCart_List` that takes in a `cart` object as a parameter.
+    It then creates a new container and dynamically generates HTML elements for each item in the `cart`
+    object. The generated elements include an image of the product, its title, price, and a quantity
+    selector with add and subtract buttons. The function also adds a trash basket icon to the subtract
+    button if the quantity of the item is 1. Finally, the function appends the generated elements to the
+    `ui_Cart` section of the HTML document. */
+
+
+
     model_UiCart_List = (cart) => {
-        if(cart===null){return}
+        if (cart === null) { return }
         const section_Content_Data = document.querySelector('#ui_Cart')
 
         section_Content_Data.innerHTML = ''
@@ -303,6 +320,19 @@ class View_cart {
 }
 
 
+/**
+ * This function replaces the content of an HTML element with a trash basket icon or a minus symbol
+ * based on a flag parameter.
+ * @param content_trash - It is an object that represents the HTML element that needs to be modified.
+ * It could be a div, span, input, etc.
+ * @param [flag=false] - The flag parameter is a boolean value that determines whether to replace the
+ * content of the HTML element with an image of a trash basket or with a minus symbol. If flag is true,
+ * the function will replace the content with an image of a trash basket, otherwise it will replace it
+ * with a minus symbol.
+ * @returns The function `replace_Minus_Symbol_For_Trash_Basket` returns either an HTML string
+ * containing an image tag with a trash basket icon and a data-id attribute, or a hyphen symbol (-) as
+ * a string, depending on the value of the `flag` parameter.
+ */
 const replace_Minus_Symbol_For_Trash_Basket = (content_trash, flag = false) => {
 
     const inputValue = content_trash.value
@@ -319,8 +349,19 @@ const replace_Minus_Symbol_For_Trash_Basket = (content_trash, flag = false) => {
 
 }
 
+/**
+ * The function calculates the total price and quantity of items in a shopping cart and renders it on
+ * the webpage.
+ * @param cart - The `cart` parameter is an array of objects representing the items in the shopping
+ * cart. Each object contains properties such as `quantity` and `price` for a particular product. The
+ * function calculates the total price and quantity of all items in the cart and renders it on the
+ * page.
+ * @returns Nothing is being returned explicitly in the `render_Total_And_Pay` function. However, if
+ * the `cart` parameter is `null`, the function will return `undefined` due to the `return` statement
+ * on the first line.
+ */
 const render_Total_And_Pay = (cart) => {
-    if (cart === null) { return  }
+    if (cart === null) { return }
     const total_And_Quantity = cart.reduce((previous, current) => {
 
         previous.quantity = current.quantity + previous.quantity;
@@ -346,8 +387,9 @@ const render_Total_And_Pay = (cart) => {
             </a>
           </div>
         `;
-
-        $total.insertAdjacentHTML('afterbegin', model_Total);
+        if ($total) {
+            return $total.insertAdjacentHTML('afterbegin', model_Total);
+        }
     }
 
     render_Function()
@@ -361,12 +403,12 @@ url */
 class Handler_Displays_Ui {
 
 
-    static reload_Page = () => {
-        const reload_Handler = document.querySelector('#init')
-        reload_Handler.addEventListener('click', () => {
-            window.location.reload()
-        })
-    }
+    /*   static reload_Page = () => {
+          const reload_Handler = document.querySelector('#init')
+          reload_Handler.addEventListener('click', () => {
+              window.location.reload()
+          })
+      } */
 
     handler_Display_(hash) {
         if (hash === 'categories') {
@@ -428,8 +470,8 @@ class Handler_Displays_Ui {
     }
 }
 
-Handler_Displays_Ui.reload_Page()
-
+/* Handler_Displays_Ui.reload_Page()
+ */
 const cart = new View_cart()
 
 

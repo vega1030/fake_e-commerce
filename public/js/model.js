@@ -7,17 +7,24 @@ add, delete, and get products from local storage. */
 
 class Call_Api_LocalStorage {
 
+    constructor(storage_Cart) {
+        this.storage_Cart = storage_Cart
+    }
+
     /* A function that receives a parameter, which is the data, and then saves the data in localStorage. */
     saveCartAtLocalStorage = (data) => {
         const CART = 'cart';
         return localStorage.setItem(CART, JSON.stringify(data));
     }
-
-
-    get_Cart = () => {
-        return JSON.parse(localStorage.getItem('cart'))
-
+    get_Cart() {
+        if (typeof localStorage !== "undefined") {
+            const cartData = localStorage.getItem('cart');
+            return JSON.parse(cartData) || [];
+        }
+        return [];
     }
+
+
 
 
 }
@@ -44,6 +51,7 @@ class Drive_Data_Cart {
         return this.responseCart
 
     }
+    //***********--Cart--**************/ 
 
     /* A function that receives an id as a parameter, calls the get_Single_Product function, which returns
     a product, and then adds the product to the cart. */
@@ -55,7 +63,6 @@ class Drive_Data_Cart {
         return this.addProductsInCart(product)
     }
 
-    //***********--Cart--**************/ 
 
     /**
      * It receives a product as a parameter, gets the cart from local storage, adds the product to the
@@ -63,8 +70,6 @@ class Drive_Data_Cart {
      * @param paramProduct - is the product that is added to the cart.
      * @returns the localStorage.setItem(CART, JSON.stringify(cart_LocalStorage))
      */
-
-
     addProductsInCart = (paramProduct) => {
         const CART = 'cart';
         let cart_Model = [];
@@ -76,10 +81,17 @@ class Drive_Data_Cart {
             return acc;
         }, []);
 
-        api_LocalStorage.saveCartAtLocalStorage(cart_Model)
-        return this.assign_Cart_Without_LocalStorage(cart_Model);
+        const isProductAdded = cart_Model.some(p => p.id === paramProduct.id && p.quantity === paramProduct.quantity);
+        const isCartUpdated = cart_Model.length !== cart_Model.filter(p => p.quantity > 0).length;
 
+        this.assign_Cart_Without_LocalStorage(cart_Model);
+        api_LocalStorage.saveCartAtLocalStorage(cart_Model);
+
+        return isProductAdded || isCartUpdated;
     }
+
+
+
 
 
     /* A function that receives an id as a parameter, gets the cart from local storage, subtracts the
@@ -102,8 +114,6 @@ class Drive_Data_Cart {
             this.send_Cart_LocalStorage(),
             this.assign_Cart_Without_LocalStorage(updateCart_Add)
         )
-
-
     }
 
     //*****************//***************** */
