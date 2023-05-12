@@ -4,13 +4,14 @@ import { get_All_Products, get_Categories, get_View_Products_For_Category, get_S
 import { Drive_Data_Cart, Call_Api_LocalStorage } from './model.js';
 import {
    Category_ui, products_Instance, Handler_Displays_Ui, View_Favorites, View_cart, replace_Minus_Symbol_For_Trash_Basket, render_Total_And_Pay,
+   Handler_Loading_And_Error
 } from "./view.js";
 
 const handler_View = new Handler_Displays_Ui()
 const categories_UI = new Category_ui()
 const api_LocalStorage = new Call_Api_LocalStorage()
 const cart_Ui = new View_cart()
-
+const handler_Loading = new Handler_Loading_And_Error()
 
 //----------------------------------------------------------------
 
@@ -24,12 +25,11 @@ class Control_View_Information_At_DOM {
    }
 
    async controller_get_All_Products() {
-      //flag for spinner
-      let flag_Load = false
+      //spinner
 
-      //flag_Load is the controller of load spinner
+      const overlay = document.querySelector('.overlay')
+
       try {
-
          this.products = await get_All_Products()
 
          const res = products_Instance.create_Card(this.products, false)
@@ -43,7 +43,9 @@ class Control_View_Information_At_DOM {
          console.log(error)
       }
       finally {
-         flag_Load = true
+         overlay.style.display = 'none'
+         document.body.style.overflow = 'auto';
+
       }
    }
 

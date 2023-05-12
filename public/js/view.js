@@ -470,6 +470,16 @@ class Handler_Displays_Ui {
     }
 }
 
+class Handler_Loading_And_Error{
+    
+    handler_Loading=(element)=>{
+        console.log(element.style);
+        element.style.display='none'?element.style.display='flex':element.style.display='none'
+        console.log(element.style);
+    }
+
+}
+
 /* Handler_Displays_Ui.reload_Page()
  */
 const cart = new View_cart()
@@ -481,6 +491,7 @@ const products_Instance = new Product();
 
 
 export {
+    Handler_Loading_And_Error,
     products_Instance,
     Category_ui,
     Product,
