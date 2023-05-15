@@ -215,10 +215,9 @@ class Control_cart {
    }
 
    confirm_Pay = () => {
-      const btn_ConfirmPay = document.querySelector('#pay_confirm')
-      btn_ConfirmPay.addEventListener('click', (e) => {
-         alert('alert');
-      })
+
+      alert('alert');
+
    }
 
    assign_Event_Btn_Pay = () => {
@@ -329,7 +328,7 @@ class Control_cart {
             }
 
             e.target.nextElementSibling.value = String(acu)
-            this.confirm_Pay()
+            
             return (this.model.update_Quantity_Cart(id, true),
                this.controller_Cart(this.model.responseCart)
             )
@@ -348,13 +347,11 @@ class Control_cart {
 
       btn_Add_Quantity.forEach(elements => {
          elements.addEventListener('click', (e) => {
-            this.confirm_Pay()
             const id = Number(e.target.previousElementSibling.dataset.id)
             acu = Number(e.target.previousElementSibling.value) + 1
             if (acu === 2) {
                this.elementDom = e.target.previousElementSibling.previousElementSibling
                replace_Minus_Symbol_For_Trash_Basket(this.elementDom, false)
-               this.confirm_Pay()
             }
             return (
                this.model.update_Quantity_Cart(id, false),
@@ -383,7 +380,6 @@ controller_Cart_Instance.add_Cart_Listener()
 controller_Cart_Instance.assign_Event_Btn_Pay()
 controller_Cart_Instance.get_Cart_Data_LocalStorage()
 controller_Cart_Instance.modify_Quantity()
-controller_Cart_Instance.confirm_Pay()
 
 
 
