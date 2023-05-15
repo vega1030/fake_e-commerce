@@ -31,7 +31,10 @@ class Control_View_Information_At_DOM {
 
       try {
          this.products = await get_All_Products()
+         if (this.products.status >= 200 && this.products.status < 300) {
 
+            console.log(this.products);
+         }
          const res = products_Instance.create_Card(this.products, false)
          if (!res) {
 
@@ -367,22 +370,20 @@ class Control_cart {
 
    //--------------------------------------------------------------
 }
-const controller_Cart_Instance = new Control_cart()
-controller_Cart_Instance.assign_Events_Products()
 
+const controller_Cart_Instance = new Control_cart()
+
+/* The above code is written in JavaScript and is calling various methods of an object named
+"controller_Cart_Instance". These methods are used to assign events to products, add a listener to
+the cart, assign an event to the pay button, get cart data from local storage, modify the quantity
+of items in the cart, and confirm payment. It is likely that this code is part of a larger program
+or website that involves a shopping cart functionality. */
+controller_Cart_Instance.assign_Events_Products()
 controller_Cart_Instance.add_Cart_Listener()
 controller_Cart_Instance.assign_Event_Btn_Pay()
 controller_Cart_Instance.get_Cart_Data_LocalStorage()
-
-
-if (document.querySelector('#cart')) {
-
-   document.querySelector('#cart').addEventListener('click', () => {
-      controller_Cart_Instance.modify_Quantity()
-      controller_Cart_Instance.confirm_Pay()
-   })
-}
-
+controller_Cart_Instance.modify_Quantity()
+controller_Cart_Instance.confirm_Pay()
 
 
 
@@ -419,7 +420,7 @@ class Control_Routes {
       const name_Hash = {
          "#individual_product": 'individual_product',
          "#home": 'home',
-         "#section_cart": 'cart',
+         "#view_section_cart": 'cart',
          "#_categories": 'categories',
          "#favorites_section": 'favorites'
 

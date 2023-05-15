@@ -149,18 +149,21 @@ class View_Favorites {
 
     static handler_Favorites() {
         const hearts = document.querySelectorAll('.favorite')
+
         hearts.forEach((element) => {
             element.addEventListener("click", (e) => {
                 const data_Id = Number(element.dataset.id)
-                console.log(e.target.style)
-                e.target.style.fill === 'red' ? e.target.style.fill = 'white' : e.target.style.fill = 'red'
-
-                const valueFavorites = element.value === 'on' ? element.value = 'off' : element.value = 'on'
-                controller_Favorites.send_Favorite_Product_To_LocalStorage(data_Id, valueFavorites)
-                e.stopPropagation()
+                e.target.style.fill === 'red' ? e.target.style.fill = 'black' : e.target.style.fill = 'red'
+                return data_Id;
             })
         })
     }
+    /*                 
+    
+    
+    const valueFavorites = element.value === 'on' ? element.value = 'off' : element.value = 'on'
+    controller_Favorites.send_Favorite_Product_To_LocalStorage(data_Id, valueFavorites)
+    e.stopPropagation() */
 
 
     static display_Favorites(product) {
@@ -411,6 +414,8 @@ class Handler_Displays_Ui {
       } */
 
     handler_Display_(hash) {
+        console.log(hash);
+
         if (hash === 'categories') {
             return (
                 document.querySelector('#home').style.display = 'none',
@@ -470,11 +475,11 @@ class Handler_Displays_Ui {
     }
 }
 
-class Handler_Loading_And_Error{
-    
-    handler_Loading=(element)=>{
+class Handler_Loading_And_Error {
+
+    handler_Loading = (element) => {
         console.log(element.style);
-        element.style.display='none'?element.style.display='flex':element.style.display='none'
+        element.style.display = 'none' ? element.style.display = 'flex' : element.style.display = 'none'
         console.log(element.style);
     }
 
