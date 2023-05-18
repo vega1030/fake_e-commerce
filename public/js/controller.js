@@ -1,7 +1,7 @@
 'use strict'
 
 import { get_All_Products, get_Categories, get_View_Products_For_Category, get_Single_Product } from './api.js'
-import { Drive_Data_Cart, Call_Api_LocalStorage } from './model.js';
+import { Drive_Data_Cart, Call_Api_LocalStorage_Cart, Handler_Favorites,SaveGet_Favorites_LocalStorage } from './model.js';
 import {
    Category_ui, products_Instance, Handler_Displays_Ui, View_Favorites, View_cart, replace_Minus_Symbol_For_Trash_Basket, render_Total_And_Pay,
    Handler_Loading_And_Error
@@ -9,9 +9,10 @@ import {
 
 const handler_View = new Handler_Displays_Ui()
 const categories_UI = new Category_ui()
-const api_LocalStorage = new Call_Api_LocalStorage()
+const api_LocalStorage = new Call_Api_LocalStorage_Cart()
 const cart_Ui = new View_cart()
 const handler_Loading = new Handler_Loading_And_Error()
+const model_Favorites = new Handler_Favorites()
 
 //----------------------------------------------------------------
 
@@ -33,7 +34,6 @@ class Control_View_Information_At_DOM {
          this.products = await get_All_Products()
          if (this.products.status >= 200 && this.products.status < 300) {
 
-            console.log(this.products);
          }
          const res = products_Instance.create_Card(this.products, false)
          if (!res) {
@@ -104,6 +104,64 @@ class Control_View_Information_At_DOM {
 }
 //----------------------------------------------------------------
 
+class Control_Favorites {
+   constructor() {
+      this.favorites = 
+      this.instance_View = new View_Favorites()
+      this.id = ''
+   }
+
+   /**
+    * This function adds event listeners to favorite buttons and sends the favorite product to local
+    * storage.
+    */
+   handler_Favorites() {
+      const favoriteId = document.querySelectorAll('.favorite');
+
+      favoriteId.forEach(element => {
+         element.addEventListener('click', (e) => {
+
+            const class_List = e.target.classList.value;
+            this.id = class_List === 'pathHeart' ? Number(e.target.parentElement.parentElement.dataset.id) :
+               Number(e.target.dataset.id);
+            this.send_Favorite_Product_To_LocalStorage()
+
+         });
+      });
+   }
+
+   /* The above code defines an asynchronous function called `send_Favorite_Product_To_LocalStorage`. When
+   this function is called, it first selects an HTML element with the class "overlay" and sets its
+   display property to "flex". Then, it tries to retrieve a single product using the
+   `get_Single_Product` function with an ID that is passed to the function. If successful, it saves and
+   updates the retrieved product in the favorites list using the
+   `model_Favorites.save_And_Update_Favorites` function and returns the updated favorites list. If
+   there is an error, it logs the error to the console. */
+
+   send_Favorite_Product_To_LocalStorage = async () => {
+      const overlay = document.querySelector('.overlay')
+      overlay.style.display = 'flex'
+      try {
+         console.log('ok');
+         const res = await get_Single_Product(this.id)
+         const favorite = model_Favorites.save_And_Update_Favorites(res)
+         this.favorites = favorite
+         this.instance_View.display_Favorites(favorite)
+         return favorite
+
+      }
+      catch (error) {
+         console.log(error);
+      }
+      finally {
+         overlay.style.display = 'none'
+      }
+
+   }
+
+}
+
+
 
 //-----------------------------------------------------------------------------//
 const handler_Init_Page = new Control_View_Information_At_DOM()
@@ -112,6 +170,10 @@ await handler_Init_Page.control_View_Categories()
 handler_Init_Page.listener_Category()
 //-----------------------------------------------------------------------------//
 
+const favorites = new Control_Favorites()
+favorites.handler_Favorites();
+favorites.send_Favorite_Product_To_LocalStorage()
+favorites.instance_View.display_Favorites(SaveGet_Favorites_LocalStorage.get_Favorites())
 class Control_cart {
 
    constructor(total = 0, elementDom) {
@@ -124,7 +186,6 @@ class Control_cart {
 
 
    controller_Cart(cart) {
-      console.log(cart);
       cart_Ui.model_UiCart_List(cart)
       return this.quantity_In_Cart(cart);
 
@@ -132,7 +193,6 @@ class Control_cart {
 
 
    get_Cart_Data_LocalStorage = () => {
-      console.log(this.model.send_Cart_LocalStorage());
       return this.model.send_Cart_LocalStorage() === 0 ? 0 :
          this.controller_Cart(this.model.send_Cart_LocalStorage())
    }
@@ -328,7 +388,7 @@ class Control_cart {
             }
 
             e.target.nextElementSibling.value = String(acu)
-            
+
             return (this.model.update_Quantity_Cart(id, true),
                this.controller_Cart(this.model.responseCart)
             )
@@ -383,25 +443,6 @@ controller_Cart_Instance.modify_Quantity()
 
 
 
-class Control_Favorites {
-   constructor(favorites) {
-      this._favorites_ = favorites
-   }
-
-   async send_Favorite_Product_To_LocalStorage(id, flag) {
-
-      if (id === '') {
-         console.log('error')
-      }
-      else {
-         const res = await calls_To_API.get_Single_Product(id)
-         handler_Data_At_LocalStorage.save_Favorites(res, flag)
-      }
-   }
-   reception_Favorite_Product(data) {
-      data ? View_Favorites.display_Favorites(data) : false
-   }
-}
 
 
 //----------------------------------------------------------------
@@ -428,6 +469,8 @@ class Control_Routes {
 }
 
 const instance_Control_Routes = new Control_Routes()
+
+
 
 const view_Element = document.querySelectorAll('.view_one_element')
 view_Element.forEach((element) => {

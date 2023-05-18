@@ -13,9 +13,8 @@
 }
 
 /* header style */
-* {
+*:not(.pathHeart){
    color: var(--color_font);
-
 }
 
 body {
@@ -84,9 +83,6 @@ input[type=number] {
    border: none;
 }
 
-.red>svg {
-   fill: #e50010;
-}
 
 
 
@@ -259,6 +255,9 @@ h2 {
    border-radius: 20% 0 0 20%
 }
 
+.red{
+   color: red;
+}
 
 /** footer **/
 
@@ -319,7 +318,6 @@ h2 {
       background-color: #ffffff;
       /*     background-color: var(--color_background_card_dark_mode);
  */
-      box-shadow: var(--shadow_box);
    }
 
 }

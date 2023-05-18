@@ -2,10 +2,7 @@
 /* It's a class that has a constructor that receives two parameters, and then has three methods that
 add, delete, and get products from local storage. */
 
-
-
-
-class Call_Api_LocalStorage {
+class Call_Api_LocalStorage_Cart {
 
     constructor(storage_Cart) {
         this.storage_Cart = storage_Cart
@@ -29,7 +26,7 @@ class Call_Api_LocalStorage {
 
 }
 
-const api_LocalStorage = new Call_Api_LocalStorage()
+const api_LocalStorage = new Call_Api_LocalStorage_Cart()
 
 class Drive_Data_Cart {
 
@@ -125,11 +122,10 @@ const handler_Cart_Model = new Drive_Data_Cart()
 
 handler_Cart_Model.send_Cart_Without_LocalStorage()
 //***********--Favorites--**************/ 
-class Favorites_ {
+class SaveGet_Favorites_LocalStorage {
 
     /* Saving the favorites at localStorage. */
     static save_Favorites_At_LocalStorage = (favorite) => {
-
         const FAVORITES = 'favorites';
 
         return localStorage.setItem(FAVORITES, JSON.stringify(favorite));
@@ -140,53 +136,45 @@ class Favorites_ {
 
     static get_Favorites = () => {
         const cart_response_Favorites = JSON.parse(localStorage.getItem('favorites'));
-
         return cart_response_Favorites;
     };
+
 
 }
 
 
 //*************----*************************/
 
-class Control_Data {
-    constructor(favorites = []) {
-        this.favorites = favorites
+class Handler_Favorites {
+    constructor() {
+        this.favorites
     }
 
-    save_Favorites = (object, flag) => {
-        if (flag === 'off') {
-            this.favorites = []
-            this.favorites = Favorites_.get_Favorites() || []
-            const favorites = [ ...this.favorites, object ]
+    /* The `save_Favorites` method is a function that receives an object as a parameter. It first
+    initializes an empty array called `favorites` on the `this` object. It then retrieves the current
+    favorites from local storage using the `get_Favorites` method of the
+    `SaveGet_Favorites_LocalStorage` class and assigns it to the `favorites` array. */
+    save_And_Update_Favorites = (object) => {
+        this.favorites = []
+        this.favorites = SaveGet_Favorites_LocalStorage.get_Favorites() || []
+        const productId = object.id
+        const index = this.favorites.findIndex(i => i.id === productId)
 
-            this.favorites = favorites.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i)
-
-            controller_Favorites.reception_Favorite_Product(this.favorites)
-
-            return Favorites_.save_Favorites_At_LocalStorage(this.favorites)
+        if (index !== -1) {
+            this.favorites.splice(index, 1)
         }
         else {
-            this.favorites = []
-            this.favorites = Favorites_.get_Favorites() || []
-            const favorites = [ ...this.favorites, object ]
-            this.favorites = favorites.filter(data => data.id !== object.id)
-
-            controller_Favorites.reception_Favorite_Product(this.favorites)
-            return Favorites_.save_Favorites_At_LocalStorage(this.favorites)
-
+            this.favorites.push(object)
         }
-
-
+        SaveGet_Favorites_LocalStorage.save_Favorites_At_LocalStorage(this.favorites)
+        return this.favorites
     }
-}
-/* controller_Favorites.reception_Favorite_Product(Favorites_.get_Favorites())
- */
 
+}
 
 /***********--------------***************/
 
-const favorites = new Favorites_()
+const favorites = new SaveGet_Favorites_LocalStorage()
 
 
 handler_Cart_Model.send_Cart_LocalStorage()
@@ -194,6 +182,9 @@ handler_Cart_Model.send_Cart_LocalStorage()
 export {
 
     Drive_Data_Cart,
-    Call_Api_LocalStorage
+    Call_Api_LocalStorage_Cart,
+    Handler_Favorites,
+    SaveGet_Favorites_LocalStorage
+
 
 }

@@ -1,6 +1,7 @@
 "use strict";
 
 
+
 class Product {
     /* Creating a card with the information of the product. */
     create_Card(product, flag) {
@@ -10,7 +11,7 @@ class Product {
 
                 global_Variable +=
                     `
-                <div class="content-sale__child">
+                <div class="content-sale__child shadow-sm p-3 mb-5 bg-body-tertiary rounded">
                     <button  type="button" class="favorite" id=${ data.id } data-id="${ data.id }" value = "on"> 
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
                             <path class= "pathHeart" fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
@@ -36,6 +37,7 @@ class Product {
                     return content_Data_In_DOM.innerHTML = global_Variable
                 }
             })
+            favorites_View.handler_Favorites()
         }
         const content_Cards = document.querySelector("#content_card");
         const $content_Categories = document.querySelector('#_categories')
@@ -61,7 +63,6 @@ class Product {
 
             })
         })
-        View_Favorites.handler_Favorites()
 
     }
 
@@ -144,58 +145,44 @@ class Category_ui {
 class View_Favorites {
 
     constructor(favorites) {
-        this._favorites = favorites
+        this.favorites = favorites
+        this.id = ''
+        this.domElements = ''
     }
-
-    static handler_Favorites() {
-        const hearts = document.querySelectorAll('.favorite')
-
-        hearts.forEach((element) => {
-            element.addEventListener("click", (e) => {
-                const data_Id = Number(element.dataset.id)
-                e.target.style.fill === 'red' ? e.target.style.fill = 'black' : e.target.style.fill = 'red'
-                return data_Id;
-            })
-        })
-    }
-    /*                 
-    
-    
+    /*                
     const valueFavorites = element.value === 'on' ? element.value = 'off' : element.value = 'on'
     controller_Favorites.send_Favorite_Product_To_LocalStorage(data_Id, valueFavorites)
-    e.stopPropagation() */
+    e.stopPropagation() 
+    */
 
 
-    static display_Favorites(product) {
-        const model_Favorites = [ ...document.querySelectorAll('.favorite') ]
-        model_Favorites.reduce((previous, current) => {
-            if (product.find(i => i.id === Number(current.dataset.id))) {
-                current.classList.add('red')
-            }
-        }, [])
+    display_Favorites(product) {
+        console.log(product, 'in view');
+        const model_Favorites = [ ...document.querySelectorAll('.favorite') ];
+        const select = 
+        model_Favorites.map(current => {
+            //initial color
+            current.children[ 0 ].firstElementChild.style.color = 'black'
+            //____
+            const matchingProduct = product.find(item => item.id === Number(current.dataset.id));
+            return matchingProduct ? current : null;
+        });
+        this.fav_DOM = select.filter(item => item !== null)
+
+        this.fav_DOM = this.fav_DOM.map(i => i.children[ 0 ].firstElementChild).forEach(i => {
+            i.style.color === 'black' ? i.style.color = 'red' : i.style.color = 'black'
 
 
-
-
-        /*         
-        */
-        /* if (confirm === 'yes') {
-            return i.nextElementSibling.childNodes[ 1 ].style.color = 'red'
-        }
-        return i.nextElementSibling.childNodes[ 1 ].style.color = 'white' */
-
-        /*         const content_Favorites = document.querySelector('#content_favorites')
-                let model_Favorites = '' */
-
+        })
     }
-
 }
 
+const favorites_View = new View_Favorites()
+
+
+
+
 class View_cart {
-
-
-
-
 
     /**
      * The function creates a cart container and updates the quantity of items in the cart.
