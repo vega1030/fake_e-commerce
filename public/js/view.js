@@ -4,14 +4,21 @@
 
 class Product {
     /* Creating a card with the information of the product. */
-    create_Card(product, flag) {
+    create_Card(product) {
+        let model = ''
+        product.forEach(data => {
 
-        const card_Model = (products, content_Data_In_DOM, global_Variable) => {
-            products.forEach(data => {
+            //------------------insert category
+            const category = product.find((item) => {
+                return item.category === data.category
+            })
 
-                global_Variable +=
-                    `
-                <div class="content-sale__child shadow-sm p-3 mb-5 bg-body-tertiary rounded">
+            //------------------
+
+            model +=
+                `
+                
+                <div class=" content-sale__child shadow-sm p-3 mb-5 bg-body-tertiary rounded" data-category="${ data.category }">
                     <button  type="button" class="favorite" id=${ data.id } data-id="${ data.id }" value = "on"> 
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
                             <path class= "pathHeart" fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
@@ -33,22 +40,26 @@ class Product {
                 
                 </div>
                 `;
-                if (content_Data_In_DOM) {
-                    return content_Data_In_DOM.innerHTML = global_Variable
-                }
-            })
-            favorites_View.handler_Favorites()
-        }
-        const content_Cards = document.querySelector("#content_card");
-        const $content_Categories = document.querySelector('#_categories')
+            const content_Cards = document.querySelector("#content_card");
+            return content_Cards.innerHTML = model
+            
 
-        let cards = "";
-        let filtered_cards = ""
+
+        })
+
+
+
 
         /* The above code is checking if the flag is true, if it is true, it will run the card_Model function
         with the filtered_cards array, if it is false, it will run the card_Model function with the cards
         array. */
-        flag === true ? card_Model(product, $content_Categories, filtered_cards) : card_Model(product, content_Cards, cards)
+
+
+
+        const hearts_Favorites = document.querySelectorAll('.favorite')
+        hearts_Favorites.forEach(i => {
+            i.children[ 0 ].firstElementChild.style.color = 'black'
+        })
 
 
         /* A function that change the color of the heart when user click,
@@ -97,6 +108,7 @@ class Product {
         `    })
         content_Individual_Cards.insertAdjacentHTML('afterbegin', model_Card)
         content_Individual_Cards.innerHTML = model_Card
+
     }
 
 
@@ -124,19 +136,20 @@ class Category_ui {
             modelNavHeader +=
                 `
                     <li class="dropdown-item_ul">
-                        <a class="dropdown-item listener_category route" href="#_categories" id="${ elements }"> ${ elements } </a>
+                        <a class="dropdown-item listener_category route" href="#_categories" data-category="${ elements }"> ${ elements } </a>
                     </li>
                     `;
             if (content_Li_In_Header) {
                 return content_Li_In_Header.innerHTML = modelNavHeader
             }
         })
-
-
     }
 
-    create_Category_UI_Cards = (data) => {
+    displayProductsByCategory = (data) => {
         products_Instance.create_Card(data)
+        favorites_View.display_FavoritesHeart(data)
+
+
     }
 }
 
@@ -149,38 +162,33 @@ class View_Favorites {
         this.id = ''
         this.domElements = ''
     }
-    /*                
-    const valueFavorites = element.value === 'on' ? element.value = 'off' : element.value = 'on'
-    controller_Favorites.send_Favorite_Product_To_LocalStorage(data_Id, valueFavorites)
-    e.stopPropagation() 
-    */
 
+    display_FavoritesHeart(product) {
 
-    display_Favorites(product) {
-        console.log(product, 'in view');
+        
         const model_Favorites = [ ...document.querySelectorAll('.favorite') ];
-        const select = 
-        model_Favorites.map(current => {
-            //initial color
-            current.children[ 0 ].firstElementChild.style.color = 'black'
-            //____
-            const matchingProduct = product.find(item => item.id === Number(current.dataset.id));
-            return matchingProduct ? current : null;
-        });
-        this.fav_DOM = select.filter(item => item !== null)
+        const select =
+            model_Favorites.map(current => {
+                //initial color
+                current.children[ 0 ].firstElementChild.style.color = 'black'
+                //____
+                const matchingProduct = product.find(item => item.id === Number(current.dataset.id));
+                return matchingProduct ? current : null;
+            });
+            this.fav_DOM = select.filter(item => item !== null)
+            
 
         this.fav_DOM = this.fav_DOM.map(i => i.children[ 0 ].firstElementChild).forEach(i => {
+            console.log(i);
             i.style.color === 'black' ? i.style.color = 'red' : i.style.color = 'black'
 
 
         })
     }
+
 }
 
 const favorites_View = new View_Favorites()
-
-
-
 
 class View_cart {
 
@@ -392,23 +400,14 @@ url */
 
 class Handler_Displays_Ui {
 
-
-    /*   static reload_Page = () => {
-          const reload_Handler = document.querySelector('#init')
-          reload_Handler.addEventListener('click', () => {
-              window.location.reload()
-          })
-      } */
-
     handler_Display_(hash) {
         console.log(hash);
 
         if (hash === 'categories') {
             return (
                 document.querySelector('#home').style.display = 'none',
-                document.querySelector('#_categories').style.display = 'grid',
                 document.querySelector('.cart_style').style.display = 'none',
-                document.querySelector('#content_card').style.display = 'none',
+                document.querySelector('#content_card').style.display = 'grid',
                 document.querySelector('#favorites_section').style.display = 'none',
                 document.querySelector('#individual_product').style.display = 'none'
 
@@ -472,15 +471,9 @@ class Handler_Loading_And_Error {
 
 }
 
-/* Handler_Displays_Ui.reload_Page()
- */
 const cart = new View_cart()
 
-
-
 const products_Instance = new Product();
-
-
 
 export {
     Handler_Loading_And_Error,

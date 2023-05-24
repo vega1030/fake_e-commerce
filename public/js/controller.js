@@ -1,7 +1,7 @@
 'use strict'
 
 import { get_All_Products, get_Categories, get_View_Products_For_Category, get_Single_Product } from './api.js'
-import { Drive_Data_Cart, Call_Api_LocalStorage_Cart, Handler_Favorites,SaveGet_Favorites_LocalStorage } from './model.js';
+import { Drive_Data_Cart, Call_Api_LocalStorage_Cart, Handler_Favorites, SaveGet_Favorites_LocalStorage } from './model.js';
 import {
    Category_ui, products_Instance, Handler_Displays_Ui, View_Favorites, View_cart, replace_Minus_Symbol_For_Trash_Basket, render_Total_And_Pay,
    Handler_Loading_And_Error
@@ -35,7 +35,7 @@ class Control_View_Information_At_DOM {
          if (this.products.status >= 200 && this.products.status < 300) {
 
          }
-         const res = products_Instance.create_Card(this.products, false)
+         const res = products_Instance.create_Card(this.products)
          if (!res) {
 
             throw new Error('Network response was not ok')
@@ -66,10 +66,26 @@ class Control_View_Information_At_DOM {
 
    }
 
+   listener_Category() {
+      const listener_category = document.querySelectorAll('.listener_category')
+      listener_category.forEach(i => i.addEventListener('click', (e) => {
+         this.send_Category(e.target.dataset.category)
+
+      })
+      )
+   }
+
    async send_Category(category = '') {
+
+
+
       try {
          const result = await get_View_Products_For_Category(category)
-         return products_Instance.create_Card(result, true)
+         //Add Listeners
+         categories_UI.displayProductsByCategory(result)
+         controller_Cart_Instance.add_Cart_Listener()
+favorites.handler_Favorites()
+
       }
       catch (error) {
          console.error(error)
@@ -77,14 +93,7 @@ class Control_View_Information_At_DOM {
 
    }
 
-   listener_Category() {
-      const listener_category = document.querySelectorAll('.listener_category')
-      listener_category.forEach(i => i.addEventListener('click', (e) => {
-         console.log(e.target.href)
-         return this.send_Category(e.target.id)
-      })
-      )
-   }
+
 
    async send_Id(id = '') {
 
@@ -106,8 +115,8 @@ class Control_View_Information_At_DOM {
 
 class Control_Favorites {
    constructor() {
-      this.favorites = 
-      this.instance_View = new View_Favorites()
+      this.favorites =
+         this.instance_View = new View_Favorites()
       this.id = ''
    }
 
@@ -120,7 +129,7 @@ class Control_Favorites {
 
       favoriteId.forEach(element => {
          element.addEventListener('click', (e) => {
-
+ console.log(e.target);
             const class_List = e.target.classList.value;
             this.id = class_List === 'pathHeart' ? Number(e.target.parentElement.parentElement.dataset.id) :
                Number(e.target.dataset.id);
@@ -146,7 +155,7 @@ class Control_Favorites {
          const res = await get_Single_Product(this.id)
          const favorite = model_Favorites.save_And_Update_Favorites(res)
          this.favorites = favorite
-         this.instance_View.display_Favorites(favorite)
+         this.instance_View.display_FavoritesHeart(favorite)
          return favorite
 
       }
@@ -173,7 +182,9 @@ handler_Init_Page.listener_Category()
 const favorites = new Control_Favorites()
 favorites.handler_Favorites();
 favorites.send_Favorite_Product_To_LocalStorage()
-favorites.instance_View.display_Favorites(SaveGet_Favorites_LocalStorage.get_Favorites())
+favorites.instance_View.display_FavoritesHeart(SaveGet_Favorites_LocalStorage.get_Favorites())
+
+
 class Control_cart {
 
    constructor(total = 0, elementDom) {
@@ -210,6 +221,7 @@ class Control_cart {
    };
 
    add_Cart_Listener = () => {
+      console.log();
       const btns_Cart = document.querySelectorAll('.btn_add_to_cart')
       btns_Cart.forEach(item => item.addEventListener('click', (e) => {
          const id = Number(e.target.id);
