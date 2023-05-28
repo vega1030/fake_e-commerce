@@ -77,18 +77,42 @@ class Control_View_Information_At_DOM {
 
    async send_Category(category = '') {
 
-
+      const overlay = document.querySelector('.overlay')
+      overlay.style.display = 'flex'
 
       try {
          const result = await get_View_Products_For_Category(category)
          //Add Listeners
          categories_UI.displayProductsByCategory(result)
          controller_Cart_Instance.add_Cart_Listener()
-favorites.handler_Favorites()
+         favorites.handler_Favorites()
+
+         /* The above code is defining a function called `searchCoincidentElements` that takes an array called
+         `result` as input. The function uses the `reduce` method to iterate over the `result` array and
+         compare each element's `category` property to the `category` property of each element in an array
+         returned by the `get_Favorites` method of a `SaveGet_Favorites_LocalStorage` object. If the
+         `category` properties match and the `category` property is not undefined and the `acc` array does
+         not already contain an element with the same `id` property as */
+
+         const searchCoincidentElements = result.reduce((acc, i) => {
+            SaveGet_Favorites_LocalStorage.get_Favorites().forEach(elements => {
+               (i.category === elements.category && i.category !== undefined && !acc
+                  .some(el => el.id === elements.id))
+                  ? acc.push(elements)
+                  : null;
+            });
+            return acc;
+         }, []);
+
+         favorites.instance_View.display_FavoritesHeart(searchCoincidentElements)
 
       }
       catch (error) {
          console.error(error)
+      }
+      finally {
+         overlay.style.display = 'none'
+
       }
 
    }
@@ -115,8 +139,8 @@ favorites.handler_Favorites()
 
 class Control_Favorites {
    constructor() {
-      this.favorites =
-         this.instance_View = new View_Favorites()
+      this.favorites
+      this.instance_View = new View_Favorites()
       this.id = ''
    }
 
@@ -125,17 +149,25 @@ class Control_Favorites {
     * storage.
     */
    handler_Favorites() {
+      /* The above code is adding a click event listener to all elements with the class "favorite". When an
+      element with this class is clicked, it checks if the clicked element has a class "pathHeart". If it
+      does, it gets the ID of the parent element's parent element (two levels up) and assigns it to the
+      "id" variable. If it doesn't have the "pathHeart" class, it gets the ID of the clicked element and
+      assigns it to the "id" variable. Then, it calls a function "send_Favorite_Product_To_LocalStorage()"
+      with the "id" */
       const favoriteId = document.querySelectorAll('.favorite');
 
       favoriteId.forEach(element => {
          element.addEventListener('click', (e) => {
- console.log(e.target);
+
             const class_List = e.target.classList.value;
             this.id = class_List === 'pathHeart' ? Number(e.target.parentElement.parentElement.dataset.id) :
                Number(e.target.dataset.id);
+
             this.send_Favorite_Product_To_LocalStorage()
 
          });
+
       });
    }
 
@@ -150,13 +182,15 @@ class Control_Favorites {
    send_Favorite_Product_To_LocalStorage = async () => {
       const overlay = document.querySelector('.overlay')
       overlay.style.display = 'flex'
+
       try {
          console.log('ok');
          const res = await get_Single_Product(this.id)
          const favorite = model_Favorites.save_And_Update_Favorites(res)
          this.favorites = favorite
-         this.instance_View.display_FavoritesHeart(favorite)
-         return favorite
+         //display
+         this.instance_View.display_FavoritesHeart(this.favorites)
+         return this.favorites
 
       }
       catch (error) {

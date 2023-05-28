@@ -1,7 +1,5 @@
 "use strict";
 
-
-
 class Product {
     /* Creating a card with the information of the product. */
     create_Card(product) {
@@ -17,7 +15,6 @@ class Product {
 
             model +=
                 `
-                
                 <div class=" content-sale__child shadow-sm p-3 mb-5 bg-body-tertiary rounded" data-category="${ data.category }">
                     <button  type="button" class="favorite" id=${ data.id } data-id="${ data.id }" value = "on"> 
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
@@ -36,30 +33,13 @@ class Product {
                 <button class='btn_add_to_cart' id='${ data.id }'>
                 Add Cart 
                 </button>
-
-                
                 </div>
                 `;
             const content_Cards = document.querySelector("#content_card");
+
             return content_Cards.innerHTML = model
-            
-
-
         })
 
-
-
-
-        /* The above code is checking if the flag is true, if it is true, it will run the card_Model function
-        with the filtered_cards array, if it is false, it will run the card_Model function with the cards
-        array. */
-
-
-
-        const hearts_Favorites = document.querySelectorAll('.favorite')
-        hearts_Favorites.forEach(i => {
-            i.children[ 0 ].firstElementChild.style.color = 'black'
-        })
 
 
         /* A function that change the color of the heart when user click,
@@ -76,6 +56,8 @@ class Product {
         })
 
     }
+
+
 
 
     uI_Individual_Card(product) {
@@ -111,6 +93,9 @@ class Product {
 
     }
 
+    heroImage=(productHero)=>{
+        console.log(productHero);
+    }
 
 
 }
@@ -147,9 +132,6 @@ class Category_ui {
 
     displayProductsByCategory = (data) => {
         products_Instance.create_Card(data)
-        favorites_View.display_FavoritesHeart(data)
-
-
     }
 }
 
@@ -164,24 +146,28 @@ class View_Favorites {
     }
 
     display_FavoritesHeart(product) {
+        //check color state here
 
-        
-        const model_Favorites = [ ...document.querySelectorAll('.favorite') ];
+        /*         const model_Favorites = [ ...document.querySelectorAll('.favorite') ];
+         */
+        const content_Cards = document.querySelector('.content-sale')
+        const cardsClass = String('.' + content_Cards.firstElementChild.classList[ 0 ])
+        const cards = [ ...document.querySelectorAll(cardsClass) ]
         const select =
-            model_Favorites.map(current => {
+            cards.map(current => {
                 //initial color
-                current.children[ 0 ].firstElementChild.style.color = 'black'
+                console.log(current.firstElementChild.firstElementChild.style)
+                current.firstElementChild.firstElementChild.style.color = 'black'
+                console.log(current.firstElementChild.firstElementChild.style);
                 //____
-                const matchingProduct = product.find(item => item.id === Number(current.dataset.id));
+                const matchingProduct = product.find(item => item.id === Number(current.firstElementChild.dataset.id));
                 return matchingProduct ? current : null;
             });
-            this.fav_DOM = select.filter(item => item !== null)
-            
+        this.fav_DOM = select.filter(item => item !== null)
+console.log(this.fav_DOM);
 
         this.fav_DOM = this.fav_DOM.map(i => i.children[ 0 ].firstElementChild).forEach(i => {
-            console.log(i);
             i.style.color === 'black' ? i.style.color = 'red' : i.style.color = 'black'
-
 
         })
     }
