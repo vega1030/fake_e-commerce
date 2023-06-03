@@ -5,6 +5,8 @@
    box-sizing: border-box;
 }
 
+
+
 html {
    height: 100%;
 }
@@ -56,7 +58,7 @@ body {
    padding: .5%;
    display: grid;
    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-   grid-template-rows: .3fr 1fr 1fr .3fr;
+   grid-template-rows: 1fr .5fr .5fr .5fr 1fr;
    padding: 4%;
 }
 
@@ -132,7 +134,7 @@ ul {
 }
 
 .image_style {
-   width: 25%;
+   width: 40%;
 }
 
 .content_section {
@@ -297,6 +299,8 @@ h1 {
    display: flex;
    flex-direction: column;
    background-color: #ffffff;
+   justify-content: center;
+   align-items: center;
 }
 
 .style_footer {
@@ -406,7 +410,7 @@ h1 {
    grid-template-columns: .5fr 1fr 1fr .5fr;
    gap: 1%;
    padding: 3%;
-   grid-template-rows: repeat(4, .5fr);
+   grid-template-rows: repeat(5, .5fr);
 
 }
 
@@ -427,7 +431,7 @@ h1 {
 }
 
 .content_image___individual_item {
-   grid-column: 2/4;
+   grid-column: 1/5;
    grid-row: 1/2;
    width: 100%;
    display: flex;
@@ -611,7 +615,8 @@ h1 {
    }
 
    .content_section {
-      grid-column: 1/6
+      grid-column: 1/6;
+      display: grid;
    }
 
 
@@ -641,13 +646,26 @@ h1 {
 
 
    .d-flex {
-      order: 1;
+      order: 2;
       justify-content: center;
       width: 100%;
    }
 
    .content-sale__child {
       max-width: 70%;
+   }
+
+   .content_description___individual_item {
+      grid-column: 1/5;
+      grid-row: 4/4;
+      text-align: center;
+   }
+
+   .content_image___individual_item {
+      grid-column: 1/5;
+      grid-row: 1/2;
+      width: 100%;
+      text-align: center;
    }
 
    .ui_Cart {
@@ -738,6 +756,53 @@ h1 {
    .price {
       grid-column: 3/5;
       grid-row: 2/2;
+   }
+
+   .content_title___individual_item {
+      grid-column: 1/5;
+      grid-row: 2/2;
+      text-align: center;
+   }
+
+   .content_price___individual_item {
+      grid-column: 2/4;
+      grid-row: 3/3;
+      text-align: center;
+   }
+
+   .content-buttons___individual_item {
+      grid-row: 5/5;
+      grid-column: 2/4;
+      text-align: center;
+   }
+
+   .content-buttons___card>.button {
+      width: 40%;
+      height: 60%;
+
+   }
+
+   /* -----structure-modal ------*/
+
+   .carousel-edited {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+   }
+
+   .carousel-control-prev,
+   .carousel-control-next {
+      height: 100%;
+   }
+
+   .carousel {
+      grid-row: 1/2;
+      grid-column: 1/4;
+   }
+
+   .w-100 {
+      width: 60% !important;
    }
 
 }

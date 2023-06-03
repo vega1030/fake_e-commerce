@@ -26,7 +26,7 @@ class Product {
                     </div>
                 <div class="content-text">
                     <a href="#individual_product" class="content_names view_one_element individual_product" data-id="${ data.id }">
-                        <h3 data-id="${ data.id }" class="name_product">${ data.title.slice(0, 20) }... </h3>
+                        ${ data.title.slice(0, 20) }
                     </a>                      
                     <h4 class= price> ${ data.price.toLocaleString('es-AR', { style: 'currency', currency: 'EUR' }) }</h4>  
                 </div>
@@ -40,80 +40,70 @@ class Product {
             return content_Cards.innerHTML = model
         })
 
-
-
         /* A function that change the color of the heart when user click,
         and send id product to saving*/
 
-        const view_Element = document.querySelectorAll('.view_one_element')
-        view_Element.forEach((element) => {
-            element.addEventListener('click', (e) => {
-                const data_Id = Number(element.dataset.id)
-                console.log(e.target.parentElement.attributes.href)
-                return controller.send_Id(data_Id)
-
-            })
-        })
-
     }
-
-
 
 
     uI_Individual_Card(product) {
         const content_Individual_Cards = document.querySelector('#individual_product')
         let model_Card = ''
-        product.forEach(item => {
+
             model_Card =
                 `
         <div class="content_title___individual_item">
-        <h1> ${ item.title }</h1>
+            <h1> ${ product.title }</h1>
+        </div>
+        <div class="content_price___individual_item">
+            <h3>${ product.price }\u20AC</h3>
+        </div>
+        <div class="content_description___individual_item">
+            <p>
+                ${ product.description }
+            </p>
     </div>
-    <div class="content_price___individual_item">
-        <h3>${ item.price }\u20AC</h3>
-    </div>
-    <div class="content_description___individual_item">
-        <p>
-
-            ${ item.description }
-        
-        </p>
-    </div>
-    <div class="content_image___individual_item">
-        <img src="${ item.image }" alt="image${ item.title }" class="image_style">
+    <div class="content_image___individual_item ">
+        <img src="${ product.image }" alt="image${ product.title }" class="image_style">
 
     </div>
-    <div class="content-buttons___card">
-    <button type="button" id ="${ item.id }" class="btn btn-primary btn-card btn_push_element">Add Cart</button>
+    <div class="content-buttons___individual_item">
+    <button type="button" id ="${ product.id }" class="btn btn-primary btn-card btn_push_element">Add Cart</button>
 </div>
  
-        `    })
+        `    
+        
         content_Individual_Cards.insertAdjacentHTML('afterbegin', model_Card)
         content_Individual_Cards.innerHTML = model_Card
-
     }
 
-    heroImage=(productHero)=>{
-        console.log(productHero);
-    }
+    heroCarrouselImage = (productsHero) => {
+        const uniqueImages = productsHero.map(product => product.image);
 
+        const carouselItems = uniqueImages.map((image, index) => {
+            const isActive = index === 0 ? 'active' : '';
+            const altText = `Slide ${ index + 1 }`;
 
+            return `
+            <div class="carousel-item ${ isActive }">
+                <img class="d-block w-100" src="${ image }" alt="${ altText }">
+            </div>
+          `;
+        });
+
+        const carouselInner = `
+          <div class="carousel-inner carousel-edited">
+            ${ carouselItems.join('') }
+          </div>
+        `;
+        const model = carouselInner;
+        const contentCarousel = document.querySelector('#carouselIndicators')
+        contentCarousel.insertAdjacentHTML('afterbegin', model)
+    };
 }
 
+
 class Category_ui {
-
-    constructor(category) {
-        this._category = category;
-    }
-
-    set category(newCategory) {
-        this._category = newCategory;
-    }
-
-    get category() {
-        return this._category;
-    }
-
     createDynamicCategoryNav(categories) {
         const content_Li_In_Header = document.querySelector('#list_classification')
         let modelNavHeader = "";
@@ -125,10 +115,10 @@ class Category_ui {
                     </li>
                     `;
             if (content_Li_In_Header) {
-                return content_Li_In_Header.innerHTML = modelNavHeader
-            }
-        })
-    }
+                return content_Li_In_Header.innerHTML = modelNavHeader;
+            };
+        });
+    };
 
     displayProductsByCategory = (data) => {
         products_Instance.create_Card(data)
@@ -156,16 +146,12 @@ class View_Favorites {
         const select =
             cards.map(current => {
                 //initial color
-                console.log(current.firstElementChild.firstElementChild.style)
                 current.firstElementChild.firstElementChild.style.color = 'black'
-                console.log(current.firstElementChild.firstElementChild.style);
                 //____
                 const matchingProduct = product.find(item => item.id === Number(current.firstElementChild.dataset.id));
                 return matchingProduct ? current : null;
             });
         this.fav_DOM = select.filter(item => item !== null)
-console.log(this.fav_DOM);
-
         this.fav_DOM = this.fav_DOM.map(i => i.children[ 0 ].firstElementChild).forEach(i => {
             i.style.color === 'black' ? i.style.color = 'red' : i.style.color = 'black'
 
@@ -344,33 +330,28 @@ const replace_Minus_Symbol_For_Trash_Basket = (content_trash, flag = false) => {
  * the `cart` parameter is `null`, the function will return `undefined` due to the `return` statement
  * on the first line.
  */
+
 const render_Total_And_Pay = (cart) => {
     if (cart === null) { return }
     const total_And_Quantity = cart.reduce((previous, current) => {
-
         previous.quantity = current.quantity + previous.quantity;
         previous.total += current.quantity * current.price;
         return previous
-
     }, { total: 0, quantity: 0 })
 
     const content_Model_Total = document.querySelector('#content_total')
-
     const render_Function = () => {
-
         if (content_Model_Total) {
             content_Model_Total.remove();
         }
-
         const $total = document.querySelector('#view_section_cart');
         const model_Total = `
-          <div id="content_total" class="content_total">
-            <h3 class="total">Subtotal ${ parseFloat(total_And_Quantity.total.toFixed(2)) }\u20AC</h3>
-            <a href="#" class="btn_confirm_buy quantity"  id="pay_confirm">
-              Pagar pedido (${ total_And_Quantity.quantity } productos)
-            </a>
-          </div>
-        `;
+            <div id="content_total" class="content_total">
+                <h3 class="total">Subtotal ${ parseFloat(total_And_Quantity.total.toFixed(2)) }\u20AC</h3>
+                <a href="#" class="btn_confirm_buy quantity"  id="pay_confirm">
+                    Pagar pedido (${ total_And_Quantity.quantity } productos)
+                </a>
+            </div>`;
         if ($total) {
             return $total.insertAdjacentHTML('afterbegin', model_Total);
         }
@@ -381,14 +362,12 @@ const render_Total_And_Pay = (cart) => {
 
 
 
-/* This class is responsible for displaying the correct section of the page based on the hash in the
-url */
+/* This class is responsible for displaying the correct section of the page based on the hash in the url */
 
 class Handler_Displays_Ui {
 
     handler_Display_(hash) {
-        console.log(hash);
-
+console.log(hash);
         if (hash === 'categories') {
             return (
                 document.querySelector('#home').style.display = 'none',
@@ -396,18 +375,15 @@ class Handler_Displays_Ui {
                 document.querySelector('#content_card').style.display = 'grid',
                 document.querySelector('#favorites_section').style.display = 'none',
                 document.querySelector('#individual_product').style.display = 'none'
-
-
             )
         }
         if (hash === 'home') {
             return (
-                document.querySelector('#_categories').style.display = 'none',
                 document.querySelector('#home').style.display = 'grid',
                 document.querySelector('.cart_style').style.display = 'none',
                 document.querySelector('#content_card').style.display = 'grid',
-                document.querySelector('#favorites_section').style.display = 'none'
-
+                document.querySelector('#favorites_section').style.display = 'none',
+                document.querySelector('#individual_product').style.display = 'none'
             )
         }
         if (hash === 'cart') {
@@ -416,53 +392,43 @@ class Handler_Displays_Ui {
                 document.querySelector('#home').style.display = 'none',
                 document.querySelector('#content_card').style.display = 'none',
                 document.querySelector('#favorites_section').style.display = 'none',
-                document.querySelector('#_categories').style.display = 'none',
                 document.querySelector('#section_cart').style.display = 'flex',
-                document.querySelector('#content').style.display = 'none'
+                document.querySelector('#content').style.display = 'none',
+                document.querySelector('#individual_product').style.display = 'none'
 
             )
         }
         if (hash === 'favorites') {
             return (
-                document.querySelector('#_categories').style.display = 'none',
+                document.querySelector('#content_card').style.display = 'none',
                 document.querySelector('.cart_style').style.display = 'none',
                 document.querySelector('#home').style.display = 'none',
                 document.querySelector('#content_card').style.display = 'none',
-                document.querySelector('#favorites_section').style.display = 'grid'
+                document.querySelector('#favorites_section').style.display = 'grid',
+                document.querySelector('#individual_product').style.display = 'none'
             )
         }
         if (hash === 'individual_product') {
             return (
-                console.log(hash),
+                console.log('okay'),
                 document.querySelector('#individual_product').style.display = 'grid',
-                document.querySelector('#_categories').style.display = 'none',
+                document.querySelector('#content_card').style.display = 'none',
                 document.querySelector('.cart_style').style.display = 'none',
                 document.querySelector('#home').style.display = 'none',
                 document.querySelector('#content_card').style.display = 'none',
                 document.querySelector('#favorites_section').style.display = 'none'
-
             )
         }
 
     }
 }
 
-class Handler_Loading_And_Error {
-
-    handler_Loading = (element) => {
-        console.log(element.style);
-        element.style.display = 'none' ? element.style.display = 'flex' : element.style.display = 'none'
-        console.log(element.style);
-    }
-
-}
 
 const cart = new View_cart()
 
 const products_Instance = new Product();
 
 export {
-    Handler_Loading_And_Error,
     products_Instance,
     Category_ui,
     Product,

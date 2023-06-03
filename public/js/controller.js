@@ -1,33 +1,34 @@
 'use strict'
 
 import { get_All_Products, get_Categories, get_View_Products_For_Category, get_Single_Product } from './api.js'
+
 import { Drive_Data_Cart, Call_Api_LocalStorage_Cart, Handler_Favorites, SaveGet_Favorites_LocalStorage } from './model.js';
+
 import {
-   Category_ui, products_Instance, Handler_Displays_Ui, View_Favorites, View_cart, replace_Minus_Symbol_For_Trash_Basket, render_Total_And_Pay,
-   Handler_Loading_And_Error
+   Category_ui, products_Instance, Handler_Displays_Ui,
+   View_Favorites, View_cart, replace_Minus_Symbol_For_Trash_Basket,
+   render_Total_And_Pay
 } from "./view.js";
 
 const handler_View = new Handler_Displays_Ui()
 const categories_UI = new Category_ui()
 const api_LocalStorage = new Call_Api_LocalStorage_Cart()
 const cart_Ui = new View_cart()
-const handler_Loading = new Handler_Loading_And_Error()
 const model_Favorites = new Handler_Favorites()
 
 //----------------------------------------------------------------
 
 class Control_View_Information_At_DOM {
 
-   constructor(products = [], single_Product = [], categories, total) {
+   constructor(products = [], categories, total) {
       this.products = products
-      this.single_Product = single_Product
+      this.single_Product
       this.categories = categories
       this.total = total
    }
 
    async controller_get_All_Products() {
       //spinner
-
       const overlay = document.querySelector('.overlay')
 
       try {
@@ -86,6 +87,7 @@ class Control_View_Information_At_DOM {
          categories_UI.displayProductsByCategory(result)
          controller_Cart_Instance.add_Cart_Listener()
          favorites.handler_Favorites()
+         handler_Init_Page.handlerSingleProduct()
 
          /* The above code is defining a function called `searchCoincidentElements` that takes an array called
          `result` as input. The function uses the `reduce` method to iterate over the `result` array and
@@ -96,8 +98,8 @@ class Control_View_Information_At_DOM {
 
          const searchCoincidentElements = result.reduce((acc, i) => {
             SaveGet_Favorites_LocalStorage.get_Favorites().forEach(elements => {
-               (i.category === elements.category && i.category !== undefined && !acc
-                  .some(el => el.id === elements.id))
+               (i.category === elements.category &&
+                  i.category !== undefined && !acc.some(el => el.id === elements.id))
                   ? acc.push(elements)
                   : null;
             });
@@ -118,23 +120,55 @@ class Control_View_Information_At_DOM {
    }
 
 
+   handlerSingleProduct = () => {
+      const view_Element = document.querySelectorAll('.individual_product')
+      view_Element.forEach((element) => {
 
-   async send_Id(id = '') {
+         element.addEventListener('click', async (e) => {
+            loadSpinner(false)
+            try {
+               const data_Id = Number(e.target.dataset.id)
+               const res = await get_Single_Product(data_Id)
+               products_Instance.uI_Individual_Card(res)
 
-      try {
+            } catch (error) {
 
-         const res = await get_Single_Product(id)
-         const product = { ...res }
-         this.single_Product = [ ...this.single_Product, product ]
-         return products_Instance.uI_Individual_Card(this.single_Product)
+            }
+            finally {
+               loadSpinner(true)
 
-      } catch (error) {
-         console.error(error)
-      }
+            }
+
+         })
+      })
 
 
    }
+
+   handlerHeroImageCarrousel = async () => {
+      try {
+         const res = await get_All_Products()
+
+         const id_SelectsElements = [ 1, 7, 10 ]
+
+         const products = res.reduce((acc, i) => {
+            id_SelectsElements.filter(num => {
+               num === i.id ? acc.push(i) : false
+
+            })
+            return acc
+         }, [])
+         products_Instance.heroCarrouselImage(products);
+      } catch (error) {
+         console.error(error);
+      };
+   }
+
+
+
 }
+
+
 //----------------------------------------------------------------
 
 class Control_Favorites {
@@ -148,6 +182,7 @@ class Control_Favorites {
     * This function adds event listeners to favorite buttons and sends the favorite product to local
     * storage.
     */
+
    handler_Favorites() {
       /* The above code is adding a click event listener to all elements with the class "favorite". When an
       element with this class is clicked, it checks if the clicked element has a class "pathHeart". If it
@@ -179,12 +214,13 @@ class Control_Favorites {
    `model_Favorites.save_And_Update_Favorites` function and returns the updated favorites list. If
    there is an error, it logs the error to the console. */
 
+
+
    send_Favorite_Product_To_LocalStorage = async () => {
       const overlay = document.querySelector('.overlay')
       overlay.style.display = 'flex'
 
       try {
-         console.log('ok');
          const res = await get_Single_Product(this.id)
          const favorite = model_Favorites.save_And_Update_Favorites(res)
          this.favorites = favorite
@@ -204,12 +240,19 @@ class Control_Favorites {
 
 }
 
+const loadSpinner = (flag) => {
+   const overlay = document.querySelector('.overlay')
+   return !flag ? overlay.style.display = 'flex' : overlay.style.display = 'none'
 
+}
 
 //-----------------------------------------------------------------------------//
 const handler_Init_Page = new Control_View_Information_At_DOM()
 await handler_Init_Page.controller_get_All_Products()
 await handler_Init_Page.control_View_Categories()
+handler_Init_Page.handlerHeroImageCarrousel()
+handler_Init_Page.handlerSingleProduct()
+
 handler_Init_Page.listener_Category()
 //-----------------------------------------------------------------------------//
 
@@ -496,10 +539,11 @@ controller_Cart_Instance.modify_Quantity()
 
 //----------------------------------------------------------------
 
+
+
 class Control_Routes {
    //reception hash to routers
    reception_Hash = (hash = '') => {
-      console.log(hash);
       const name_Hash = {
          "#individual_product": 'individual_product',
          "#home": 'home',
@@ -515,18 +559,6 @@ class Control_Routes {
 }
 
 const instance_Control_Routes = new Control_Routes()
-
-
-
-const view_Element = document.querySelectorAll('.view_one_element')
-view_Element.forEach((element) => {
-   element.addEventListener('click', (e) => {
-      const data_Id = Number(element.dataset.id)
-      console.log(e.target.parentElement.attributes.href)
-      return controller.send_Id(data_Id)
-
-   })
-})
 
 //----------------------------------------------------------------
 
