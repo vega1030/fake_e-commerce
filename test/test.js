@@ -1,25 +1,26 @@
-import { Call_Api_LocalStorage, Drive_Data_Cart } from '../public/js/model.js';
 import { Control_cart } from '../public/js/controller.js';
-import { assert } from 'chai';
+import { assert, expect } from 'chai';
 import { LocalStorage } from 'node-localstorage';
 import { createRequire } from 'module';
 import { JSDOM } from 'jsdom';
 import sinon from 'sinon';
+import { it } from 'mocha';
 
 const require = createRequire(import.meta.url)
 
 const test_LocalStorage = new LocalStorage('./scratch');
 global.test_LocalStorage = test_LocalStorage;
-const myModel = new Call_Api_LocalStorage(test_LocalStorage)
+const myModel = new Call_Api_LocalStorage_Cart(test_LocalStorage)
 
 const consoleWarnStub = sinon.stub(console, 'warn');
 afterEach(() => {
   consoleWarnStub.resetHistory();
 });
 
-const { window } = new JSDOM();
+const { window } =  JSDOM('<!DOCTYPE html>')
 global.window = window;
 global.document = window.document;
+
 
 /* This code is testing the `quantity_In_Cart` method of the `Control_cart` class. It has three test
 cases: */
@@ -71,4 +72,3 @@ describe('Control_cart', () => {
 
 //-------------------------//
 
-export { test_LocalStorage, myModel }

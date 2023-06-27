@@ -1,22 +1,28 @@
 'use strict'
 
 import { get_All_Products, get_Categories, get_View_Products_For_Category, get_Single_Product } from './api.js'
-
-import { Drive_Data_Cart, Call_Api_LocalStorage_Cart, Handler_Favorites, SaveGet_Favorites_LocalStorage } from './model.js';
+import { keysLocalStorage } from './constants.js'
+import { Drive_Data_Cart, Handler_Favorites, SaveGet_Favorites_LocalStorage, StorageService } from './model.js';
 
 import {
    Category_ui, products_Instance, Handler_Displays_Ui,
    View_Favorites, View_cart, replace_Minus_Symbol_For_Trash_Basket,
    render_Total_And_Pay
 } from "./view.js";
-
+const local_Storage = new StorageService()
 const handler_View = new Handler_Displays_Ui()
 const categories_UI = new Category_ui()
-const api_LocalStorage = new Call_Api_LocalStorage_Cart()
 const cart_Ui = new View_cart()
 const model_Favorites = new Handler_Favorites()
+const favoritesStorage = new SaveGet_Favorites_LocalStorage()
 
 //----------------------------------------------------------------
+const loadSpinner = (flag) => {
+   const overlay = document.querySelector('.overlay')
+   if (overlay != null) {
+      return !flag ? overlay.style.display = 'flex' : overlay.style.display = 'none'
+   }
+}
 
 class Control_View_Information_At_DOM {
 
@@ -29,7 +35,7 @@ class Control_View_Information_At_DOM {
 
    async controller_get_All_Products() {
       //spinner
-      const overlay = document.querySelector('.overlay')
+      loadSpinner(false)
 
       try {
          this.products = await get_All_Products()
@@ -47,7 +53,7 @@ class Control_View_Information_At_DOM {
          console.log(error)
       }
       finally {
-         overlay.style.display = 'none'
+         loadSpinner(true)
          document.body.style.overflow = 'auto';
 
       }
@@ -55,6 +61,7 @@ class Control_View_Information_At_DOM {
 
 
    async control_View_Categories() {
+      loadSpinner(false)
 
       try {
 
@@ -63,6 +70,9 @@ class Control_View_Information_At_DOM {
 
       } catch (error) {
          console.log(error)
+      }
+      finally {
+         loadSpinner(true)
       }
 
    }
@@ -78,8 +88,8 @@ class Control_View_Information_At_DOM {
 
    async send_Category(category = '') {
 
-      const overlay = document.querySelector('.overlay')
-      overlay.style.display = 'flex'
+      loadSpinner(false)
+
 
       try {
          const result = await get_View_Products_For_Category(category)
@@ -92,12 +102,13 @@ class Control_View_Information_At_DOM {
          /* The above code is defining a function called `searchCoincidentElements` that takes an array called
          `result` as input. The function uses the `reduce` method to iterate over the `result` array and
          compare each element's `category` property to the `category` property of each element in an array
-         returned by the `get_Favorites` method of a `SaveGet_Favorites_LocalStorage` object. If the
+         returned by the `get_Favorites` method of a `favoritesStorage` object. If the
          `category` properties match and the `category` property is not undefined and the `acc` array does
          not already contain an element with the same `id` property as */
 
          const searchCoincidentElements = result.reduce((acc, i) => {
-            SaveGet_Favorites_LocalStorage.get_Favorites().forEach(elements => {
+            console.log(local_Storage.getItem(keysLocalStorage.FAVORITES));
+            local_Storage.getItem(keysLocalStorage.FAVORITES).forEach(elements => {
                (i.category === elements.category &&
                   i.category !== undefined && !acc.some(el => el.id === elements.id))
                   ? acc.push(elements)
@@ -113,7 +124,7 @@ class Control_View_Information_At_DOM {
          console.error(error)
       }
       finally {
-         overlay.style.display = 'none'
+         loadSpinner(true)
 
       }
 
@@ -122,10 +133,10 @@ class Control_View_Information_At_DOM {
 
    handlerSingleProduct = () => {
       const view_Element = document.querySelectorAll('.individual_product')
+      loadSpinner(false)
       view_Element.forEach((element) => {
 
          element.addEventListener('click', async (e) => {
-            loadSpinner(false)
             try {
                const data_Id = Number(e.target.dataset.id)
                const res = await get_Single_Product(data_Id)
@@ -149,7 +160,7 @@ class Control_View_Information_At_DOM {
       try {
          const res = await get_All_Products()
 
-         const id_SelectsElements = [ 1, 7, 10 ]
+         const id_SelectsElements = [ 3, 14, 19 ]
 
          const products = res.reduce((acc, i) => {
             id_SelectsElements.filter(num => {
@@ -167,7 +178,6 @@ class Control_View_Information_At_DOM {
 
 
 }
-
 
 //----------------------------------------------------------------
 
@@ -198,7 +208,6 @@ class Control_Favorites {
             const class_List = e.target.classList.value;
             this.id = class_List === 'pathHeart' ? Number(e.target.parentElement.parentElement.dataset.id) :
                Number(e.target.dataset.id);
-
             this.send_Favorite_Product_To_LocalStorage()
 
          });
@@ -223,6 +232,7 @@ class Control_Favorites {
       try {
          const res = await get_Single_Product(this.id)
          const favorite = model_Favorites.save_And_Update_Favorites(res)
+
          this.favorites = favorite
          //display
          this.instance_View.display_FavoritesHeart(this.favorites)
@@ -240,11 +250,7 @@ class Control_Favorites {
 
 }
 
-const loadSpinner = (flag) => {
-   const overlay = document.querySelector('.overlay')
-   return !flag ? overlay.style.display = 'flex' : overlay.style.display = 'none'
 
-}
 
 //-----------------------------------------------------------------------------//
 const handler_Init_Page = new Control_View_Information_At_DOM()
@@ -259,7 +265,7 @@ handler_Init_Page.listener_Category()
 const favorites = new Control_Favorites()
 favorites.handler_Favorites();
 favorites.send_Favorite_Product_To_LocalStorage()
-favorites.instance_View.display_FavoritesHeart(SaveGet_Favorites_LocalStorage.get_Favorites())
+favorites.instance_View.display_FavoritesHeart((local_Storage.getItem(keysLocalStorage.FAVORITES)))
 
 
 class Control_cart {
@@ -271,6 +277,9 @@ class Control_cart {
       this.id = null;
       this.model = new Drive_Data_Cart()
    }
+
+
+
 
 
    controller_Cart(cart) {
@@ -286,19 +295,27 @@ class Control_cart {
    }
 
    send_Id_To_Api = async (id) => {
+      loadSpinner(false)
+
       if (id) {
 
-         const result = await get_Single_Product(id);
-         this.single_Product = result;
-         this.model.create_A_New_Array_Of_Object(this.single_Product);
-         return (this.controller_Cart(this.model.responseCart),
-            cart_Ui.model_UiCart_List(this.model.responseCart))
+         try {
+            const result = await get_Single_Product(id);
+            this.single_Product = result;
+            this.model.create_A_New_Array_Of_Object(this.single_Product);
+            return (this.controller_Cart(this.model.responseCart),
+               cart_Ui.model_UiCart_List(this.model.responseCart))
+         } catch (error) {
+            console.log(error);
+         }
+         finally {
+            loadSpinner(true)
+         }
       };
       return console.error('the id not exist');
    };
 
    add_Cart_Listener = () => {
-      console.log();
       const btns_Cart = document.querySelectorAll('.btn_add_to_cart')
       btns_Cart.forEach(item => item.addEventListener('click', (e) => {
          const id = Number(e.target.id);
@@ -417,21 +434,8 @@ class Control_cart {
 
    /* ------------------------------------ */
 
-
-
-
-
-   /* The `cart_Quantity` method is a function that takes in two parameters `minus` and `add`, which are
-   arrays of elements representing the minus and add buttons in the cart UI. The method then adds event
-   listeners to these elements, so that when they are clicked, it updates the quantity of the
-   corresponding product in the cart and updates the cart UI accordingly. */
-
-
-
    modify_Quantity = () => {
-      const btn_Add_Quantity = document.querySelectorAll('.add')
-      let acu = 0
-      //--------------------------------------------------------------
+
       /* This code block is selecting all elements with the class "subtract" and adding a click event
       listener to each of them. When one of these elements is clicked, it checks if the next element
       sibling is null. If it is null, it means that the clicked element is associated with the last
@@ -444,6 +448,8 @@ class Control_cart {
       value of the input element that is the next element sibling of the clicked element, and updates the
       cart with the new quantity value using the `update_Quantity_Cart` method. If the quantity value is
       1, it replaces the trash basket icon with a minus symbol */
+      let acu = 0
+      const btn_Add_Quantity = document.querySelectorAll('.add')
       const btns_Subtract = document.querySelectorAll('.subtract')
       btns_Subtract.forEach(elements => {
          elements.addEventListener('click', (e) => {
@@ -469,7 +475,6 @@ class Control_cart {
             }
 
             const id = Number(e.target.nextElementSibling.dataset.id)
-            console.log(e.target.nextElementSibling.value);
             acu = Number(e.target.nextElementSibling.value) - 1
             if (acu === 1) {
                this.elementDom = elements
@@ -558,6 +563,7 @@ class Control_Routes {
 
 }
 
+
 const instance_Control_Routes = new Control_Routes()
 
 //----------------------------------------------------------------
@@ -570,4 +576,5 @@ export {
    Control_View_Information_At_DOM,
    Control_Favorites,
    Control_cart,
+   loadSpinner
 }

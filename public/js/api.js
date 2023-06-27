@@ -1,4 +1,5 @@
 'use strict'
+import { URL_API } from "./constants.js"
 
 /**
  * This function retrieves all products from a fake store API using async/await and returns the result
@@ -8,9 +9,7 @@
  */
 const get_All_Products = async () => {
     try {
-
-        const url_view_all_products = 'https://fakestoreapi.com/products'
-        const result = await fetch(url_view_all_products)
+        const result = await fetch(URL_API.ALL_PRODUCTS)
         const res = await result.json()
         return res
 
@@ -27,8 +26,7 @@ const get_All_Products = async () => {
  */
 const get_Categories = async () => {
     try {
-        const url_view_all_categories = 'https://fakestoreapi.com/products/categories'
-        const result = await fetch(url_view_all_categories)
+        const result = await fetch(URL_API.GET_CATEGORIES)
         const res = await result.json()
         return res
     }
@@ -48,9 +46,8 @@ const get_Categories = async () => {
 
 const get_View_Products_For_Category = async (category) => {
 
-    const url = `https://fakestoreapi.com/products/category/${ category }`
     try {
-        const result = await fetch(url)
+        const result = await fetch(URL_API.GET_PRODUCTS_BY_CATEGORY(category))
         const res = await result.json()
         return res
 
@@ -72,14 +69,13 @@ const get_View_Products_For_Category = async (category) => {
  */
 
 const get_Single_Product = async (id) => {
-    const url = `https://fakestoreapi.com/products/${ Number(id) }`
     try {
         if (id == '') {
             console.log('error');
         }
         else {
-            const result = await fetch(url)
-            const res =  await result.json()
+            const result = await fetch(URL_API.GET_PRODUCT(id))
+            const res = await result.json()
             return res
         }
 
@@ -88,18 +84,6 @@ const get_Single_Product = async (id) => {
     }
 }
 
-
-/* `await get_All_Products()` is calling the `get_All_Products` function, which retrieves all products
-from a fake store API using async/await and returns the result as a JSON object. The `await` keyword
-is used to wait for the function to complete and return a value before moving on to the next line of
-code. */
-await get_All_Products()
-
-
-/* `await get_Categories()` is calling the `get_Categories` function, which retrieves a list of
-categories from a fake store API using asynchronous JavaScript. The `await` keyword is used to wait
-for the function to complete and return a value before moving on to the next line of code. */
-await get_Categories()
 
 
 export { get_All_Products, get_Categories, get_View_Products_For_Category, get_Single_Product }

@@ -36,8 +36,8 @@ class Product {
                 </div>
                 `;
             const content_Cards = document.querySelector("#content_card");
+            return content_Cards ? content_Cards.innerHTML = model : null
 
-            return content_Cards.innerHTML = model
         })
 
         /* A function that change the color of the heart when user click,
@@ -50,8 +50,8 @@ class Product {
         const content_Individual_Cards = document.querySelector('#individual_product')
         let model_Card = ''
 
-            model_Card =
-                `
+        model_Card =
+            `
         <div class="content_title___individual_item">
             <h1> ${ product.title }</h1>
         </div>
@@ -68,13 +68,17 @@ class Product {
 
     </div>
     <div class="content-buttons___individual_item">
-    <button type="button" id ="${ product.id }" class="btn btn-primary btn-card btn_push_element">Add Cart</button>
+    <button type="button" id ="${ product.id }" class="btn btn-primary btn-card btn_add_to_cart">Add Cart</button>
 </div>
  
-        `    
-        
+        `
+
         content_Individual_Cards.insertAdjacentHTML('afterbegin', model_Card)
-        content_Individual_Cards.innerHTML = model_Card
+
+        content_Individual_Cards.addEventListener('click', (e) => {
+            console.log(e.target.id);
+        })
+
     }
 
     heroCarrouselImage = (productsHero) => {
@@ -99,6 +103,7 @@ class Product {
         const model = carouselInner;
         const contentCarousel = document.querySelector('#carouselIndicators')
         contentCarousel.insertAdjacentHTML('afterbegin', model)
+
     };
 }
 
@@ -136,6 +141,7 @@ class View_Favorites {
     }
 
     display_FavoritesHeart(product) {
+        console.log(product);
         //check color state here
 
         /*         const model_Favorites = [ ...document.querySelectorAll('.favorite') ];
@@ -367,14 +373,15 @@ const render_Total_And_Pay = (cart) => {
 class Handler_Displays_Ui {
 
     handler_Display_(hash) {
-console.log(hash);
+        console.log(hash);
         if (hash === 'categories') {
             return (
                 document.querySelector('#home').style.display = 'none',
                 document.querySelector('.cart_style').style.display = 'none',
                 document.querySelector('#content_card').style.display = 'grid',
                 document.querySelector('#favorites_section').style.display = 'none',
-                document.querySelector('#individual_product').style.display = 'none'
+                document.querySelector('#individual_product').style.display = 'none',
+                document.querySelector('#content').style.display = 'grid'
             )
         }
         if (hash === 'home') {

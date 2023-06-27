@@ -1,42 +1,43 @@
+
 'use strict'
+import { keysLocalStorage } from './constants.js'
 /* It's a class that has a constructor that receives two parameters, and then has three methods that
 add, delete, and get products from local storage. */
 
-class Call_Api_LocalStorage_Cart {
-
-    constructor(storage_Cart) {
-        this.storage_Cart = storage_Cart
+//These abstraction step at localStorage
+class StorageService {
+    setItem(key, value) {
+        console.log(value);
+        const setValue = JSON.stringify(value)
+        localStorage.setItem(key, setValue);
     }
 
-    /* A function that receives a parameter, which is the data, and then saves the data in localStorage. */
-    saveCartAtLocalStorage = (data) => {
-        const CART = 'cart';
-        return localStorage.setItem(CART, JSON.stringify(data));
-    }
-    get_Cart() {
-        if (typeof localStorage !== "undefined") {
-            const cartData = localStorage.getItem('cart');
-            return JSON.parse(cartData) || [];
-        }
-        return [];
+    getItem(key) {
+        const value = JSON.parse(localStorage.getItem(key));
+
+        return value
     }
 
 
-
-
+    removeItem(key) {
+        localStorage.removeItem(key);
+    }
 }
+const local_Storage = new StorageService()
 
-const api_LocalStorage = new Call_Api_LocalStorage_Cart()
+
+
+
 
 class Drive_Data_Cart {
 
-    constructor(cart) {
-        this.responseCart = cart
+    constructor() {
+        this.responseCart
 
     }
 
     send_Cart_LocalStorage = () => {
-        return api_LocalStorage.get_Cart();
+        return local_Storage.getItem(keysLocalStorage.CART);
     };
 
     assign_Cart_Without_LocalStorage = (newCart) => {
@@ -68,22 +69,18 @@ class Drive_Data_Cart {
      * @returns the localStorage.setItem(CART, JSON.stringify(cart_LocalStorage))
      */
     addProductsInCart = (paramProduct) => {
-        const CART = 'cart';
-        let cart_Model = [];
-        cart_Model = api_LocalStorage.get_Cart() || [];
+        let cart_Model = local_Storage.getItem(keysLocalStorage.CART) || [];
         const cart = [ ...cart_Model, paramProduct ];
         cart_Model = cart.reduce((acc, e) => {
             const searchRepeat = acc.find(x => e.id === x.id);
             searchRepeat ? searchRepeat.quantity += e.quantity : acc.push(e);
             return acc;
         }, []);
-
         const isProductAdded = cart_Model.some(p => p.id === paramProduct.id && p.quantity === paramProduct.quantity);
         const isCartUpdated = cart_Model.length !== cart_Model.filter(p => p.quantity > 0).length;
 
         this.assign_Cart_Without_LocalStorage(cart_Model);
-        api_LocalStorage.saveCartAtLocalStorage(cart_Model);
-
+        local_Storage.setItem(keysLocalStorage.CART, cart_Model);
         return isProductAdded || isCartUpdated;
     }
 
@@ -95,20 +92,19 @@ class Drive_Data_Cart {
     product from the cart, and then saves the cart back to local storage. */
     update_Quantity_Cart = (id = "", flag) => {
         if (flag === true) {
-            const updateCart_Minus = api_LocalStorage.get_Cart().map
+            const updateCart_Minus = local_Storage.getItem(keysLocalStorage.CART).map
                 (i => i.id === id ? { ...i, quantity: i.quantity - 1 } : i).filter(i => i.quantity > 0);
             return (
-                api_LocalStorage.saveCartAtLocalStorage(updateCart_Minus),
-                this.send_Cart_LocalStorage(),
+                local_Storage.setItem(keysLocalStorage.CART, updateCart_Minus),
+                local_Storage.getItem(keysLocalStorage.CART),
                 this.assign_Cart_Without_LocalStorage(updateCart_Minus)
-            )
-        }
-        const updateCart_Add = api_LocalStorage.get_Cart().map(i => i.id === id
-            ? { ...i, quantity: i.quantity + 1 } : i).filter(i => i.quantity > 0);
-
-        return (
-            api_LocalStorage.saveCartAtLocalStorage(updateCart_Add),
-            this.send_Cart_LocalStorage(),
+                )
+            }
+            const updateCart_Add = local_Storage.getItem(keysLocalStorage.CART).map
+            (i => i.id === id ? { ...i, quantity: i.quantity + 1 } : i).filter(i => i.quantity > 0);
+            return (
+            local_Storage.setItem(keysLocalStorage.CART, updateCart_Add),
+            local_Storage.getItem(keysLocalStorage.CART),
             this.assign_Cart_Without_LocalStorage(updateCart_Add)
         )
     }
@@ -125,7 +121,7 @@ handler_Cart_Model.send_Cart_Without_LocalStorage()
 class SaveGet_Favorites_LocalStorage {
 
     /* Saving the favorites at localStorage. */
-    static save_Favorites_At_LocalStorage = (favorite) => {
+    save_Favorites_At_LocalStorage = (favorite) => {
         const FAVORITES = 'favorites';
 
         return localStorage.setItem(FAVORITES, JSON.stringify(favorite));
@@ -134,13 +130,14 @@ class SaveGet_Favorites_LocalStorage {
 
     //save info to localStorage and no overwriting
 
-    static get_Favorites = () => {
-        const cart_response_Favorites = JSON.parse(localStorage.getItem('favorites'));
-        return cart_response_Favorites;
+    get_Favorites(key = 'favorites') {
+
+        return JSON.parse(localStorage.getItem(key));
     };
 
-
 }
+
+const favoriteStorage = new SaveGet_Favorites_LocalStorage()
 
 
 //*************----*************************/
@@ -153,20 +150,19 @@ class Handler_Favorites {
     /* The `save_Favorites` method is a function that receives an object as a parameter. It first
     initializes an empty array called `favorites` on the `this` object. It then retrieves the current
     favorites from local storage using the `get_Favorites` method of the
-    `SaveGet_Favorites_LocalStorage` class and assigns it to the `favorites` array. */
-    save_And_Update_Favorites = (object) => {
-        this.favorites = []
-        this.favorites = SaveGet_Favorites_LocalStorage.get_Favorites() || []
-        const productId = object.id
-        const index = this.favorites.findIndex(i => i.id === productId)
+    `favoriteStorage` class and assigns it to the `favorites` array. */
+    save_And_Update_Favorites = (productId) => {
+        const id = productId.id && productId ? productId.id : null
+        this.favorites = local_Storage.getItem(keysLocalStorage.FAVORITES) || [];
+        const index = this.favorites.findIndex(i => i.id === id)
 
         if (index !== -1) {
             this.favorites.splice(index, 1)
         }
         else {
-            this.favorites.push(object)
+            this.favorites.push(productId)
         }
-        SaveGet_Favorites_LocalStorage.save_Favorites_At_LocalStorage(this.favorites)
+        local_Storage.setItem(keysLocalStorage.FAVORITES, this.favorites)
         return this.favorites
     }
 
@@ -174,17 +170,15 @@ class Handler_Favorites {
 
 /***********--------------***************/
 
-const favorites = new SaveGet_Favorites_LocalStorage()
 
 
-handler_Cart_Model.send_Cart_LocalStorage()
 
 export {
 
     Drive_Data_Cart,
-    Call_Api_LocalStorage_Cart,
     Handler_Favorites,
-    SaveGet_Favorites_LocalStorage
+    SaveGet_Favorites_LocalStorage,
+    StorageService
 
 
 }

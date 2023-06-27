@@ -143,8 +143,7 @@ h3 {
 
 
 .form-init {
-   display: flex;
-   flex-direction: row;
+  text-align: center;
 }
 
 .content-spinner {
