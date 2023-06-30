@@ -141,12 +141,11 @@ class View_Favorites {
     }
 
     display_FavoritesHeart(product) {
-        console.log(product);
         //check color state here
 
-        /*         const model_Favorites = [ ...document.querySelectorAll('.favorite') ];
-         */
         const content_Cards = document.querySelector('.content-sale')
+
+        
         const cardsClass = String('.' + content_Cards.firstElementChild.classList[ 0 ])
         const cards = [ ...document.querySelectorAll(cardsClass) ]
         const select =
@@ -162,6 +161,7 @@ class View_Favorites {
             i.style.color === 'black' ? i.style.color = 'red' : i.style.color = 'black'
 
         })
+
     }
 
 }

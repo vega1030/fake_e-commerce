@@ -2,7 +2,7 @@
 
 import { get_All_Products, get_Categories, get_View_Products_For_Category, get_Single_Product } from './api.js'
 import { keysLocalStorage } from './constants.js'
-import { Drive_Data_Cart, Handler_Favorites, SaveGet_Favorites_LocalStorage, StorageService } from './model.js';
+import { Drive_Data_Cart, Handler_Favorites, StorageService } from './model.js';
 
 import {
    Category_ui, products_Instance, Handler_Displays_Ui,
@@ -14,7 +14,6 @@ const handler_View = new Handler_Displays_Ui()
 const categories_UI = new Category_ui()
 const cart_Ui = new View_cart()
 const model_Favorites = new Handler_Favorites()
-const favoritesStorage = new SaveGet_Favorites_LocalStorage()
 
 //----------------------------------------------------------------
 const loadSpinner = (flag) => {
@@ -107,7 +106,6 @@ class Control_View_Information_At_DOM {
          not already contain an element with the same `id` property as */
 
          const searchCoincidentElements = result.reduce((acc, i) => {
-            console.log(local_Storage.getItem(keysLocalStorage.FAVORITES));
             local_Storage.getItem(keysLocalStorage.FAVORITES).forEach(elements => {
                (i.category === elements.category &&
                   i.category !== undefined && !acc.some(el => el.id === elements.id))
@@ -169,7 +167,9 @@ class Control_View_Information_At_DOM {
             })
             return acc
          }, [])
-         products_Instance.heroCarrouselImage(products);
+         if(typeof localStorage !== 'undefined'){
+            products_Instance.heroCarrouselImage(products);
+         }
       } catch (error) {
          console.error(error);
       };
@@ -245,27 +245,14 @@ class Control_Favorites {
       finally {
          overlay.style.display = 'none'
       }
-
    }
-
 }
 
-
-
 //-----------------------------------------------------------------------------//
-const handler_Init_Page = new Control_View_Information_At_DOM()
-await handler_Init_Page.controller_get_All_Products()
-await handler_Init_Page.control_View_Categories()
-handler_Init_Page.handlerHeroImageCarrousel()
-handler_Init_Page.handlerSingleProduct()
 
-handler_Init_Page.listener_Category()
 //-----------------------------------------------------------------------------//
 
 const favorites = new Control_Favorites()
-favorites.handler_Favorites();
-favorites.send_Favorite_Product_To_LocalStorage()
-favorites.instance_View.display_FavoritesHeart((local_Storage.getItem(keysLocalStorage.FAVORITES)))
 
 
 class Control_cart {
@@ -284,14 +271,17 @@ class Control_cart {
 
    controller_Cart(cart) {
       cart_Ui.model_UiCart_List(cart)
-      return this.quantity_In_Cart(cart);
+      const quantityTotalProductsInCart = this.quantity_In_Cart(cart)
+
+      return cart_Ui.createCartCont(quantityTotalProductsInCart), render_Total_And_Pay(cart)
 
    };
 
 
    get_Cart_Data_LocalStorage = () => {
-      return this.model.send_Cart_LocalStorage() === 0 ? 0 :
-         this.controller_Cart(this.model.send_Cart_LocalStorage())
+      if(typeof localStorage !== 'undefined'){
+         return this.model.send_Cart_LocalStorage() === 0 ? 0 : this.controller_Cart(this.model.send_Cart_LocalStorage())
+      }
    }
 
    send_Id_To_Api = async (id) => {
@@ -410,16 +400,15 @@ class Control_cart {
     */
 
    quantity_In_Cart = (data) => {
-
       if (!data) {
          return 0
       }
       const acu = data === undefined ? 0 : data.reduce((previous, current) => {
-         return previous + current.quantity
-      }, 0)
-      return (cart_Ui.createCartCont(acu), render_Total_And_Pay(data))
-   }
+         return current.quantity === undefined ? previous : previous + current.quantity
 
+      }, 0)
+      return acu
+   }
 
 
 
@@ -521,19 +510,33 @@ class Control_cart {
 
    //--------------------------------------------------------------
 }
+const handler_Init_Page = new Control_View_Information_At_DOM()
+await handler_Init_Page.controller_get_All_Products()
+await handler_Init_Page.control_View_Categories()
 
 const controller_Cart_Instance = new Control_cart()
 
-/* The above code is written in JavaScript and is calling various methods of an object named
-"controller_Cart_Instance". These methods are used to assign events to products, add a listener to
-the cart, assign an event to the pay button, get cart data from local storage, modify the quantity
-of items in the cart, and confirm payment. It is likely that this code is part of a larger program
-or website that involves a shopping cart functionality. */
-controller_Cart_Instance.assign_Events_Products()
-controller_Cart_Instance.add_Cart_Listener()
-controller_Cart_Instance.assign_Event_Btn_Pay()
-controller_Cart_Instance.get_Cart_Data_LocalStorage()
-controller_Cart_Instance.modify_Quantity()
+
+
+if (typeof window !== 'undefined') {
+
+
+}
+document.addEventListener('DOMContentLoaded',
+controller_Cart_Instance.get_Cart_Data_LocalStorage(),
+controller_Cart_Instance.add_Cart_Listener(),
+controller_Cart_Instance.modify_Quantity(),
+handler_Init_Page.handlerSingleProduct(),
+handler_Init_Page.listener_Category(),
+favorites.handler_Favorites(),
+favorites.send_Favorite_Product_To_LocalStorage(),
+)
+if (typeof localStorage !== 'undefined') {
+   controller_Cart_Instance.assign_Event_Btn_Pay(),
+   controller_Cart_Instance.assign_Events_Products(),
+   favorites.instance_View.display_FavoritesHeart(local_Storage.getItem(keysLocalStorage.FAVORITES))
+}
+handler_Init_Page.handlerHeroImageCarrousel()
 
 
 

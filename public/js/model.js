@@ -1,5 +1,6 @@
 
 'use strict'
+
 import { keysLocalStorage } from './constants.js'
 /* It's a class that has a constructor that receives two parameters, and then has three methods that
 add, delete, and get products from local storage. */
@@ -7,17 +8,14 @@ add, delete, and get products from local storage. */
 //These abstraction step at localStorage
 class StorageService {
     setItem(key, value) {
-        console.log(value);
         const setValue = JSON.stringify(value)
         localStorage.setItem(key, setValue);
     }
 
     getItem(key) {
         const value = JSON.parse(localStorage.getItem(key));
-
         return value
     }
-
 
     removeItem(key) {
         localStorage.removeItem(key);
@@ -117,31 +115,8 @@ class Drive_Data_Cart {
 const handler_Cart_Model = new Drive_Data_Cart()
 
 handler_Cart_Model.send_Cart_Without_LocalStorage()
+
 //***********--Favorites--**************/ 
-class SaveGet_Favorites_LocalStorage {
-
-    /* Saving the favorites at localStorage. */
-    save_Favorites_At_LocalStorage = (favorite) => {
-        const FAVORITES = 'favorites';
-
-        return localStorage.setItem(FAVORITES, JSON.stringify(favorite));
-    };
-
-
-    //save info to localStorage and no overwriting
-
-    get_Favorites(key = 'favorites') {
-
-        return JSON.parse(localStorage.getItem(key));
-    };
-
-}
-
-const favoriteStorage = new SaveGet_Favorites_LocalStorage()
-
-
-//*************----*************************/
-
 class Handler_Favorites {
     constructor() {
         this.favorites
@@ -162,6 +137,7 @@ class Handler_Favorites {
         else {
             this.favorites.push(productId)
         }
+        console.log(this.favorites); 
         local_Storage.setItem(keysLocalStorage.FAVORITES, this.favorites)
         return this.favorites
     }
@@ -177,8 +153,5 @@ export {
 
     Drive_Data_Cart,
     Handler_Favorites,
-    SaveGet_Favorites_LocalStorage,
     StorageService
-
-
 }
