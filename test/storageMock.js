@@ -16,5 +16,4 @@ function localStorageMock() {
         },
     };
 }
-
 export{localStorageMock}
