@@ -167,7 +167,7 @@ class Control_View_Information_At_DOM {
             })
             return acc
          }, [])
-         if(typeof localStorage !== 'undefined'){
+         if (typeof localStorage !== 'undefined') {
             products_Instance.heroCarrouselImage(products);
          }
       } catch (error) {
@@ -270,19 +270,19 @@ class Control_cart {
 
 
    controller_Cart(cart) {
-      cart_Ui.model_UiCart_List(cart)
-      const quantityTotalProductsInCart = this.quantity_In_Cart(cart)
+      this.cart = cart
 
-      return cart_Ui.createCartCont(quantityTotalProductsInCart), render_Total_And_Pay(cart)
+      cart_Ui.model_UiCart_List(this.cart)
+      const quantityTotalProductsInCart = this.quantity_In_Cart(this.cart)
+      return cart_Ui.createCartCont(quantityTotalProductsInCart), render_Total_And_Pay(this.cart)
 
    };
-
-
-   get_Cart_Data_LocalStorage = () => {
-      if(typeof localStorage !== 'undefined'){
-         return this.model.send_Cart_LocalStorage() === 0 ? 0 : this.controller_Cart(this.model.send_Cart_LocalStorage())
-      }
+   sendCart(){
+      console.log(this.cart);
+      return this.cart
    }
+
+
 
    send_Id_To_Api = async (id) => {
       loadSpinner(false)
@@ -292,18 +292,50 @@ class Control_cart {
          try {
             const result = await get_Single_Product(id);
             this.single_Product = result;
-            this.model.create_A_New_Array_Of_Object(this.single_Product);
-            return (this.controller_Cart(this.model.responseCart),
-               cart_Ui.model_UiCart_List(this.model.responseCart))
+
+            const product = {
+               quantity: 1,
+               ...this.single_Product
+            }
+            this.addProductsInCart(product)
+
          } catch (error) {
             console.log(error);
+            console.error('the id not exist');
          }
          finally {
             loadSpinner(true)
          }
       };
-      return console.error('the id not exist');
    };
+
+   addProductsInCart = (paramProduct) => {
+      const detectedDOM = (param) => {
+         if (typeof localStorage == !undefined) {
+            return param
+         }
+
+      }
+      let cart_Model = local_Storage.getItem(keysLocalStorage.CART) || [];
+      detectedDOM(cart_Model)
+      const cart = [ ...cart_Model, paramProduct ];
+      cart_Model = cart.reduce((acc, e) => {
+         const searchRepeat = acc.find(x => e.id === x.id);
+         searchRepeat ? searchRepeat.quantity += e.quantity : acc.push(e);
+         return acc;
+      }, []);
+
+      const isProductAdded = cart_Model.some(p => p.id === paramProduct.id && p.quantity === paramProduct.quantity);
+      const isCartUpdated = cart_Model.length !== cart_Model.filter(p => p.quantity > 0).length;
+      cart_Ui.model_UiCart_List(cart_Model)
+      local_Storage.setItem(keysLocalStorage.CART, cart_Model);
+      this.quantity_In_Cart(cart_Model)
+      console.log('cartModel',cart_Model); 
+      this.cart=cart_Model
+      this.controller_Cart(cart_Model)
+      this.sendCart()
+      return isProductAdded || isCartUpdated;
+   }
 
    add_Cart_Listener = () => {
       const btns_Cart = document.querySelectorAll('.btn_add_to_cart')
@@ -516,25 +548,17 @@ await handler_Init_Page.control_View_Categories()
 
 const controller_Cart_Instance = new Control_cart()
 
-
-
-if (typeof window !== 'undefined') {
-
-
-}
-document.addEventListener('DOMContentLoaded',
-controller_Cart_Instance.get_Cart_Data_LocalStorage(),
-controller_Cart_Instance.add_Cart_Listener(),
-controller_Cart_Instance.modify_Quantity(),
-handler_Init_Page.handlerSingleProduct(),
-handler_Init_Page.listener_Category(),
-favorites.handler_Favorites(),
-favorites.send_Favorite_Product_To_LocalStorage(),
-)
 if (typeof localStorage !== 'undefined') {
-   controller_Cart_Instance.assign_Event_Btn_Pay(),
-   controller_Cart_Instance.assign_Events_Products(),
-   favorites.instance_View.display_FavoritesHeart(local_Storage.getItem(keysLocalStorage.FAVORITES))
+   controller_Cart_Instance.add_Cart_Listener(),
+      controller_Cart_Instance.modify_Quantity(),
+      handler_Init_Page.handlerSingleProduct(),
+      handler_Init_Page.listener_Category(),
+      controller_Cart_Instance.assign_Event_Btn_Pay(),
+      controller_Cart_Instance.assign_Events_Products(),
+      favorites.handler_Favorites(),
+      favorites.send_Favorite_Product_To_LocalStorage(),
+      favorites.instance_View.display_FavoritesHeart(local_Storage.getItem(keysLocalStorage.FAVORITES)),
+      controller_Cart_Instance.controller_Cart(local_Storage.getItem(keysLocalStorage.CART))
 }
 handler_Init_Page.handlerHeroImageCarrousel()
 
