@@ -13,8 +13,11 @@ class StorageService {
     }
 
     getItem(key) {
-        const value = JSON.parse(localStorage.getItem(key));
-        return value
+        if (typeof localStorage !== 'undefined') {
+            const value = JSON.parse(localStorage.getItem(key)) || []
+            return value
+        }
+        return []
     }
 
     removeItem(key) {
@@ -60,11 +63,11 @@ class Drive_Data_Cart {
                 local_Storage.setItem(keysLocalStorage.CART, updateCart_Minus),
                 local_Storage.getItem(keysLocalStorage.CART),
                 this.assign_Cart_Without_LocalStorage(updateCart_Minus)
-                )
-            }
-            const updateCart_Add = local_Storage.getItem(keysLocalStorage.CART).map
+            )
+        }
+        const updateCart_Add = local_Storage.getItem(keysLocalStorage.CART).map
             (i => i.id === id ? { ...i, quantity: i.quantity + 1 } : i).filter(i => i.quantity > 0);
-            return (
+        return (
             local_Storage.setItem(keysLocalStorage.CART, updateCart_Add),
             local_Storage.getItem(keysLocalStorage.CART),
             this.assign_Cart_Without_LocalStorage(updateCart_Add)
@@ -101,7 +104,6 @@ class Handler_Favorites {
         else {
             this.favorites.push(productId)
         }
-        console.log(this.favorites); 
         local_Storage.setItem(keysLocalStorage.FAVORITES, this.favorites)
         return this.favorites
     }

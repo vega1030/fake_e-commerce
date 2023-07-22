@@ -22,7 +22,7 @@ const loadSpinner = (flag) => {
       return !flag ? overlay.style.display = 'flex' : overlay.style.display = 'none'
    }
 }
-
+let cart = []
 class Control_View_Information_At_DOM {
 
    constructor(products = [], categories, total) {
@@ -254,35 +254,32 @@ class Control_Favorites {
 
 const favorites = new Control_Favorites()
 
-
 class Control_cart {
 
    constructor(total = 0, elementDom) {
-      this.cart
+      this.cart = []
+      this.cart_Model = local_Storage.getItem(keysLocalStorage.CART)
       this.elementDom = elementDom
       this.single_Product = null
       this.id = null;
+      this.shouldClearCart = false;
       this.model = new Drive_Data_Cart()
    }
 
 
 
+   clearCart() {
+      this.shouldClearCart = true;
+   }
 
-
-   controller_Cart(cart) {
-      this.cart = cart
+   controller_Cart(cart = '') {
+      this.cart = cart ? cart : []
 
       cart_Ui.model_UiCart_List(this.cart)
       const quantityTotalProductsInCart = this.quantity_In_Cart(this.cart)
       return cart_Ui.createCartCont(quantityTotalProductsInCart), render_Total_And_Pay(this.cart)
 
    };
-   sendCart(){
-      console.log(this.cart);
-      return this.cart
-   }
-
-
 
    send_Id_To_Api = async (id) => {
       loadSpinner(false)
@@ -310,31 +307,51 @@ class Control_cart {
    };
 
    addProductsInCart = (paramProduct) => {
-      const detectedDOM = (param) => {
-         if (typeof localStorage == !undefined) {
-            return param
-         }
-
+      if (this.shouldClearCart) {
+         this.cart_Model = []
+         this.shouldClearCart = false
       }
-      let cart_Model = local_Storage.getItem(keysLocalStorage.CART) || [];
-      detectedDOM(cart_Model)
-      const cart = [ ...cart_Model, paramProduct ];
-      cart_Model = cart.reduce((acc, e) => {
-         const searchRepeat = acc.find(x => e.id === x.id);
-         searchRepeat ? searchRepeat.quantity += e.quantity : acc.push(e);
+      const updatedCart = [ ...this.cart_Model, paramProduct ];
+      const updatedCartReduced = updatedCart.reduce((acc, e) => {
+         const existingIndex = acc.findIndex((x) => e.id === x.id);
+
+         if (existingIndex !== -1) {
+            // El producto ya existe en el carrito actual, actualizamos la cantidad
+            acc[ existingIndex ].quantity += e.quantity;
+         } else {
+            // El producto no existe en el carrito actual, lo agregamos
+            acc.push(e);
+         }
          return acc;
       }, []);
 
-      const isProductAdded = cart_Model.some(p => p.id === paramProduct.id && p.quantity === paramProduct.quantity);
-      const isCartUpdated = cart_Model.length !== cart_Model.filter(p => p.quantity > 0).length;
-      cart_Ui.model_UiCart_List(cart_Model)
-      local_Storage.setItem(keysLocalStorage.CART, cart_Model);
-      this.quantity_In_Cart(cart_Model)
-      console.log('cartModel',cart_Model); 
-      this.cart=cart_Model
-      this.controller_Cart(cart_Model)
-      this.sendCart()
-      return isProductAdded || isCartUpdated;
+      const isProductAddedOrUpdated = updatedCartReduced.some((product) => {
+         // Buscar el producto en el carrito original (this.cart_Model)
+         const existingProduct = this.cart_Model.find((p) => p.id === product.id);
+
+         // Si el producto no existe en el carrito original, se considera un nuevo producto agregado
+         if (!existingProduct) {
+            return true;
+         }
+         if (existingProduct.quantity !== product.quantity) {
+            return true;
+         }
+
+         return false;
+      });
+      const allQuantitiesAreZero = updatedCartReduced.every((product) => product.quantity === 0);
+      if (isProductAddedOrUpdated || allQuantitiesAreZero) {
+         this.cart_Model = updatedCartReduced;
+     }
+
+      if (typeof localStorage !== 'undefined') {
+         cart_Ui.model_UiCart_List(cart_Model)
+         local_Storage.setItem(keysLocalStorage.CART, cart_Model);
+         this.controller_Cart(cart_Model)
+      }
+      this.cart_Model = updatedCartReduced;
+
+      return { result: isProductAddedOrUpdated || allQuantitiesAreZero, cart: this.cart_Model };
    }
 
    add_Cart_Listener = () => {
