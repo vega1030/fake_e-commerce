@@ -22,7 +22,6 @@ const loadSpinner = (flag) => {
       return !flag ? overlay.style.display = 'flex' : overlay.style.display = 'none'
    }
 }
-let cart = []
 class Control_View_Information_At_DOM {
 
    constructor(products = [], categories, total) {
@@ -186,6 +185,7 @@ class Control_Favorites {
       this.favorites
       this.instance_View = new View_Favorites()
       this.id = ''
+      this.instance_Model = new Handler_Favorites()
    }
 
    /**
@@ -223,7 +223,20 @@ class Control_Favorites {
    `model_Favorites.save_And_Update_Favorites` function and returns the updated favorites list. If
    there is an error, it logs the error to the console. */
 
+   save_And_Update_Favorites = (productId) => {
+      const id = productId.id && productId ? productId.id : null
+      this.favorites = local_Storage.getItem(keysLocalStorage.FAVORITES) || [];
+      const index = this.favorites.findIndex(i => i.id === id)
 
+      if (index !== -1) {
+         this.favorites.splice(index, 1)
+      }
+      else {
+         this.favorites.push(productId)
+      }
+      local_Storage.setItem(keysLocalStorage.FAVORITES, this.favorites)
+      return { favorites: this.favorites }
+   }
 
    send_Favorite_Product_To_LocalStorage = async () => {
       const overlay = document.querySelector('.overlay')
@@ -231,7 +244,7 @@ class Control_Favorites {
 
       try {
          const res = await get_Single_Product(this.id)
-         const favorite = model_Favorites.save_And_Update_Favorites(res)
+         const favorite = this.save_And_Update_Favorites(res)
 
          this.favorites = favorite
          //display
@@ -256,10 +269,10 @@ const favorites = new Control_Favorites()
 
 class Control_cart {
 
-   constructor(total = 0, elementDom) {
+   constructor(elementDom) {
       this.cart = []
-      this.cart_Model = local_Storage.getItem(keysLocalStorage.CART)
-      this.elementDom = elementDom
+      this.cart_Model =
+         this.elementDom = elementDom
       this.single_Product = null
       this.id = null;
       this.shouldClearCart = false;
@@ -274,10 +287,10 @@ class Control_cart {
 
    controller_Cart(cart = '') {
       this.cart = cart ? cart : []
-
       cart_Ui.model_UiCart_List(this.cart)
       const quantityTotalProductsInCart = this.quantity_In_Cart(this.cart)
-      return cart_Ui.createCartCont(quantityTotalProductsInCart), render_Total_And_Pay(this.cart)
+      cart_Ui.createCartCont(quantityTotalProductsInCart), render_Total_And_Pay(this.cart)
+      return this.cart
 
    };
 
@@ -311,23 +324,18 @@ class Control_cart {
          this.cart_Model = []
          this.shouldClearCart = false
       }
-      const updatedCart = [ ...this.cart_Model, paramProduct ];
+      const updatedCart = [ ...this.model.copyLocalStorage(), paramProduct ];
       const updatedCartReduced = updatedCart.reduce((acc, e) => {
          const existingIndex = acc.findIndex((x) => e.id === x.id);
 
-         if (existingIndex !== -1) {
-            // El producto ya existe en el carrito actual, actualizamos la cantidad
-            acc[ existingIndex ].quantity += e.quantity;
-         } else {
-            // El producto no existe en el carrito actual, lo agregamos
-            acc.push(e);
-         }
+         existingIndex !== -1 ? acc[ existingIndex ].quantity += e.quantity : acc.push(e);
+         console.log(acc);
          return acc;
       }, []);
 
       const isProductAddedOrUpdated = updatedCartReduced.some((product) => {
          // Buscar el producto en el carrito original (this.cart_Model)
-         const existingProduct = this.cart_Model.find((p) => p.id === product.id);
+         const existingProduct = this.model.copyLocalStorage().find((p) => p.id === product.id);
 
          // Si el producto no existe en el carrito original, se considera un nuevo producto agregado
          if (!existingProduct) {
@@ -340,16 +348,19 @@ class Control_cart {
          return false;
       });
       const allQuantitiesAreZero = updatedCartReduced.every((product) => product.quantity === 0);
-      if (isProductAddedOrUpdated || allQuantitiesAreZero) {
-         this.cart_Model = updatedCartReduced;
-     }
 
-      if (typeof localStorage !== 'undefined') {
-         cart_Ui.model_UiCart_List(cart_Model)
-         local_Storage.setItem(keysLocalStorage.CART, cart_Model);
-         this.controller_Cart(cart_Model)
+      if (isProductAddedOrUpdated || allQuantitiesAreZero) {
+         
+         this.cart_Model = this.model.copyLocalStorage()
+         console.log(this.cart_Model);
       }
+
       this.cart_Model = updatedCartReduced;
+      if (typeof localStorage !== 'undefined') {
+         cart_Ui.model_UiCart_List(this.cart_Model)
+         local_Storage.setItem(keysLocalStorage.CART, this.cart_Model);
+         this.controller_Cart(this.cart_Model)
+      }
 
       return { result: isProductAddedOrUpdated || allQuantitiesAreZero, cart: this.cart_Model };
    }
@@ -459,6 +470,32 @@ class Control_cart {
       return acu
    }
 
+   /* A function that receives an id as a parameter, gets the cart from local storage, subtracts the
+   product from the cart, and then saves the cart back to local storage. */
+   update_Quantity_Cart = (id = "", flag) => {
+
+      if (flag === true) {
+
+         const updateCart_Minus = this.cart_Model.map
+            (i => i.id === id ? { ...i, quantity: i.quantity - 1 } : i).filter(i => i.quantity > 0);
+
+         if (typeof localStorage !== 'undefined') {
+            local_Storage.setItem(keysLocalStorage.CART, updateCart_Minus)
+         }
+         console.log(updateCart_Minus);
+         this.model.assign_Cart_Without_LocalStorage(updateCart_Minus)
+         return updateCart_Minus
+      }
+      const updateCart_Add = this.cart_Model.map
+         (i => i.id === id ? { ...i, quantity: i.quantity + 1 } : i).filter(i => i.quantity > 0);
+
+      if (typeof localStorage !== 'undefined') {
+         local_Storage.setItem(keysLocalStorage.CART, updateCart_Add)
+      }
+      console.log(updateCart_Add);
+      this.model.assign_Cart_Without_LocalStorage(updateCart_Add)
+      return updateCart_Add
+   }
 
 
    /* This is a method in the `Control_cart` class that adds a click event listener to the `#section_cart`
@@ -505,7 +542,8 @@ class Control_cart {
                const id_Delete_Product_In_Cart = Number(e.target.dataset.id)
                //Update quantity
 
-               this.model.update_Quantity_Cart(id_Delete_Product_In_Cart, true)
+               this.update_Quantity_Cart(id_Delete_Product_In_Cart, true)
+               console.log(this.update_Quantity_Cart(id_Delete_Product_In_Cart, true));
                this.controller_Cart(this.model.responseCart)
 
                return cart_Ui.handle_Delete_Element_In_DOM(element_Delete_In_DOM)
@@ -521,7 +559,7 @@ class Control_cart {
 
             e.target.nextElementSibling.value = String(acu)
 
-            return (this.model.update_Quantity_Cart(id, true),
+            return (this.update_Quantity_Cart(id, true),
                this.controller_Cart(this.model.responseCart)
             )
          })
@@ -546,7 +584,7 @@ class Control_cart {
                replace_Minus_Symbol_For_Trash_Basket(this.elementDom, false)
             }
             return (
-               this.model.update_Quantity_Cart(id, false),
+               this.update_Quantity_Cart(id, false),
                this.controller_Cart(this.model.responseCart),
                e.target.previousElementSibling.value = String(acu)
             )

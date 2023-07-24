@@ -26,61 +26,38 @@ class StorageService {
 }
 const local_Storage = new StorageService()
 
-
-
-
-
+//-----------------------------------
 class Drive_Data_Cart {
 
     constructor() {
-        this.modelCart
+        this.modelCart=[]
 
     }
-
-    send_Cart_LocalStorage = () => {
-        return local_Storage.getItem(keysLocalStorage.CART);
-    };
 
     assign_Cart_Without_LocalStorage = (newCart) => {
 
-        this.responseCart = newCart
+        this.modelCart = newCart
     }
 
     send_Cart_Without_LocalStorage = () => {
-        return this.responseCart
+
+        return this.modelCart
 
     }
-    //***********--Cart--**************/ 
 
-
-    /* A function that receives an id as a parameter, gets the cart from local storage, subtracts the
-    product from the cart, and then saves the cart back to local storage. */
-    update_Quantity_Cart = (id = "", flag) => {
-        if (flag === true) {
-            const updateCart_Minus = local_Storage.getItem(keysLocalStorage.CART).map
-                (i => i.id === id ? { ...i, quantity: i.quantity - 1 } : i).filter(i => i.quantity > 0);
-            return (
-                local_Storage.setItem(keysLocalStorage.CART, updateCart_Minus),
-                local_Storage.getItem(keysLocalStorage.CART),
-                this.assign_Cart_Without_LocalStorage(updateCart_Minus)
-            )
+    copyLocalStorage() {
+        if (typeof localStorage !== 'undefined') {
+            this.modelCart = local_Storage.getItem(keysLocalStorage.CART)
+            console.log(this.modelCart);
+            return this.modelCart
         }
-        const updateCart_Add = local_Storage.getItem(keysLocalStorage.CART).map
-            (i => i.id === id ? { ...i, quantity: i.quantity + 1 } : i).filter(i => i.quantity > 0);
-        return (
-            local_Storage.setItem(keysLocalStorage.CART, updateCart_Add),
-            local_Storage.getItem(keysLocalStorage.CART),
-            this.assign_Cart_Without_LocalStorage(updateCart_Add)
-        )
+        return this.modelCart
     }
-
-    //*****************//***************** */
-
 
 }
 /***********--------------***************/
 const handler_Cart_Model = new Drive_Data_Cart()
-
+handler_Cart_Model.copyLocalStorage()
 handler_Cart_Model.send_Cart_Without_LocalStorage()
 
 //***********--Favorites--**************/ 
@@ -93,18 +70,12 @@ class Handler_Favorites {
     initializes an empty array called `favorites` on the `this` object. It then retrieves the current
     favorites from local storage using the `get_Favorites` method of the
     `favoriteStorage` class and assigns it to the `favorites` array. */
-    save_And_Update_Favorites = (productId) => {
-        const id = productId.id && productId ? productId.id : null
-        this.favorites = local_Storage.getItem(keysLocalStorage.FAVORITES) || [];
-        const index = this.favorites.findIndex(i => i.id === id)
 
-        if (index !== -1) {
-            this.favorites.splice(index, 1)
-        }
-        else {
-            this.favorites.push(productId)
-        }
-        local_Storage.setItem(keysLocalStorage.FAVORITES, this.favorites)
+    dataFavorites(favorites = []) {
+        this.favorites = favorites
+    }
+
+    sendDataFavorites() {
         return this.favorites
     }
 

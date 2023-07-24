@@ -4,7 +4,7 @@ import { createRequire } from 'module';
 import { JSDOM } from 'jsdom';
 import sinon from 'sinon';
 import { it, describe } from 'mocha';
-import { Control_cart } from '../public/js/controller.js';
+import { Control_cart,Control_Favorites } from '../public/js/controller.js';
 import { keysLocalStorage } from '../public/js/constants.js';
 import { storageMock } from './storageMock.js';
 const require = createRequire(import.meta.url)
@@ -178,6 +178,13 @@ describe('----Method addProductsInCart----', () => {
     expect(finalResult.result).to.be.false;
   });
 })
+describe('----Method add_Favorites----', () => {
+  it('should add a product to the list of favorite products', () => {
+    const testFav = new Control_Favorites()
+    const paramProduct = { id: 1, name: 'panacea', price: 15.50, quantity: 1 }
+    const res = testFav.handler_Favorites(paramProduct)
+    
+})})
 
 
 //-------------------------//
