@@ -9,7 +9,9 @@ add, delete, and get products from local storage. */
 class StorageService {
     setItem(key, value) {
         const setValue = JSON.stringify(value)
-        localStorage.setItem(key, setValue);
+        if(typeof localStorage !== 'undefined'){
+            localStorage.setItem(key, setValue);
+        }
     }
 
     getItem(key) {
@@ -49,6 +51,13 @@ class Drive_Data_Cart {
     send_Cart_Without_LocalStorage = () => {
         return this.responseCart
 
+    }
+
+    createCopyLocalStorage(cart){
+        console.log(cart);
+        this.responseCart = cart
+        local_Storage.setItem(keysLocalStorage.CART,this.responseCart)
+        return this.responseCart
     }
     //***********--Cart--**************/ 
 
@@ -109,6 +118,8 @@ class Handler_Favorites {
     }
 
 }
+
+handler_Cart_Model.createCopyLocalStorage(local_Storage.getItem(keysLocalStorage.CART))
 
 /***********--------------***************/
 

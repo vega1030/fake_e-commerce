@@ -257,7 +257,7 @@ const favorites = new Control_Favorites()
 class Control_cart {
 
    constructor(total = 0, elementDom) {
-      this.cart = []
+      this.cart_Model = []
       this.cart_Model = local_Storage.getItem(keysLocalStorage.CART)
       this.elementDom = elementDom
       this.single_Product = null
@@ -274,10 +274,15 @@ class Control_cart {
 
    controller_Cart(cart = '') {
       this.cart = cart ? cart : []
-
-      cart_Ui.model_UiCart_List(this.cart)
-      const quantityTotalProductsInCart = this.quantity_In_Cart(this.cart)
-      return cart_Ui.createCartCont(quantityTotalProductsInCart), render_Total_And_Pay(this.cart)
+      if(typeof localStorage !== 'undefined'){
+         cart_Ui.model_UiCart_List(this.cart_Model)
+         this.model.createCopyLocalStorage(this.cart_Model)
+         this.quantity_In_Cart(this.cart_Model)
+         render_Total_And_Pay(this.cart)
+         
+         return this.cart_Model
+      }
+      return this.cart_Model
 
    };
 
@@ -326,10 +331,9 @@ class Control_cart {
       }, []);
 
       const isProductAddedOrUpdated = updatedCartReduced.some((product) => {
-         // Buscar el producto en el carrito original (this.cart_Model)
+   
          const existingProduct = this.cart_Model.find((p) => p.id === product.id);
-
-         // Si el producto no existe en el carrito original, se considera un nuevo producto agregado
+      
          if (!existingProduct) {
             return true;
          }
@@ -345,9 +349,8 @@ class Control_cart {
      }
 
       if (typeof localStorage !== 'undefined') {
-         cart_Ui.model_UiCart_List(cart_Model)
-         local_Storage.setItem(keysLocalStorage.CART, cart_Model);
-         this.controller_Cart(cart_Model)
+         
+         this.controller_Cart(this.cart_Model)
       }
       this.cart_Model = updatedCartReduced;
 
@@ -449,13 +452,15 @@ class Control_cart {
     */
 
    quantity_In_Cart = (data) => {
+      console.log(data);
       if (!data) {
          return 0
       }
       const acu = data === undefined ? 0 : data.reduce((previous, current) => {
          return current.quantity === undefined ? previous : previous + current.quantity
-
+         
       }, 0)
+      cart_Ui.createCartCont(acu)
       return acu
    }
 
