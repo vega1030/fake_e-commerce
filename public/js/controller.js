@@ -264,6 +264,7 @@ class Control_cart {
       this.id = null;
       this.shouldClearCart = false;
       this.model = new Drive_Data_Cart()
+      this.acu = 0
    }
 
 
@@ -274,12 +275,12 @@ class Control_cart {
 
    controller_Cart(cart = '') {
       this.cart = cart ? cart : []
-      if(typeof localStorage !== 'undefined'){
+      if (typeof localStorage !== 'undefined') {
          cart_Ui.model_UiCart_List(this.cart_Model)
          this.model.createCopyLocalStorage(this.cart_Model)
          this.quantity_In_Cart(this.cart_Model)
          render_Total_And_Pay(this.cart)
-         
+
          return this.cart_Model
       }
       return this.cart_Model
@@ -331,9 +332,9 @@ class Control_cart {
       }, []);
 
       const isProductAddedOrUpdated = updatedCartReduced.some((product) => {
-   
+
          const existingProduct = this.cart_Model.find((p) => p.id === product.id);
-      
+
          if (!existingProduct) {
             return true;
          }
@@ -346,10 +347,10 @@ class Control_cart {
       const allQuantitiesAreZero = updatedCartReduced.every((product) => product.quantity === 0);
       if (isProductAddedOrUpdated || allQuantitiesAreZero) {
          this.cart_Model = updatedCartReduced;
-     }
+      }
 
       if (typeof localStorage !== 'undefined') {
-         
+
          this.controller_Cart(this.cart_Model)
       }
       this.cart_Model = updatedCartReduced;
@@ -428,6 +429,7 @@ class Control_cart {
 
    }
 
+
    assign_Event_Btn_Pay = () => {
       const payEvent = document.querySelector('#view_section_cart')
       payEvent.addEventListener('click', (event) => {
@@ -452,17 +454,18 @@ class Control_cart {
     */
 
    quantity_In_Cart = (data) => {
-      console.log(data);
       if (!data) {
          return 0
       }
       const acu = data === undefined ? 0 : data.reduce((previous, current) => {
          return current.quantity === undefined ? previous : previous + current.quantity
-         
+
       }, 0)
       cart_Ui.createCartCont(acu)
       return acu
    }
+
+
 
 
 
@@ -491,42 +494,38 @@ class Control_cart {
       value of the input element that is the next element sibling of the clicked element, and updates the
       cart with the new quantity value using the `update_Quantity_Cart` method. If the quantity value is
       1, it replaces the trash basket icon with a minus symbol */
-      let acu = 0
+
+      console.log('this cart_Model: ', this.cart_Model);
+
       const btn_Add_Quantity = document.querySelectorAll('.add')
       const btns_Subtract = document.querySelectorAll('.subtract')
       btns_Subtract.forEach(elements => {
          elements.addEventListener('click', (e) => {
 
-            /* The above code is checking if the next element sibling of the target element is null. If
-            it is null, it retrieves the parent element of the parent element of the target element
-            and assigns it to a variable. It also retrieves the ID of the product to be deleted from
-            the dataset of the target element and assigns it to a variable. Then it updates the
-            quantity of the product in the cart by calling a method of the model object and passing
-            the ID of the product and a boolean value as arguments. After that, it calls a method of
-            the controller object and passes the responseCart property of the model */
+
 
             if (e.target.nextElementSibling === null) {
                const element_Delete_In_DOM = e.target.parentElement.parentElement.parentElement
                const id_Delete_Product_In_Cart = Number(e.target.dataset.id)
                //Update quantity
 
-               this.model.update_Quantity_Cart(id_Delete_Product_In_Cart, true)
+               this.update_Quantity_Cart(id_Delete_Product_In_Cart, true)
                this.controller_Cart(this.model.responseCart)
-
                return cart_Ui.handle_Delete_Element_In_DOM(element_Delete_In_DOM)
 
             }
 
             const id = Number(e.target.nextElementSibling.dataset.id)
-            acu = Number(e.target.nextElementSibling.value) - 1
-            if (acu === 1) {
+            this.acu = Number(e.target.nextElementSibling.value) - 1
+            console.log(this.acu);
+            if (this.acu === 1) {
                this.elementDom = elements
                replace_Minus_Symbol_For_Trash_Basket(this.elementDom, true)
             }
 
-            e.target.nextElementSibling.value = String(acu)
+            e.target.nextElementSibling.value = String(this.acu)
 
-            return (this.model.update_Quantity_Cart(id, true),
+            return (this.update_Quantity_Cart(id, true),
                this.controller_Cart(this.model.responseCart)
             )
          })
@@ -545,22 +544,36 @@ class Control_cart {
       btn_Add_Quantity.forEach(elements => {
          elements.addEventListener('click', (e) => {
             const id = Number(e.target.previousElementSibling.dataset.id)
-            acu = Number(e.target.previousElementSibling.value) + 1
-            if (acu === 2) {
+            this.acu = Number(e.target.previousElementSibling.value) + 1
+            console.log('acu add: ', this.acu);
+            if (this.acu === 2) {
                this.elementDom = e.target.previousElementSibling.previousElementSibling
                replace_Minus_Symbol_For_Trash_Basket(this.elementDom, false)
             }
             return (
-               this.model.update_Quantity_Cart(id, false),
+               this.update_Quantity_Cart(id, false),
                this.controller_Cart(this.model.responseCart),
-               e.target.previousElementSibling.value = String(acu)
+               e.target.previousElementSibling.value = String(this.acu)
             )
          })
 
       })
 
    }
-
+   update_Quantity_Cart = (id = "", flag) => {
+      if (flag === true) {
+         const updateCart_Minus = this.cart_Model.map
+            (i => i.id === id ? { ...i, quantity: i.quantity - 1 } : i).filter(i => i.quantity > 0);
+         this.cart_Model = updateCart_Minus
+         this.model.createCopyLocalStorage(this.cart_Model)
+         return this.cart_Model
+      }
+      const updateCart_Add = this.cart_Model.map
+         (i => i.id === id ? { ...i, quantity: i.quantity + 1 } : i).filter(i => i.quantity > 0);
+      this.cart_Model = updateCart_Add
+      this.model.createCopyLocalStorage(this.cart_Model)
+      return this.cart_Model
+   }
 
    //--------------------------------------------------------------
 }

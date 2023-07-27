@@ -28,10 +28,7 @@ class StorageService {
 }
 const local_Storage = new StorageService()
 
-
-
-
-
+//---------------------------------------/
 class Drive_Data_Cart {
 
     constructor() {
@@ -54,7 +51,7 @@ class Drive_Data_Cart {
     }
 
     createCopyLocalStorage(cart){
-        console.log(cart);
+        console.log('cart at model: ',cart);
         this.responseCart = cart
         local_Storage.setItem(keysLocalStorage.CART,this.responseCart)
         return this.responseCart
@@ -64,24 +61,7 @@ class Drive_Data_Cart {
 
     /* A function that receives an id as a parameter, gets the cart from local storage, subtracts the
     product from the cart, and then saves the cart back to local storage. */
-    update_Quantity_Cart = (id = "", flag) => {
-        if (flag === true) {
-            const updateCart_Minus = local_Storage.getItem(keysLocalStorage.CART).map
-                (i => i.id === id ? { ...i, quantity: i.quantity - 1 } : i).filter(i => i.quantity > 0);
-            return (
-                local_Storage.setItem(keysLocalStorage.CART, updateCart_Minus),
-                local_Storage.getItem(keysLocalStorage.CART),
-                this.assign_Cart_Without_LocalStorage(updateCart_Minus)
-            )
-        }
-        const updateCart_Add = local_Storage.getItem(keysLocalStorage.CART).map
-            (i => i.id === id ? { ...i, quantity: i.quantity + 1 } : i).filter(i => i.quantity > 0);
-        return (
-            local_Storage.setItem(keysLocalStorage.CART, updateCart_Add),
-            local_Storage.getItem(keysLocalStorage.CART),
-            this.assign_Cart_Without_LocalStorage(updateCart_Add)
-        )
-    }
+
 
     //*****************//***************** */
 
