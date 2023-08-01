@@ -279,13 +279,12 @@ class View_cart {
             content_Data.appendChild(price);
             content_Data.appendChild(content_Select);
 
-            container.appendChild(content_Data);
+            section_Content_Data.appendChild(content_Data);
             item.quantity === 1 ? subtractBtn.appendChild(contentTrash) : subtractBtn.textContent = '-';
 
             return { ...item, content_Data };
         });
 
-        section_Content_Data.appendChild(container);
     }
 
 

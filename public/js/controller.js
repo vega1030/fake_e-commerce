@@ -2,7 +2,7 @@
 
 import { get_All_Products, get_Categories, get_View_Products_For_Category, get_Single_Product } from './api.js'
 import { keysLocalStorage } from './constants.js'
-import { Drive_Data_Cart, Handler_Favorites, StorageService } from './model.js';
+import { Drive_Data_Cart, StorageService, Handler_Favorites } from './model.js';
 
 import {
    Category_ui, products_Instance, Handler_Displays_Ui,
@@ -13,12 +13,12 @@ const local_Storage = new StorageService()
 const handler_View = new Handler_Displays_Ui()
 const categories_UI = new Category_ui()
 const cart_Ui = new View_cart()
-const model_Favorites = new Handler_Favorites()
+const modelFavorites = new Handler_Favorites()
 
 //----------------------------------------------------------------
 const loadSpinner = (flag) => {
    const overlay = document.querySelector('.overlay')
-   if (overlay != null) {
+   if (overlay !== null) {
       return !flag ? overlay.style.display = 'flex' : overlay.style.display = 'none'
    }
 }
@@ -183,7 +183,7 @@ class Control_View_Information_At_DOM {
 
 class Control_Favorites {
    constructor() {
-      this.favorites
+      this.favorites = []
       this.instance_View = new View_Favorites()
       this.id = ''
    }
@@ -209,6 +209,7 @@ class Control_Favorites {
             this.id = class_List === 'pathHeart' ? Number(e.target.parentElement.parentElement.dataset.id) :
                Number(e.target.dataset.id);
             this.send_Favorite_Product_To_LocalStorage()
+            this.callingApi()
 
          });
 
@@ -223,29 +224,58 @@ class Control_Favorites {
    `model_Favorites.save_And_Update_Favorites` function and returns the updated favorites list. If
    there is an error, it logs the error to the console. */
 
+   async callingApi() {
 
-
-   send_Favorite_Product_To_LocalStorage = async () => {
-      const overlay = document.querySelector('.overlay')
-      overlay.style.display = 'flex'
+      loadSpinner(false)
 
       try {
          const res = await get_Single_Product(this.id)
-         const favorite = model_Favorites.save_And_Update_Favorites(res)
+         return res
+      }
+      catch (error) {
+         return error;
+      }
+      finally {
+         loadSpinner(true)
+      }
 
+   }
+
+
+   async send_Favorite_Product_To_LocalStorage () {
+
+         const res = this.callingApi()
+
+         const favorite =  this.save_And_Update_Favorites(res)
+         console.log(favorite);
          this.favorites = favorite
          //display
          this.instance_View.display_FavoritesHeart(this.favorites)
          return this.favorites
 
-      }
-      catch (error) {
-         console.log(error);
-      }
-      finally {
-         overlay.style.display = 'none'
-      }
    }
+
+   save_And_Update_Favorites = (productId) => {
+      const id = productId.id && productId ? productId.id : null
+
+      if (typeof localStorage !== 'undefined') {
+         this.favorites = local_Storage.getItem(keysLocalStorage.FAVORITES) || [];
+      }
+      const index = this.favorites.findIndex(i => i.id === productId.id)
+
+      if (index !== -1) {
+         this.favorites.splice(index, 1)
+         console.log(this.favorites);
+      }
+      else {
+         this.favorites.push(productId)
+      }
+      if (typeof localStorage !== 'undefined') {
+         local_Storage.setItem(keysLocalStorage.FAVORITES, this.favorites)
+      }
+      return this.favorites
+   }
+
 }
 
 //-----------------------------------------------------------------------------//
@@ -274,12 +304,12 @@ class Control_cart {
    }
 
    controller_Cart(cart = '') {
-      this.cart = cart ? cart : []
       if (typeof localStorage !== 'undefined') {
+         this.cart_Model = cart
          cart_Ui.model_UiCart_List(this.cart_Model)
-         this.model.createCopyLocalStorage(this.cart_Model)
+         this.model.setAndCopyLocalStorage(this.cart_Model)
          this.quantity_In_Cart(this.cart_Model)
-         render_Total_And_Pay(this.cart)
+         render_Total_And_Pay(this.cart_Model)
 
          return this.cart_Model
       }
@@ -318,6 +348,7 @@ class Control_cart {
          this.shouldClearCart = false
       }
       const updatedCart = [ ...this.cart_Model, paramProduct ];
+
       const updatedCartReduced = updatedCart.reduce((acc, e) => {
          const existingIndex = acc.findIndex((x) => e.id === x.id);
 
@@ -376,51 +407,55 @@ class Control_cart {
 
    assign_Events_Products = () => {
 
-      const section_Content_Data = document.querySelector('#ui_Cart');
-      section_Content_Data.addEventListener('click', (event) => {
-         const target = event.target;
+      const sectionCart = document.querySelector('#section_cart')
 
-         /* The above code defines an object called `cartHandler` with three methods: `subtract`, `add`, and
-         `trash_count`. These methods are used to modify the quantity of items in a shopping cart. The
-         `subtract` method decreases the quantity of an item by 1, the `add` method increases the quantity of
-         an item by 1, and the `trash_count` method removes an item from the cart. The code then loops
-         through the class list of a given target element and calls the corresponding method in `cartHandler`
-         based on the class name. */
+      const cart = document.querySelector('#ui_Cart');
+
+      const listenerTarget = () => cart.addEventListener('click', (event) => {
+         const target = event.target
+
          const cartHandler = {
 
             subtract: (target) => {
+               this.modify_Quantity();
+               console.log('subtract: ', target);
                const id = target.getAttribute('data-id');
                const input = target.nextElementSibling;
                const count = parseInt(input.value, 10);
                const newCount = Math.max(count - 1, 0);
                input.value = newCount;
-               this.modify_Quantity();
             },
 
             add: (target) => {
+               this.modify_Quantity();
+               console.log(target);
                const id = target.getAttribute('data-id');
                const input = target.previousElementSibling;
                const count = parseInt(input.value, 10);
                const newCount = Math.min(count + 1, 10);
                input.value = newCount;
-               this.modify_Quantity();
             },
 
             trash_count: (target) => {
-               const id = target.getAttribute('data-id');
                this.modify_Quantity();
+               const id = target.getAttribute('data-id');
             },
 
          };
-
+         //recibe el classlist de target
          for (const className of target.classList) {
+            console.log(className);
             if (className in cartHandler) {
+               //pasa la class a cartHandler()
                cartHandler[ className ](target);
                break;
             }
          }
+      }
 
-      });
+      );
+
+      sectionCart.addEventListener('click', listenerTarget())
    }
 
    confirm_Pay = () => {
@@ -495,22 +530,22 @@ class Control_cart {
       cart with the new quantity value using the `update_Quantity_Cart` method. If the quantity value is
       1, it replaces the trash basket icon with a minus symbol */
 
-      console.log('this cart_Model: ', this.cart_Model);
 
       const btn_Add_Quantity = document.querySelectorAll('.add')
       const btns_Subtract = document.querySelectorAll('.subtract')
       btns_Subtract.forEach(elements => {
          elements.addEventListener('click', (e) => {
-
-
-
+            console.log(false);
             if (e.target.nextElementSibling === null) {
+               console.log(true);
                const element_Delete_In_DOM = e.target.parentElement.parentElement.parentElement
                const id_Delete_Product_In_Cart = Number(e.target.dataset.id)
                //Update quantity
 
                this.update_Quantity_Cart(id_Delete_Product_In_Cart, true)
                this.controller_Cart(this.model.responseCart)
+               const controller = this.controller_Cart(this.model.responseCart)
+               console.log(controller);
                return cart_Ui.handle_Delete_Element_In_DOM(element_Delete_In_DOM)
 
             }
@@ -550,28 +585,30 @@ class Control_cart {
                this.elementDom = e.target.previousElementSibling.previousElementSibling
                replace_Minus_Symbol_For_Trash_Basket(this.elementDom, false)
             }
-            return (
-               this.update_Quantity_Cart(id, false),
+            this.update_Quantity_Cart(id, false),
                this.controller_Cart(this.model.responseCart),
                e.target.previousElementSibling.value = String(this.acu)
-            )
+            return
+
          })
 
       })
 
    }
+
    update_Quantity_Cart = (id = "", flag) => {
       if (flag === true) {
+         console.log('update: ', flag);
          const updateCart_Minus = this.cart_Model.map
             (i => i.id === id ? { ...i, quantity: i.quantity - 1 } : i).filter(i => i.quantity > 0);
          this.cart_Model = updateCart_Minus
-         this.model.createCopyLocalStorage(this.cart_Model)
+         this.model.setAndCopyLocalStorage(this.cart_Model)
          return this.cart_Model
       }
       const updateCart_Add = this.cart_Model.map
          (i => i.id === id ? { ...i, quantity: i.quantity + 1 } : i).filter(i => i.quantity > 0);
       this.cart_Model = updateCart_Add
-      this.model.createCopyLocalStorage(this.cart_Model)
+      this.model.setAndCopyLocalStorage(this.cart_Model)
       return this.cart_Model
    }
 
@@ -585,11 +622,10 @@ const controller_Cart_Instance = new Control_cart()
 
 if (typeof localStorage !== 'undefined') {
    controller_Cart_Instance.add_Cart_Listener(),
-      controller_Cart_Instance.modify_Quantity(),
+      controller_Cart_Instance.assign_Events_Products(),
       handler_Init_Page.handlerSingleProduct(),
       handler_Init_Page.listener_Category(),
       controller_Cart_Instance.assign_Event_Btn_Pay(),
-      controller_Cart_Instance.assign_Events_Products(),
       favorites.handler_Favorites(),
       favorites.send_Favorite_Product_To_LocalStorage(),
       favorites.instance_View.display_FavoritesHeart(local_Storage.getItem(keysLocalStorage.FAVORITES)),

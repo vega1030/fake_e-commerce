@@ -5,6 +5,7 @@ import { JSDOM } from 'jsdom';
 import sinon from 'sinon';
 import { it, describe } from 'mocha';
 import { Control_cart } from '../public/js/controller.js';
+import { Control_Favorites } from "../public/js/controller.js";
 import { keysLocalStorage } from '../public/js/constants.js';
 import { storageMock } from './storageMock.js';
 const require = createRequire(import.meta.url)
@@ -156,7 +157,7 @@ describe('----Method addProductsInCart----', () => {
     const res1 = testCart.addProductsInCart(paramProduct2);
     testLocalStorage.setItem(keysLocalStorage.CART, JSON.stringify(res1.cart));
     expect(testLocalStorage.getItem(keysLocalStorage.CART)).to.deep.equal(JSON.stringify([ { id: 6, quantity: 6 } ]));
-    
+
     //new id into the cart
     expect(res1.result).to.be.false;
     testCart.clearCart()
@@ -176,9 +177,155 @@ describe('----Method addProductsInCart----', () => {
     expect(testLocalStorage.getItem(keysLocalStorage.CART)).to.deep.equal(JSON.stringify([ { id: 1, quantity: 1 } ]));
     //new id into the cart    
     expect(finalResult.result).to.be.false;
+    testLocalStorage.clear()
+
   });
+
+
 })
 
+describe('----Method save_And_Update_Favorites----', () => {
 
-//-------------------------//
+  it('should create favorite list', () => {
+
+
+    const testFavorites = new Control_Favorites()
+
+    const product1 = {
+      id: 4,
+      name: 'Producto 4',
+      price: 100,
+      img: 'img/product4.jpg',
+      description: 'Descripción del producto 4',
+      quantity: 1
+    }
+
+    const product2 = {
+      id: 2,
+      name: 'Producto 2',
+      price: 300,
+      img: 'img/product2.jpg',
+      description: 'Descripción del producto 2',
+      quantity: 1
+    }
+
+    const product3 = {
+      id: 3,
+      name: 'Producto 3',
+      price: 400,
+      img: 'img/product3.jpg',
+      description: 'Descripción del producto 3',
+      quantity: 1
+    }
+
+    const resFavorites =
+      [
+        {
+          id: 4,
+          name: 'Producto 4',
+          price: 100,
+          img: 'img/product4.jpg',
+          description: 'Descripción del producto 4',
+          quantity: 1
+        },
+        {
+          id: 2,
+          name: 'Producto 2',
+          price: 300,
+          img: 'img/product2.jpg',
+          description: 'Descripción del producto 2',
+          quantity: 1
+        },
+        {
+          id: 3,
+          name: 'Producto 3',
+          price: 400,
+          img: 'img/product3.jpg',
+          description: 'Descripción del producto 3',
+          quantity: 1
+        }
+      ]
+
+
+    const result = testFavorites.save_And_Update_Favorites(product1)
+    const result2 = testFavorites.save_And_Update_Favorites(product2)
+    const result3 = testFavorites.save_And_Update_Favorites(product3)
+
+    testLocalStorage.setItem(keysLocalStorage.FAVORITES, JSON.stringify(result3))
+    expect(testLocalStorage.getItem(keysLocalStorage.FAVORITES)).to.deep.equal(JSON.stringify(resFavorites));
+
+
+    testLocalStorage.clear()
+
+
+  });
+
+  it('should dislike one favorite product', () => {
+
+    const testFavorites = new Control_Favorites()
+
+    const product1 = {
+      id: 4,
+      name: 'Producto 4',
+      price: 100,
+      img: 'img/product4.jpg',
+      description: 'Descripción del producto 4',
+      quantity: 1
+    }
+
+    const product2 = {
+      id: 2,
+      name: 'Producto 2',
+      price: 300,
+      img: 'img/product2.jpg',
+      description: 'Descripción del producto 2',
+      quantity: 1
+    }
+
+    const product3 = {
+      id: 3,
+      name: 'Producto 3',
+      price: 400,
+      img: 'img/product3.jpg',
+      description: 'Descripción del producto 3',
+      quantity: 1
+    }
+
+    const newResFavorites =
+      [
+        {
+          id: 2,
+          name: 'Producto 2',
+          price: 300,
+          img: 'img/product2.jpg',
+          description: 'Descripción del producto 2',
+          quantity: 1
+        },
+        {
+          id: 3,
+          name: 'Producto 3',
+          price: 400,
+          img: 'img/product3.jpg',
+          description: 'Descripción del producto 3',
+          quantity: 1
+        }
+      ]
+
+
+    const result2 = testFavorites.save_And_Update_Favorites(product2)
+    const result3 = testFavorites.save_And_Update_Favorites(product3)
+    const result = testFavorites.save_And_Update_Favorites(product1)
+    const final_result = testFavorites.save_And_Update_Favorites(product1)
+
+    console.table(final_result);
+
+    testLocalStorage.setItem(keysLocalStorage.FAVORITES, JSON.stringify(final_result))
+    expect(testLocalStorage.getItem(keysLocalStorage.FAVORITES)).to.deep.equal(JSON.stringify(newResFavorites));
+
+
+
+
+  });
+})
+  //-------------------------//
 
