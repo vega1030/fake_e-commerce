@@ -68,16 +68,11 @@ class Product {
 
     </div>
     <div class="content-buttons___individual_item">
-    <button type="button" id ="${ product.id }" class="btn btn-primary btn-card btn_add_to_cart">Add Cart</button>
+    <button type="button" data-id ="${ product.id }" class="btn btn-primary btn-card btn_add_to_cart">Add Cart</button>
 </div>
  
         `
-
         content_Individual_Cards.insertAdjacentHTML('afterbegin', model_Card)
-
-        content_Individual_Cards.addEventListener('click', (e) => {
-            console.log(e.target.id);
-        })
 
     }
 
@@ -145,7 +140,7 @@ class View_Favorites {
 
         const content_Cards = document.querySelector('.content-sale')
 
-        
+
         const cardsClass = String('.' + content_Cards.firstElementChild.classList[ 0 ])
         const cards = [ ...document.querySelectorAll(cardsClass) ]
         const select =
@@ -186,17 +181,12 @@ class View_cart {
 
     }
 
-
-
-
     /* The above code defines a function `model_UiCart_List` that takes in a `cart` object as a parameter.
     It then creates a new container and dynamically generates HTML elements for each item in the `cart`
     object. The generated elements include an image of the product, its title, price, and a quantity
     selector with add and subtract buttons. The function also adds a trash basket icon to the subtract
     button if the quantity of the item is 1. Finally, the function appends the generated elements to the
     `ui_Cart` section of the HTML document. */
-
-
 
     model_UiCart_List = (cart) => {
         if (cart === null) { return }
@@ -416,7 +406,6 @@ class Handler_Displays_Ui {
         }
         if (hash === 'individual_product') {
             return (
-                console.log('okay'),
                 document.querySelector('#individual_product').style.display = 'grid',
                 document.querySelector('#content_card').style.display = 'none',
                 document.querySelector('.cart_style').style.display = 'none',

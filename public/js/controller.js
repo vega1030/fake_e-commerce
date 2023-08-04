@@ -22,7 +22,9 @@ const loadSpinner = (flag) => {
       return !flag ? overlay.style.display = 'flex' : overlay.style.display = 'none'
    }
 }
-let cart = []
+
+
+
 class Control_View_Information_At_DOM {
 
    constructor(products = [], categories, total) {
@@ -135,6 +137,8 @@ class Control_View_Information_At_DOM {
       view_Element.forEach((element) => {
 
          element.addEventListener('click', async (e) => {
+            controllerIndividualProduct.listenerAddCart()
+
             try {
                const data_Id = Number(e.target.dataset.id)
                const res = await get_Single_Product(data_Id)
@@ -175,9 +179,18 @@ class Control_View_Information_At_DOM {
       };
    }
 
+}
 
+class ControlIndividualProduct {
+
+   listenerAddCart() {
+      const btnAddCart = document.querySelectorAll('.btn_add_to_cart')
+      console.log(btnAddCart);
+   }
 
 }
+const controllerIndividualProduct = new ControlIndividualProduct
+controllerIndividualProduct.listenerAddCart()
 
 //----------------------------------------------------------------
 
@@ -225,8 +238,8 @@ class Control_Favorites {
    there is an error, it logs the error to the console. */
 
    async callingApi() {
-
       loadSpinner(false)
+
 
       try {
          const res = await get_Single_Product(this.id)
@@ -242,16 +255,17 @@ class Control_Favorites {
    }
 
 
-   async send_Favorite_Product_To_LocalStorage () {
+   async send_Favorite_Product_To_LocalStorage() {
 
-         const res = this.callingApi()
-
-         const favorite =  this.save_And_Update_Favorites(res)
-         console.log(favorite);
-         this.favorites = favorite
-         //display
-         this.instance_View.display_FavoritesHeart(this.favorites)
-         return this.favorites
+      const res = await this.callingApi()
+      if(res === undefined){
+         return 
+      }
+      const favorite = this.save_And_Update_Favorites(res)
+      this.favorites = favorite
+      //display
+      this.instance_View.display_FavoritesHeart(this.favorites)
+      return this.favorites
 
    }
 
@@ -265,7 +279,6 @@ class Control_Favorites {
 
       if (index !== -1) {
          this.favorites.splice(index, 1)
-         console.log(this.favorites);
       }
       else {
          this.favorites.push(productId)
@@ -343,6 +356,7 @@ class Control_cart {
    };
 
    addProductsInCart = (paramProduct) => {
+      console.log(paramProduct);
       if (this.shouldClearCart) {
          this.cart_Model = []
          this.shouldClearCart = false
@@ -615,12 +629,12 @@ class Control_cart {
    //--------------------------------------------------------------
 }
 const handler_Init_Page = new Control_View_Information_At_DOM()
-await handler_Init_Page.controller_get_All_Products()
-await handler_Init_Page.control_View_Categories()
 
 const controller_Cart_Instance = new Control_cart()
 
 if (typeof localStorage !== 'undefined') {
+   await handler_Init_Page.controller_get_All_Products()
+   await handler_Init_Page.control_View_Categories()
    controller_Cart_Instance.add_Cart_Listener(),
       controller_Cart_Instance.assign_Events_Products(),
       handler_Init_Page.handlerSingleProduct(),
@@ -630,8 +644,8 @@ if (typeof localStorage !== 'undefined') {
       favorites.send_Favorite_Product_To_LocalStorage(),
       favorites.instance_View.display_FavoritesHeart(local_Storage.getItem(keysLocalStorage.FAVORITES)),
       controller_Cart_Instance.controller_Cart(local_Storage.getItem(keysLocalStorage.CART))
+   handler_Init_Page.handlerHeroImageCarrousel()
 }
-handler_Init_Page.handlerHeroImageCarrousel()
 
 
 
