@@ -1,6 +1,12 @@
 "use strict";
 
 class Product {
+
+
+    constructor(heartsDom) {
+        this.heartsDom = heartsDom
+    }
+
     /* Creating a card with the information of the product. */
     create_Card(product) {
         let model = ''
@@ -15,7 +21,7 @@ class Product {
 
             model +=
                 `
-                <div class=" content-sale__child shadow-sm p-3 mb-5 bg-body-tertiary rounded" data-category="${ data.category }">
+                <div class=" content-sale__child shadow-sm p-3 mb-5 bg-body-tertiary rounded" data-category="${ data.category }" data-id="${ data.id }">
                     <button  type="button" class="favorite" id=${ data.id } data-id="${ data.id }" value = "on"> 
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
                             <path class= "pathHeart" fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
@@ -48,32 +54,45 @@ class Product {
 
     uI_Individual_Card(product) {
         const content_Individual_Cards = document.querySelector('#individual_product')
+
+        const coincidentElements = this.heartsDom.find(i => {
+            return i.dataset.id == product.id
+        })
+        const initialColor = coincidentElements===undefined?'black':'red'
+
         let model_Card = ''
 
         model_Card =
             `
-        <div class="content_title___individual_item">
-            <h1> ${ product.title }</h1>
-        </div>
-        <div class="content_price___individual_item">
-            <h3>${ product.price }\u20AC</h3>
-        </div>
-        <div class="content_description___individual_item">
-            <p>
-                ${ product.description }
-            </p>
-    </div>
-    <div class="content_image___individual_item ">
-        <img src="${ product.image }" alt="image${ product.title }" class="image_style">
-
-    </div>
-    <div class="content-buttons___individual_item">
-    <button type="button" data-id ="${ product.id }" class="btn btn-primary btn-card btn_add_to_cart">Add Cart</button>
-</div>
- 
+            <div class='content-button-favorite' data-id="${ product.id }">
+                <button  type="button" class="favorite" data-id="${ product.id }" value = "on"> 
+                    <svg data-id="${ product.id }" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16"style="color: ${initialColor};">
+                    <path data-id="${ product.id }" class= "pathHeart" fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="content_title___individual_item">
+                <h1> ${ product.title }</h1>
+            </div>
+            <div class="content_price___individual_item">
+                <h3>${ product.price }\u20AC</h3>
+            </div>
+            <div class="content_description___individual_item">
+                <p>
+                    ${ product.description }
+                </p>
+            </div>
+            <div class="content_image___individual_item ">
+                <img src="${ product.image }" alt="image${ product.title }" class="image_style">
+            </div>
+            <div class="content-buttons___individual_item">
+                <button type="button" data-id ="${ product.id }" class="btn btn-primary btn-card individual_btn_add_to_cart">Add Cart</button>
+            </div>
         `
-        content_Individual_Cards.insertAdjacentHTML('afterbegin', model_Card)
 
+
+        content_Individual_Cards.insertAdjacentHTML('afterbegin', model_Card)
+        return content_Individual_Cards
     }
 
     heroCarrouselImage = (productsHero) => {
@@ -132,16 +151,15 @@ class View_Favorites {
     constructor(favorites) {
         this.favorites = favorites
         this.id = ''
-        this.domElements = ''
+        this.fav_DOM = ''
     }
 
     display_FavoritesHeart(product) {
         //check color state here
-
         const content_Cards = document.querySelector('.content-sale')
 
-
         const cardsClass = String('.' + content_Cards.firstElementChild.classList[ 0 ])
+        console.log(cardsClass);
         const cards = [ ...document.querySelectorAll(cardsClass) ]
         const select =
             cards.map(current => {
@@ -152,10 +170,15 @@ class View_Favorites {
                 return matchingProduct ? current : null;
             });
         this.fav_DOM = select.filter(item => item !== null)
-        this.fav_DOM = this.fav_DOM.map(i => i.children[ 0 ].firstElementChild).forEach(i => {
-            i.style.color === 'black' ? i.style.color = 'red' : i.style.color = 'black'
 
+        this.fav_DOM.map(i => i.children[ 0 ].firstElementChild).forEach(i => {
+            i.style.color === 'black' ? i.style.color = 'red' : i.style.color = 'black'
         })
+        /* The above code is assigning the value of `this.fav_DOM` to the `heartsDom` property of the
+        `products_Instance` object in JavaScript. */
+        products_Instance.heartsDom = this.fav_DOM
+        //------------------------------------------
+        return this.fav_DOM
 
     }
 

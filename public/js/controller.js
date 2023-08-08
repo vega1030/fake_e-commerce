@@ -7,13 +7,15 @@ import { Drive_Data_Cart, StorageService, Handler_Favorites } from './model.js';
 import {
    Category_ui, products_Instance, Handler_Displays_Ui,
    View_Favorites, View_cart, replace_Minus_Symbol_For_Trash_Basket,
-   render_Total_And_Pay
+   render_Total_And_Pay, Product
 } from "./view.js";
 const local_Storage = new StorageService()
 const handler_View = new Handler_Displays_Ui()
 const categories_UI = new Category_ui()
 const cart_Ui = new View_cart()
 const modelFavorites = new Handler_Favorites()
+const productsView = new Product()
+
 
 //----------------------------------------------------------------
 const loadSpinner = (flag) => {
@@ -137,7 +139,6 @@ class Control_View_Information_At_DOM {
       view_Element.forEach((element) => {
 
          element.addEventListener('click', async (e) => {
-            controllerIndividualProduct.listenerAddCart()
 
             try {
                const data_Id = Number(e.target.dataset.id)
@@ -183,14 +184,42 @@ class Control_View_Information_At_DOM {
 
 class ControlIndividualProduct {
 
-   listenerAddCart() {
-      const btnAddCart = document.querySelectorAll('.btn_add_to_cart')
-      console.log(btnAddCart);
+   constructor() {
+      this.id = ''
+      this.delegationContent = document.querySelector('#individual_product')
+
    }
 
+   listenerAddCart() {
+      this.delegationContent.addEventListener('click', async (e) => {
+         this.id = e.target.dataset.id
+         console.log(this.id);
+         const result = this.id === undefined ? undefined : await controller_Cart_Instance.send_Id_To_Api(this.id)
+         return result
+      })
+
+
+   }
+   listenerFavorite() {
+      this.delegationContent.addEventListener('click', async (e) => {
+         this.id = e.target.dataset.id
+         /*          const result = this.id === undefined ? undefined : await favorites.callingApi(Number(this.id)) */
+         this.id = this.id === undefined ? undefined : Number(this.id);
+         if (this.id === undefined) {
+            return undefined
+         }
+         favorites.id = this.id;
+         const result = await favorites.callingApi();
+         console.log(result);
+         favorites.instance_View.display_FavoritesHeart(result)
+         return result
+      })
+   }
 }
 const controllerIndividualProduct = new ControlIndividualProduct
 controllerIndividualProduct.listenerAddCart()
+controllerIndividualProduct.listenerFavorite()
+
 
 //----------------------------------------------------------------
 
@@ -258,8 +287,8 @@ class Control_Favorites {
    async send_Favorite_Product_To_LocalStorage() {
 
       const res = await this.callingApi()
-      if(res === undefined){
-         return 
+      if (res === undefined) {
+         return
       }
       const favorite = this.save_And_Update_Favorites(res)
       this.favorites = favorite
@@ -356,7 +385,6 @@ class Control_cart {
    };
 
    addProductsInCart = (paramProduct) => {
-      console.log(paramProduct);
       if (this.shouldClearCart) {
          this.cart_Model = []
          this.shouldClearCart = false
@@ -367,10 +395,8 @@ class Control_cart {
          const existingIndex = acc.findIndex((x) => e.id === x.id);
 
          if (existingIndex !== -1) {
-            // El producto ya existe en el carrito actual, actualizamos la cantidad
             acc[ existingIndex ].quantity += e.quantity;
          } else {
-            // El producto no existe en el carrito actual, lo agregamos
             acc.push(e);
          }
          return acc;
@@ -643,7 +669,7 @@ if (typeof localStorage !== 'undefined') {
       favorites.handler_Favorites(),
       favorites.send_Favorite_Product_To_LocalStorage(),
       favorites.instance_View.display_FavoritesHeart(local_Storage.getItem(keysLocalStorage.FAVORITES)),
-      controller_Cart_Instance.controller_Cart(local_Storage.getItem(keysLocalStorage.CART))
+   controller_Cart_Instance.controller_Cart(local_Storage.getItem(keysLocalStorage.CART))
    handler_Init_Page.handlerHeroImageCarrousel()
 }
 
