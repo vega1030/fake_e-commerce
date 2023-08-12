@@ -193,7 +193,6 @@ class ControlIndividualProduct {
    listenerAddCart() {
       this.delegationContent.addEventListener('click', async (e) => {
          this.id = e.target.dataset.id
-         console.log(this.id);
          const result = this.id === undefined ? undefined : await controller_Cart_Instance.send_Id_To_Api(this.id)
          return result
       })
@@ -201,24 +200,26 @@ class ControlIndividualProduct {
 
    }
    listenerFavorite() {
+
       this.delegationContent.addEventListener('click', async (e) => {
-         this.id = e.target.dataset.id
-         /*          const result = this.id === undefined ? undefined : await favorites.callingApi(Number(this.id)) */
-         this.id = this.id === undefined ? undefined : Number(this.id);
+         const targetId = e.target.classList.value === 'pathHeart' ? e.target.dataset.id : e.target.dataset.id
+         this.id = targetId
          if (this.id === undefined) {
-            return undefined
+            return this.id
          }
-         favorites.id = this.id;
-         const result = await favorites.callingApi();
-         console.log(result);
-         favorites.instance_View.display_FavoritesHeart(result)
-         return result
+
+         favorites.id = this.id
+         const res = await favorites.callingApi()
+         const resList = favorites.save_And_Update_Favorites(res)
+         console.log(resList);
+         return resList
       })
    }
 }
+
+
 const controllerIndividualProduct = new ControlIndividualProduct
-controllerIndividualProduct.listenerAddCart()
-controllerIndividualProduct.listenerFavorite()
+
 
 
 //----------------------------------------------------------------
@@ -230,20 +231,15 @@ class Control_Favorites {
       this.id = ''
    }
 
-   /**
-    * This function adds event listeners to favorite buttons and sends the favorite product to local
-    * storage.
-    */
+   /* The above code is adding a click event listener to all elements with the class "favorite". When an
+   element with this class is clicked, it checks if the clicked element has a class "pathHeart". If it
+   does, it gets the ID of the parent element's parent element (two levels up) and assigns it to the
+   "id" variable. If it doesn't have the "pathHeart" class, it gets the ID of the clicked element and
+   assigns it to the "id" variable. Then, it calls a function "send_Favorite_Product_To_LocalStorage()"
+   with the "id" */
 
    handler_Favorites() {
-      /* The above code is adding a click event listener to all elements with the class "favorite". When an
-      element with this class is clicked, it checks if the clicked element has a class "pathHeart". If it
-      does, it gets the ID of the parent element's parent element (two levels up) and assigns it to the
-      "id" variable. If it doesn't have the "pathHeart" class, it gets the ID of the clicked element and
-      assigns it to the "id" variable. Then, it calls a function "send_Favorite_Product_To_LocalStorage()"
-      with the "id" */
       const favoriteId = document.querySelectorAll('.favorite');
-
       favoriteId.forEach(element => {
          element.addEventListener('click', (e) => {
 
@@ -285,37 +281,36 @@ class Control_Favorites {
 
 
    async send_Favorite_Product_To_LocalStorage() {
-
       const res = await this.callingApi()
       if (res === undefined) {
          return
       }
       const favorite = this.save_And_Update_Favorites(res)
       this.favorites = favorite
-      //display
       this.instance_View.display_FavoritesHeart(this.favorites)
       return this.favorites
-
    }
 
-   save_And_Update_Favorites = (productId) => {
-      const id = productId.id && productId ? productId.id : null
+   //------------------------------------------------------------------------------
+   //------------------------------------------------------------------------------
 
+   save_And_Update_Favorites = (favoriteProduct) => {
+      const id = favoriteProduct.id && favoriteProduct ? favoriteProduct.id : null;
       if (typeof localStorage !== 'undefined') {
          this.favorites = local_Storage.getItem(keysLocalStorage.FAVORITES) || [];
       }
-      const index = this.favorites.findIndex(i => i.id === productId.id)
+      const index = this.favorites.findIndex(i => i.id === favoriteProduct.id);
 
       if (index !== -1) {
-         this.favorites.splice(index, 1)
+         this.favorites.splice(index, 1);
       }
       else {
-         this.favorites.push(productId)
+         this.favorites.push(favoriteProduct);
       }
       if (typeof localStorage !== 'undefined') {
-         local_Storage.setItem(keysLocalStorage.FAVORITES, this.favorites)
+         local_Storage.setItem(keysLocalStorage.FAVORITES, this.favorites);
       }
-      return this.favorites
+      return this.favorites;
    }
 
 }
@@ -652,12 +647,12 @@ class Control_cart {
       return this.cart_Model
    }
 
-   //--------------------------------------------------------------
 }
-const handler_Init_Page = new Control_View_Information_At_DOM()
 
+const handler_Init_Page = new Control_View_Information_At_DOM()
 const controller_Cart_Instance = new Control_cart()
 
+//--------------------------------------------------------------
 if (typeof localStorage !== 'undefined') {
    await handler_Init_Page.controller_get_All_Products()
    await handler_Init_Page.control_View_Categories()
@@ -669,19 +664,12 @@ if (typeof localStorage !== 'undefined') {
       favorites.handler_Favorites(),
       favorites.send_Favorite_Product_To_LocalStorage(),
       favorites.instance_View.display_FavoritesHeart(local_Storage.getItem(keysLocalStorage.FAVORITES)),
-   controller_Cart_Instance.controller_Cart(local_Storage.getItem(keysLocalStorage.CART))
+      controller_Cart_Instance.controller_Cart(local_Storage.getItem(keysLocalStorage.CART))
    handler_Init_Page.handlerHeroImageCarrousel()
+   controllerIndividualProduct.listenerAddCart()
+   controllerIndividualProduct.listenerFavorite()
 }
-
-
-
-
-
 //----------------------------------------------------------------
-
-
-//----------------------------------------------------------------
-
 
 
 class Control_Routes {
@@ -698,8 +686,8 @@ class Control_Routes {
       //send hash to controller
       return handler_View.handler_Display_(name_Hash[ hash ]);
    }
-
 }
+
 
 
 const instance_Control_Routes = new Control_Routes()

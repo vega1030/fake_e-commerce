@@ -58,19 +58,23 @@ class Product {
         const coincidentElements = this.heartsDom.find(i => {
             return i.dataset.id == product.id
         })
-        const initialColor = coincidentElements===undefined?'black':'red'
+        /* The above code is declaring a constant variable called `initialColor`. It is using a ternary
+        operator to check if the variable `coincidentElements` is undefined. If it is undefined, the value
+        of `initialColor` will be set to `'black'`, otherwise it will be set to `'red'`. */
+
+        const initialColor = coincidentElements === undefined ? 'black' : 'red'
 
         let model_Card = ''
 
         model_Card =
             `
             <div class='content-button-favorite' data-id="${ product.id }">
-                <button  type="button" class="favorite" data-id="${ product.id }" value = "on"> 
-                    <svg data-id="${ product.id }" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16"style="color: ${initialColor};">
-                    <path data-id="${ product.id }" class= "pathHeart" fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
-                    </svg>
-                </button>
-            </div>
+            <button type="button" class="favorite individual-favorite" data-id="${ product.id }" value="on"> 
+                <svg data-id="${ product.id }" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill=${ initialColor } class="bi bi-heart-fill" viewBox="0 0 16 16">
+                <path data-id="${ product.id }" class="pathHeart heart-path" fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                </svg>
+            </button>
+        </div>
             <div class="content_title___individual_item">
                 <h1> ${ product.title }</h1>
             </div>
@@ -90,8 +94,27 @@ class Product {
             </div>
         `
 
+        const heart = document.querySelector('.individual-favorite > svg > path');
+
+        const btnFavorite = document.querySelector('individual-favorite')
 
         content_Individual_Cards.insertAdjacentHTML('afterbegin', model_Card)
+
+
+        content_Individual_Cards.addEventListener('click', (e) => {
+            const heart = document.querySelector('.individual-favorite > svg > path');
+            const isInsideFavorite = e.target.closest('.individual-favorite');
+
+            if (isInsideFavorite) {
+                const currentColor = heart.getAttribute('fill');
+
+                if (currentColor === 'black') {
+                    return heart.setAttribute('fill', 'red');
+                } else {
+                    return heart.setAttribute('fill', 'black');
+                }
+            }
+        });
         return content_Individual_Cards
     }
 
@@ -159,7 +182,6 @@ class View_Favorites {
         const content_Cards = document.querySelector('.content-sale')
 
         const cardsClass = String('.' + content_Cards.firstElementChild.classList[ 0 ])
-        console.log(cardsClass);
         const cards = [ ...document.querySelectorAll(cardsClass) ]
         const select =
             cards.map(current => {
@@ -172,6 +194,7 @@ class View_Favorites {
         this.fav_DOM = select.filter(item => item !== null)
 
         this.fav_DOM.map(i => i.children[ 0 ].firstElementChild).forEach(i => {
+
             i.style.color === 'black' ? i.style.color = 'red' : i.style.color = 'black'
         })
         /* The above code is assigning the value of `this.fav_DOM` to the `heartsDom` property of the
