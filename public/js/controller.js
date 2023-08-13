@@ -192,8 +192,10 @@ class ControlIndividualProduct {
 
    listenerAddCart() {
       this.delegationContent.addEventListener('click', async (e) => {
+         const targetElement = e.target.classList.contains('individual_btn_add_to_cart')
+
          this.id = e.target.dataset.id
-         const result = this.id === undefined ? undefined : await controller_Cart_Instance.send_Id_To_Api(this.id)
+         const result = targetElement === true ? await controller_Cart_Instance.send_Id_To_Api(this.id) : undefined
          return result
       })
 
