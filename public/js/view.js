@@ -94,24 +94,21 @@ class Product {
             </div>
         `
 
-        const heart = document.querySelector('.individual-favorite > svg > path');
-
-        const btnFavorite = document.querySelector('individual-favorite')
-
+        /*         const heart = document.querySelector('.individual-favorite > svg > path');
+         */
         content_Individual_Cards.insertAdjacentHTML('afterbegin', model_Card)
 
-
         content_Individual_Cards.addEventListener('click', (e) => {
-            const heart = document.querySelector('.individual-favorite > svg > path');
             const isInsideFavorite = e.target.closest('.individual-favorite');
 
             if (isInsideFavorite) {
+                const heart = e.currentTarget.querySelector('.individual-favorite > svg');
                 const currentColor = heart.getAttribute('fill');
-
+                console.log(currentColor);
                 if (currentColor === 'black') {
-                    return heart.setAttribute('fill', 'red');
+                    heart.setAttribute('fill', 'red');
                 } else {
-                    return heart.setAttribute('fill', 'black');
+                    heart.setAttribute('fill', 'black');
                 }
             }
         });

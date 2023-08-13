@@ -193,8 +193,8 @@ class ControlIndividualProduct {
    listenerAddCart() {
       this.delegationContent.addEventListener('click', async (e) => {
          const targetElement = e.target.classList.contains('individual_btn_add_to_cart')
-
          this.id = e.target.dataset.id
+
          const result = targetElement === true ? await controller_Cart_Instance.send_Id_To_Api(this.id) : undefined
          return result
       })
@@ -204,17 +204,20 @@ class ControlIndividualProduct {
    listenerFavorite() {
 
       this.delegationContent.addEventListener('click', async (e) => {
+         const targetElement = e.target.classList.contains('pathHeart')
          const targetId = e.target.classList.value === 'pathHeart' ? e.target.dataset.id : e.target.dataset.id
          this.id = targetId
+         console.log(targetElement);
          if (this.id === undefined) {
             return this.id
          }
-
-         favorites.id = this.id
-         const res = await favorites.callingApi()
-         const resList = favorites.save_And_Update_Favorites(res)
-         console.log(resList);
-         return resList
+         if (targetElement === true) {
+            favorites.id = this.id
+            const res = await favorites.callingApi()
+            const resList = favorites.save_And_Update_Favorites(res)
+            console.log(resList);
+            return resList
+         }
       })
    }
 }
