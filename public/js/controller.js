@@ -7,14 +7,14 @@ import { Drive_Data_Cart, StorageService, Handler_Favorites } from './model.js';
 import {
    Category_ui, products_Instance, Handler_Displays_Ui,
    View_Favorites, View_cart, replace_Minus_Symbol_For_Trash_Basket,
-   render_Total_And_Pay, Product
+   render_Total_And_Pay, TemplateCards
 } from "./view.js";
 const local_Storage = new StorageService()
 const handler_View = new Handler_Displays_Ui()
 const categories_UI = new Category_ui()
 const cart_Ui = new View_cart()
 const modelFavorites = new Handler_Favorites()
-const productsView = new Product()
+const productsView = new TemplateCards()
 
 
 //----------------------------------------------------------------
@@ -46,6 +46,7 @@ class Control_View_Information_At_DOM {
 
          }
          const res = products_Instance.create_Card(this.products)
+         const resAssing = products_Instance.assignModelCard(this.products)
          if (!res) {
 
             throw new Error('Network response was not ok')
@@ -144,6 +145,7 @@ class Control_View_Information_At_DOM {
                const data_Id = Number(e.target.dataset.id)
                const res = await get_Single_Product(data_Id)
                products_Instance.uI_Individual_Card(res)
+               products_Instance.insertIndividualCard()
 
             } catch (error) {
 
@@ -284,6 +286,11 @@ class Control_Favorites {
 
    }
 
+   saveFavoriteOfLocalStorage(favorites){
+      this.favorites = favorites
+      console.log(this.favorites);
+      return this.favorites
+   }
 
    async send_Favorite_Product_To_LocalStorage() {
       const res = await this.callingApi()
@@ -293,6 +300,7 @@ class Control_Favorites {
       const favorite = this.save_And_Update_Favorites(res)
       this.favorites = favorite
       this.instance_View.display_FavoritesHeart(this.favorites)
+      console.log(this.favorites);
       return this.favorites
    }
 
@@ -316,6 +324,27 @@ class Control_Favorites {
          local_Storage.setItem(keysLocalStorage.FAVORITES, this.favorites);
       }
       return this.favorites;
+   }
+
+
+
+
+
+   sendFavoriteToView() {
+      document.querySelector('#favorites').addEventListener('click', () => {
+         if (this.favorites.length > 0 || null) {
+            const ControllerResponseFavorite_Ok = {
+               list: this.instance_View.createFavoriteListUI(this.favorites),
+               validation: true
+            }
+            return ControllerResponseFavorite_Ok
+         }
+         const ControllerResponseFavorite = {
+            list: null,
+            validation: false
+         }
+         return ControllerResponseFavorite
+      })
    }
 
 }
@@ -660,6 +689,8 @@ const controller_Cart_Instance = new Control_cart()
 //--------------------------------------------------------------
 if (typeof localStorage !== 'undefined') {
    await handler_Init_Page.controller_get_All_Products()
+   products_Instance.insertAllProducts(),
+
    await handler_Init_Page.control_View_Categories()
    controller_Cart_Instance.add_Cart_Listener(),
       controller_Cart_Instance.assign_Events_Products(),
@@ -667,12 +698,14 @@ if (typeof localStorage !== 'undefined') {
       handler_Init_Page.listener_Category(),
       controller_Cart_Instance.assign_Event_Btn_Pay(),
       favorites.handler_Favorites(),
-      favorites.send_Favorite_Product_To_LocalStorage(),
+      favorites.saveFavoriteOfLocalStorage(local_Storage.getItem(keysLocalStorage.FAVORITES))
+      favorites.send_Favorite_Product_To_LocalStorage(), 
       favorites.instance_View.display_FavoritesHeart(local_Storage.getItem(keysLocalStorage.FAVORITES)),
       controller_Cart_Instance.controller_Cart(local_Storage.getItem(keysLocalStorage.CART))
    handler_Init_Page.handlerHeroImageCarrousel()
    controllerIndividualProduct.listenerAddCart()
    controllerIndividualProduct.listenerFavorite()
+   favorites.sendFavoriteToView()
 }
 //----------------------------------------------------------------
 

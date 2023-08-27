@@ -1,15 +1,16 @@
 "use strict";
 
-class Product {
+class TemplateCards {
 
 
     constructor(heartsDom) {
         this.heartsDom = heartsDom
+        this.modelCard = ''
+        this.modelIndividualCard = ''
     }
 
     /* Creating a card with the information of the product. */
     create_Card(product) {
-        let model = ''
         product.forEach(data => {
 
             //------------------insert category
@@ -19,7 +20,7 @@ class Product {
 
             //------------------
 
-            model +=
+            this.modelCard +=
                 `
                 <div class=" content-sale__child shadow-sm p-3 mb-5 bg-body-tertiary rounded" data-category="${ data.category }" data-id="${ data.id }">
                     <button  type="button" class="favorite" id=${ data.id } data-id="${ data.id }" value = "on"> 
@@ -41,32 +42,26 @@ class Product {
                 </button>
                 </div>
                 `;
-            const content_Cards = document.querySelector("#content_card");
-            return content_Cards ? content_Cards.innerHTML = model : null
-
+            return this.modelCard
         })
+
 
         /* A function that change the color of the heart when user click,
         and send id product to saving*/
 
     }
-
+    insertAllProducts() {
+        const content_Cards = document.querySelector("#content_card");
+        content_Cards ? content_Cards.innerHTML = this.modelCard : null;
+    }
+    /* -------------------------------------- */
 
     uI_Individual_Card(product) {
-        const content_Individual_Cards = document.querySelector('#individual_product')
-
         const coincidentElements = this.heartsDom.find(i => {
             return i.dataset.id == product.id
         })
-        /* The above code is declaring a constant variable called `initialColor`. It is using a ternary
-        operator to check if the variable `coincidentElements` is undefined. If it is undefined, the value
-        of `initialColor` will be set to `'black'`, otherwise it will be set to `'red'`. */
-
         const initialColor = coincidentElements === undefined ? 'black' : 'red'
-
-        let model_Card = ''
-
-        model_Card =
+        this.modelIndividualCard =
             `
             <div class='content-button-favorite' data-id="${ product.id }">
             <button type="button" class="favorite individual-favorite" data-id="${ product.id }" value="on"> 
@@ -93,18 +88,23 @@ class Product {
                 <button type="button" data-id ="${ product.id }" class="btn btn-primary btn-card individual_btn_add_to_cart">Add Cart</button>
             </div>
         `
+        return this.modelIndividualCard
+    }
 
-        /*         const heart = document.querySelector('.individual-favorite > svg > path');
-         */
-        content_Individual_Cards.insertAdjacentHTML('afterbegin', model_Card)
+    insertIndividualCard() {
+        const content_Individual_Cards = document.querySelector('#individual_product')
+        console.log('individual insert: ', this.modelIndividualCard);
+        content_Individual_Cards.insertAdjacentHTML('afterbegin', this.modelIndividualCard)
+    }
 
+
+    changeColorHeart() {
+        const content_Individual_Cards = document.querySelector('#individual_product')
         content_Individual_Cards.addEventListener('click', (e) => {
             const isInsideFavorite = e.target.closest('.individual-favorite');
-
             if (isInsideFavorite) {
                 const heart = e.currentTarget.querySelector('.individual-favorite > svg');
                 const currentColor = heart.getAttribute('fill');
-                console.log(currentColor);
                 if (currentColor === 'black') {
                     heart.setAttribute('fill', 'red');
                 } else {
@@ -112,7 +112,7 @@ class Product {
                 }
             }
         });
-        return content_Individual_Cards
+
     }
 
     heroCarrouselImage = (productsHero) => {
@@ -141,6 +141,8 @@ class Product {
     };
 }
 
+const products_Instance = new TemplateCards();
+products_Instance.changeColorHeart()
 
 class Category_ui {
     createDynamicCategoryNav(categories) {
@@ -174,6 +176,15 @@ class View_Favorites {
         this.fav_DOM = ''
     }
 
+
+    createFavoriteListUI(favorites) {
+        const contentCardFavorite = document.querySelector('#favorites_section')
+        const cards = products_Instance.create_Card(favorites)
+        contentCardFavorite.innerHTML = products_Instance.modelCard
+        console.log(products_Instance.modelCard);
+
+    }
+
     display_FavoritesHeart(product) {
         //check color state here
         const content_Cards = document.querySelector('.content-sale')
@@ -201,6 +212,7 @@ class View_Favorites {
         return this.fav_DOM
 
     }
+
 
 }
 
@@ -461,15 +473,15 @@ class Handler_Displays_Ui {
     }
 }
 
-
 const cart = new View_cart()
 
-const products_Instance = new Product();
+
+
 
 export {
     products_Instance,
     Category_ui,
-    Product,
+    TemplateCards,
     Handler_Displays_Ui,
     View_Favorites,
     replace_Minus_Symbol_For_Trash_Basket,
