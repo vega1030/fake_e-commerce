@@ -45,20 +45,18 @@ class Control_View_Information_At_DOM {
          if (this.products.status >= 200 && this.products.status < 300) {
 
          }
-         const res = products_Instance.create_Card(this.products)
-         const resAssing = products_Instance.assignModelCard(this.products)
-         if (!res) {
-
-            throw new Error('Network response was not ok')
-         }
+         /* const res = products_Instance.create_Card(this.products) */
+         return this.products
       }
 
       catch (error) {
          console.log(error)
       }
       finally {
+
          loadSpinner(true)
          document.body.style.overflow = 'auto';
+
 
       }
    }
@@ -286,7 +284,7 @@ class Control_Favorites {
 
    }
 
-   saveFavoriteOfLocalStorage(favorites){
+   saveFavoriteOfLocalStorage(favorites) {
       this.favorites = favorites
       console.log(this.favorites);
       return this.favorites
@@ -688,10 +686,11 @@ const controller_Cart_Instance = new Control_cart()
 
 //--------------------------------------------------------------
 if (typeof localStorage !== 'undefined') {
-   await handler_Init_Page.controller_get_All_Products()
+   const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
+   products_Instance.create_Card(returnAllProducts)
    products_Instance.insertAllProducts(),
 
-   await handler_Init_Page.control_View_Categories()
+      await handler_Init_Page.control_View_Categories()
    controller_Cart_Instance.add_Cart_Listener(),
       controller_Cart_Instance.assign_Events_Products(),
       handler_Init_Page.handlerSingleProduct(),
@@ -699,7 +698,7 @@ if (typeof localStorage !== 'undefined') {
       controller_Cart_Instance.assign_Event_Btn_Pay(),
       favorites.handler_Favorites(),
       favorites.saveFavoriteOfLocalStorage(local_Storage.getItem(keysLocalStorage.FAVORITES))
-      favorites.send_Favorite_Product_To_LocalStorage(), 
+   favorites.send_Favorite_Product_To_LocalStorage(),
       favorites.instance_View.display_FavoritesHeart(local_Storage.getItem(keysLocalStorage.FAVORITES)),
       controller_Cart_Instance.controller_Cart(local_Storage.getItem(keysLocalStorage.CART))
    handler_Init_Page.handlerHeroImageCarrousel()

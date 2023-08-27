@@ -7,20 +7,25 @@ class TemplateCards {
         this.heartsDom = heartsDom
         this.modelCard = ''
         this.modelIndividualCard = ''
+        this.products = ''
     }
 
     /* Creating a card with the information of the product. */
-    create_Card(product) {
-        product.forEach(data => {
+    create_Card(products) {
+        this.products = ''
+        this.modelCard = ''
+        this.products = products
+        console.log(this.products)
+        let model = ''
+        this.products.forEach(data => {
 
             //------------------insert category
-            const category = product.find((item) => {
+            const category = this.products.find((item) => {
                 return item.category === data.category
             })
 
             //------------------
-
-            this.modelCard +=
+            model +=
                 `
                 <div class=" content-sale__child shadow-sm p-3 mb-5 bg-body-tertiary rounded" data-category="${ data.category }" data-id="${ data.id }">
                     <button  type="button" class="favorite" id=${ data.id } data-id="${ data.id }" value = "on"> 
@@ -42,12 +47,14 @@ class TemplateCards {
                 </button>
                 </div>
                 `;
+            this.modelCard = model
             return this.modelCard
         })
 
 
         /* A function that change the color of the heart when user click,
         and send id product to saving*/
+
 
     }
     insertAllProducts() {
@@ -60,7 +67,9 @@ class TemplateCards {
         const coincidentElements = this.heartsDom.find(i => {
             return i.dataset.id == product.id
         })
+        //initialize color
         const initialColor = coincidentElements === undefined ? 'black' : 'red'
+        //-----
         this.modelIndividualCard =
             `
             <div class='content-button-favorite' data-id="${ product.id }">
@@ -179,9 +188,10 @@ class View_Favorites {
 
     createFavoriteListUI(favorites) {
         const contentCardFavorite = document.querySelector('#favorites_section')
-        const cards = products_Instance.create_Card(favorites)
-        contentCardFavorite.innerHTML = products_Instance.modelCard
-        console.log(products_Instance.modelCard);
+
+        products_Instance.create_Card(favorites)
+        
+        contentCardFavorite.innerHTML += products_Instance.modelCard
 
     }
 
