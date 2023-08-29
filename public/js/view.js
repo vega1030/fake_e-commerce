@@ -15,7 +15,6 @@ class TemplateCards {
         this.products = ''
         this.modelCard = ''
         this.products = products
-        console.log(this.products)
         let model = ''
         this.products.forEach(data => {
 
@@ -151,7 +150,10 @@ class TemplateCards {
 }
 
 const products_Instance = new TemplateCards();
-products_Instance.changeColorHeart()
+
+if (typeof localStorage !== 'undefined') {
+    products_Instance.changeColorHeart()
+}
 
 class Category_ui {
     createDynamicCategoryNav(categories) {
@@ -171,7 +173,9 @@ class Category_ui {
     };
 
     displayProductsByCategory = (data) => {
+        const contentCards = document.querySelector('#content_card')
         products_Instance.create_Card(data)
+        contentCards.innerHTML = products_Instance.modelCard
     }
 }
 
@@ -187,12 +191,16 @@ class View_Favorites {
 
 
     createFavoriteListUI(favorites) {
+        this.favorites = favorites
         const contentCardFavorite = document.querySelector('#favorites_section')
-
-        products_Instance.create_Card(favorites)
-        
+        products_Instance.create_Card(this.favorites)
+        this.display_FavoritesHeart(this.favorites)
         contentCardFavorite.innerHTML += products_Instance.modelCard
+    }
 
+    deleteCardFavorite(){
+        
+        
     }
 
     display_FavoritesHeart(product) {

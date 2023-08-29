@@ -83,7 +83,6 @@ class Control_View_Information_At_DOM {
       const listener_category = document.querySelectorAll('.listener_category')
       listener_category.forEach(i => i.addEventListener('click', (e) => {
          this.send_Category(e.target.dataset.category)
-
       })
       )
    }
@@ -91,8 +90,6 @@ class Control_View_Information_At_DOM {
    async send_Category(category = '') {
 
       loadSpinner(false)
-
-
       try {
          const result = await get_View_Products_For_Category(category)
          //Add Listeners
@@ -194,28 +191,25 @@ class ControlIndividualProduct {
       this.delegationContent.addEventListener('click', async (e) => {
          const targetElement = e.target.classList.contains('individual_btn_add_to_cart')
          this.id = e.target.dataset.id
-
          const result = targetElement === true ? await controller_Cart_Instance.send_Id_To_Api(this.id) : undefined
          return result
       })
-
-
    }
-   listenerFavorite() {
 
+   listenerFavorite() {
       this.delegationContent.addEventListener('click', async (e) => {
          const targetElement = e.target.classList.contains('pathHeart')
          const targetId = e.target.classList.value === 'pathHeart' ? e.target.dataset.id : e.target.dataset.id
          this.id = targetId
-         console.log(targetElement);
+
          if (this.id === undefined) {
             return this.id
          }
+
          if (targetElement === true) {
             favorites.id = this.id
             const res = await favorites.callingApi()
             const resList = favorites.save_And_Update_Favorites(res)
-            console.log(resList);
             return resList
          }
       })
@@ -253,6 +247,7 @@ class Control_Favorites {
                Number(e.target.dataset.id);
             this.send_Favorite_Product_To_LocalStorage()
             this.callingApi()
+            loadSpinner()
 
          });
 
@@ -286,7 +281,6 @@ class Control_Favorites {
 
    saveFavoriteOfLocalStorage(favorites) {
       this.favorites = favorites
-      console.log(this.favorites);
       return this.favorites
    }
 
@@ -324,30 +318,28 @@ class Control_Favorites {
       return this.favorites;
    }
 
-
-
-
-
    sendFavoriteToView() {
       document.querySelector('#favorites').addEventListener('click', () => {
          if (this.favorites.length > 0 || null) {
-            const ControllerResponseFavorite_Ok = {
-               list: this.instance_View.createFavoriteListUI(this.favorites),
+            const controllerResponseFavorite_Ok = {
+               list: this.favorites,
                validation: true
             }
-            return ControllerResponseFavorite_Ok
+            this.instance_View.createFavoriteListUI(controllerResponseFavorite_Ok.list)
+            this.handler_Favorites()
+            this.instance_View.display_FavoritesHeart(this.favorites)
+            return controllerResponseFavorite_Ok
          }
          const ControllerResponseFavorite = {
             list: null,
             validation: false
          }
+         this.instance_View
          return ControllerResponseFavorite
       })
    }
 
 }
-
-//-----------------------------------------------------------------------------//
 
 //-----------------------------------------------------------------------------//
 
