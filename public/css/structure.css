@@ -1,9 +1,9 @@
 * {
-   font-family: "Heebo", sans-serif;
    padding: 0;
    margin: 0;
    box-sizing: border-box;
 }
+
 
 
 
@@ -53,13 +53,9 @@ body {
 }
 
 .section_home_page {
-   width: 100vw;
    display: grid;
    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-   grid-template-rows: repeat(5, 1fr);
-
-   padding: 4%;
-   height: 80vh;
+   grid-template-rows: repeat(15, .2fr);
 }
 
 
@@ -294,10 +290,9 @@ h1 {
 
 .content_style {
    background-color: #ffffff;
-
    display: grid;
    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-   grid-template-rows: repeat(2, 3fr);
+   grid-template-rows: repeat(8, .2fr);
    padding: 4%;
 }
 
@@ -363,12 +358,13 @@ h1 {
 
 .nav>.nav-header {
    display: flex;
-   width: 34.33%;
+   width: 12rem;
    justify-content: flex-start;
-   height: 75%;
+   height: 60%;
    justify-content: center;
    align-items: center;
    cursor: pointer;
+   
 }
 
 .nav>.nav-header>.nav-title {
@@ -444,7 +440,7 @@ h1 {
 .categories_style,
 .favorites {
    width: 100%;
-   height: 100%;
+
    display: grid;
    justify-items: center;
    grid-template-rows: 33rem;
@@ -452,6 +448,7 @@ h1 {
    grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
    padding: 4%;
    background-color: #ffffff;
+   grid-row: 2/4;
    justify-content: center;
 }
 
@@ -516,7 +513,34 @@ h1 {
 /********************************/
 
 
+@media screen and (min-width: 360px) and (max-width: 428px) {
+   .list_classification{
+      justify-content: flex-start;
+      
+   }
+   .nav>.nav-btn {
+      display: inline-block;
+      padding: 1%;
+   }
+   .nav-btn {
+      width: 18.33%;
+   }
 
+   .nav-link___cart{
+      padding: 0;
+      width: 19vw;
+      height: 11vh;
+   }
+   .count_elements_at_cart{
+      position: absolute;
+      top: .85rem;
+      right: 0.6rem;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      text-align: center;
+   }
+}
 
 /********************************/
 
@@ -534,11 +558,6 @@ h1 {
    .content-card,
    .content-card__reverse {
       flex-direction: column;
-   }
-
-   .nav>.nav-btn {
-      display: inline-block;
-      padding: 1%;
    }
 
    .nav>.nav-btn>label {
@@ -600,13 +619,13 @@ h1 {
 
    .content_section {
       grid-column: 1/6;
-      grid-row: 4/4;
+      grid-row: 8/8;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(min(100%, 15ch), 1fr));
       grid-template-rows: .5fr .5fr .5fr .5fr .5fr .5fr;
       gap: 3rem;
-  }
    }
+}
 
 
 
@@ -669,10 +688,6 @@ h1 {
       grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
       grid-template-rows: repeat(auto-fit, minmax(100px, 1fr));
       row-gap: 2%;
-   }
-
-   .list_classification {
-      justify-content: center;
    }
 
    .content_total {
@@ -811,7 +826,7 @@ h1 {
    }
 
    .carousel {
-      grid-row: 1/5;
+      grid-row: 1/8;
       grid-column: 1/4;
    }
 
