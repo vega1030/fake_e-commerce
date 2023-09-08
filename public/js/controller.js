@@ -221,7 +221,7 @@ const controllerIndividualProduct = new ControlIndividualProduct
 
 
 
-//----------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------
 
 class Control_Favorites {
    constructor() {
@@ -241,10 +241,9 @@ class Control_Favorites {
       const favoriteId = document.querySelectorAll('.favorite');
       favoriteId.forEach(element => {
          element.addEventListener('click', (e) => {
-
             const class_List = e.target.classList.value;
-            this.id = class_List === 'pathHeart' ? Number(e.target.parentElement.parentElement.dataset.id) :
-               Number(e.target.dataset.id);
+            this.id = class_List === 'pathHeart' ? Number(e.target.parentElement.parentElement.dataset.id) : Number(e.target.dataset.id);
+            this.instance_View.deleteCardFavorite()
             this.send_Favorite_Product_To_LocalStorage()
             this.callingApi()
             loadSpinner()
@@ -292,7 +291,6 @@ class Control_Favorites {
       const favorite = this.save_And_Update_Favorites(res)
       this.favorites = favorite
       this.instance_View.display_FavoritesHeart(this.favorites)
-      console.log(this.favorites);
       return this.favorites
    }
 
@@ -341,10 +339,10 @@ class Control_Favorites {
 
 }
 
-//-----------------------------------------------------------------------------//
 
 const favorites = new Control_Favorites()
 
+//------------------------------------------------------------------------------------------------------------------
 class Control_cart {
 
    constructor(total = 0, elementDom) {
@@ -563,40 +561,30 @@ class Control_cart {
 
 
 
-   /* This is a method in the `Control_cart` class that adds a click event listener to the `#section_cart`
-   element in the DOM. When the element is clicked, it checks the value of the `flag` parameter. If
-   `flag` is `false`, it calls the `model_UiCart_List` method from the `cart_Ui` module, passing in the
-   cart data retrieved from the local storage using the `api_LocalStorage.get_Cart()` method. If `flag`
-   is not `false`, it calls the `model_UiCart_List` method from the `cart_Ui` module, passing in the
-   cart data stored in the `responseCart` property of the `Control_cart` instance. The purpose of this
-   method is to update the cart UI with the latest cart data when the `#section_cart` element is
-   clicked. */
 
-   /* ------------------------------------ */
-
+   //------------------------------------------------------------------------------------------------------------------
+   /* This code block is selecting all elements with the class "subtract" and adding a click event
+   listener to each of them. When one of these elements is clicked, it checks if the next element
+   sibling is null. If it is null, it means that the clicked element is associated with the last
+   product in the cart, and the function calls the `update_Quantity_Cart` method from the `model`
+   object, passing in the `id_Delete_Product_In_Cart` and `true` as arguments. It then calls the
+   `handle_Delete_Element_In_DOM` function from the `cart_Ui` module, passing in the
+   `element_Delete_In_DOM` as an argument to remove the corresponding product from the cart UI. If the
+   next element sibling is not null, it retrieves the `id` of the product associated with the clicked
+   element from the `data-id` attribute of the next element sibling. It then decrements the quantity
+   value of the input element that is the next element sibling of the clicked element, and updates the
+   cart with the new quantity value using the `update_Quantity_Cart` method. If the quantity value is
+   1, it replaces the trash basket icon with a minus symbol */
+   //------------------------------------------------------------------------------------------------------------------
    modify_Quantity = () => {
 
-      /* This code block is selecting all elements with the class "subtract" and adding a click event
-      listener to each of them. When one of these elements is clicked, it checks if the next element
-      sibling is null. If it is null, it means that the clicked element is associated with the last
-      product in the cart, and the function calls the `update_Quantity_Cart` method from the `model`
-      object, passing in the `id_Delete_Product_In_Cart` and `true` as arguments. It then calls the
-      `handle_Delete_Element_In_DOM` function from the `cart_Ui` module, passing in the
-      `element_Delete_In_DOM` as an argument to remove the corresponding product from the cart UI. If the
-      next element sibling is not null, it retrieves the `id` of the product associated with the clicked
-      element from the `data-id` attribute of the next element sibling. It then decrements the quantity
-      value of the input element that is the next element sibling of the clicked element, and updates the
-      cart with the new quantity value using the `update_Quantity_Cart` method. If the quantity value is
-      1, it replaces the trash basket icon with a minus symbol */
 
 
       const btn_Add_Quantity = document.querySelectorAll('.add')
       const btns_Subtract = document.querySelectorAll('.subtract')
       btns_Subtract.forEach(elements => {
          elements.addEventListener('click', (e) => {
-            console.log(false);
             if (e.target.nextElementSibling === null) {
-               console.log(true);
                const element_Delete_In_DOM = e.target.parentElement.parentElement.parentElement
                const id_Delete_Product_In_Cart = Number(e.target.dataset.id)
                //Update quantity
@@ -604,7 +592,6 @@ class Control_cart {
                this.update_Quantity_Cart(id_Delete_Product_In_Cart, true)
                this.controller_Cart(this.model.responseCart)
                const controller = this.controller_Cart(this.model.responseCart)
-               console.log(controller);
                return cart_Ui.handle_Delete_Element_In_DOM(element_Delete_In_DOM)
 
             }
@@ -625,8 +612,8 @@ class Control_cart {
          })
       })
 
+      //------------------------------------------------------------------------------------------------------------------
 
-      //--------------------------------------------------------------
       /* This code block is adding event listeners to a set of elements with the class `add`. When one of
       these elements is clicked, it retrieves the `id` of the product associated with the clicked element
       from the `data-id` attribute of the previous sibling element. It then increments the quantity value
@@ -654,6 +641,8 @@ class Control_cart {
       })
 
    }
+
+   //------------------------------------------------------------------------------------------------------------------
 
    update_Quantity_Cart = (id = "", flag) => {
       if (flag === true) {

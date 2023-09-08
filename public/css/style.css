@@ -1,7 +1,7 @@
 /*Variables*/
 @font-face {
    font-family: 'mainFont';
-   src: url('./../fonts/Noto_Sans_Shavian/NotoSansShavian-Regular.ttf') format('truetype');
+   src: url('./../fonts/Exo_2/Exo2-VariableFont_wght.ttf') format('truetype');
 }
 
 :root {
@@ -21,11 +21,16 @@
 /* header style */
 *:not(.pathHeart, .bi) {
    color: var(--color_font);
-   font-family: 'myFont', sans-serif;
+   font-family: 'mainFont', sans-serif;
 }
+.count_elements_at_cart {
+   background-color: var(--color-background_count_cart)
+};
 
 @media screen and (min-width: 360px) and (max-width: 428px) {
-
+*{
+   font-size: .75rem;
+}
    .count_elements_at_cart {
       background-color: var(--color-background_count_cart);
       position: absolute;
@@ -109,9 +114,7 @@ input[type=number] {
 
 /********************************/
 
-.navbar_cart {
-   width: 3.2rem;
-}
+
 
 /*nav bar */
 ul {

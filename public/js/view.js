@@ -199,8 +199,10 @@ class View_Favorites {
     }
 
     deleteCardFavorite(){
-        
-        
+        const contentFavorite = document.querySelector('#favorites_section')
+        contentFavorite.addEventListener('click',(e)=>{
+            e.target.parentElement.parentElement.parentElement.remove();
+        })
     }
 
     display_FavoritesHeart(product) {
@@ -474,7 +476,8 @@ class Handler_Displays_Ui {
                 document.querySelector('#home').style.display = 'none',
                 document.querySelector('#content_card').style.display = 'none',
                 document.querySelector('#favorites_section').style.display = 'grid',
-                document.querySelector('#individual_product').style.display = 'none'
+                document.querySelector('#individual_product').style.display = 'none',
+                document.querySelector('#content').style.display = 'none'
             )
         }
         if (hash === 'individual_product') {
