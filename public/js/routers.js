@@ -25,6 +25,7 @@ window.addEventListener('hashchange', (e) => {
 
 
 window.addEventListener("load", (event) => {
+    console.log(event);
     window[ "home" ].addEventListener("click", event => new_Routes.push_Id(event))
     window[ "_categories" ].addEventListener("click", event => new_Routes.push_Id(event))
     window[ "#individual_product" ].addEventListener("click", event => new_Routes.push_Id(event))

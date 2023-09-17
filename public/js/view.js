@@ -18,10 +18,6 @@ class TemplateCards {
         let model = ''
         this.products.forEach(data => {
 
-            //------------------insert category
-            const category = this.products.find((item) => {
-                return item.category === data.category
-            })
 
             //------------------
             model +=
@@ -101,7 +97,6 @@ class TemplateCards {
 
     insertIndividualCard() {
         const content_Individual_Cards = document.querySelector('#individual_product')
-        console.log('individual insert: ', this.modelIndividualCard);
         content_Individual_Cards.insertAdjacentHTML('afterbegin', this.modelIndividualCard)
     }
 
@@ -123,7 +118,7 @@ class TemplateCards {
 
     }
 
-    heroCarrouselImage = (productsHero) => {
+    heroCarouselImage = (productsHero) => {
         const uniqueImages = productsHero.map(product => product.image);
 
         const carouselItems = uniqueImages.map((image, index) => {
@@ -134,7 +129,7 @@ class TemplateCards {
             <div class="carousel-item ${ isActive }">
                 <img class="d-block w-100" src="${ image }" alt="${ altText }">
             </div>
-          `;
+            `;
         });
 
         const carouselInner = `
@@ -198,10 +193,13 @@ class View_Favorites {
         contentCardFavorite.innerHTML += products_Instance.modelCard
     }
 
-    deleteCardFavorite(){
+    deleteCardFavorite() {
         const contentFavorite = document.querySelector('#favorites_section')
-        contentFavorite.addEventListener('click',(e)=>{
-            e.target.parentElement.parentElement.parentElement.remove();
+        contentFavorite.addEventListener('click', (e) => {
+            if (e.target.nodeName === 'path') {
+                e.target.parentElement.parentElement.parentElement.remove()
+            }
+
         })
     }
 
@@ -228,7 +226,7 @@ class View_Favorites {
         /* The above code is assigning the value of `this.fav_DOM` to the `heartsDom` property of the
         `products_Instance` object in JavaScript. */
         products_Instance.heartsDom = this.fav_DOM
-        //------------------------------------------
+        //------------------------------------------------------------------------------------------------------------------------------
         return this.fav_DOM
 
     }
@@ -237,7 +235,7 @@ class View_Favorites {
 }
 
 const favorites_View = new View_Favorites()
-
+//---------------------------------------------------------------------------------------------------------------------------------------
 class View_cart {
 
     /**
@@ -436,8 +434,14 @@ const render_Total_And_Pay = (cart) => {
 
 class Handler_Displays_Ui {
 
+    initPage() {
+        document.querySelector('#init').addEventListener('click', () => {
+            console.log('init');
+        })
+    }
+
     handler_Display_(hash) {
-        console.log(hash);
+
         if (hash === 'categories') {
             return (
                 document.querySelector('#home').style.display = 'none',
@@ -454,7 +458,8 @@ class Handler_Displays_Ui {
                 document.querySelector('.cart_style').style.display = 'none',
                 document.querySelector('#content_card').style.display = 'grid',
                 document.querySelector('#favorites_section').style.display = 'none',
-                document.querySelector('#individual_product').style.display = 'none'
+                document.querySelector('#individual_product').style.display = 'none',
+                document.querySelector('#content').style.display = 'grid'
             )
         }
         if (hash === 'cart') {
@@ -470,6 +475,7 @@ class Handler_Displays_Ui {
             )
         }
         if (hash === 'favorites') {
+
             return (
                 document.querySelector('#content_card').style.display = 'none',
                 document.querySelector('.cart_style').style.display = 'none',
@@ -493,6 +499,11 @@ class Handler_Displays_Ui {
 
     }
 }
+
+const handlerDisplay = new Handler_Displays_Ui
+
+handlerDisplay.initPage()
+
 
 const cart = new View_cart()
 
