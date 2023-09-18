@@ -760,16 +760,9 @@ h1 {
 }
 
 
-/* -------Footer------ */
 
 
-
-
-/* --------------------- */
-
-
-
-@media screen and (min-width: 428px) and (max-width: 700px) {
+@media screen and (min-width: 428px) and (max-width: 600px) {
    .header {
       height: 25vh;
 
@@ -909,7 +902,8 @@ h1 {
       display: flex;
       flex-direction: column;
       justify-content: space-evenly;
-      align-items: center;   }
+      align-items: center;
+   }
 
    .ui_Cart {
       width: 100%;
@@ -968,6 +962,37 @@ h1 {
       padding: .8rem;
    }
 
+   .content-button-favorite {
+      grid-column: 10/11;
+      grid-row: 1/1;
+   }
+
+   .content_title___individual_item {
+      grid-column: 3/12;
+      grid-row: 2/2;
+      text-align: center;
+   }
+
+   .content_price___individual_item {
+      grid-column: 6/9;
+      grid-row: 3/4;
+      text-align: center;
+   }
+
+   .content_description___individual_item {
+      grid-column: 1/13;
+      grid-row: 5/5;
+      text-align: center;
+   }
+
+   .image_style {
+      width: 90%
+   }
+
+   .content-buttons___individual_item {
+      grid-column: 6/9;
+      grid-row: 6/6;
+   }
 
 }
 

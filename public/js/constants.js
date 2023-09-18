@@ -12,4 +12,10 @@ const URL_API = {
     GET_PRODUCT: (id) => `https://fakestoreapi.com/products/${ Number(id) }`
 }
 
-export { keysLocalStorage, URL_API }
+const sections = {
+    FAVORITES : 'Your favorites',
+    CART : 'Your cart',
+    ALL_PRODUCTS : 'All products',
+}
+
+export { keysLocalStorage, URL_API,sections }

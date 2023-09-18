@@ -1,5 +1,6 @@
 "use strict";
 
+
 class TemplateCards {
 
 
@@ -11,7 +12,7 @@ class TemplateCards {
     }
 
     /* Creating a card with the information of the product. */
-    create_Card(products) {
+    create_Card(products, section) {
         this.products = ''
         this.modelCard = ''
         this.products = products
@@ -46,9 +47,18 @@ class TemplateCards {
             return this.modelCard
         })
 
+        const contentCards = document.querySelector('.favorites')
 
-        /* A function that change the color of the heart when user click,
-        and send id product to saving*/
+        const contentTitleSection = document.createElement('h1')
+
+        contentTitleSection.innerHTML = 'Favorites'
+
+        contentTitleSection.classList.add('content_title_section')
+
+        contentTitleSection.classList.add('text-center')
+
+        contentCards.innerHTML = contentTitleSection
+
 
 
     }
@@ -185,12 +195,15 @@ class View_Favorites {
     }
 
 
-    createFavoriteListUI(favorites) {
+    createFavoriteListUI(favorites, section) {
         this.favorites = favorites
         const contentCardFavorite = document.querySelector('#favorites_section')
-        products_Instance.create_Card(this.favorites)
+        console.log(contentCardFavorite);
+        products_Instance.create_Card(this.favorites, section)
         this.display_FavoritesHeart(this.favorites)
-        contentCardFavorite.innerHTML += products_Instance.modelCard
+        contentCardFavorite.innerHTML = products_Instance.modelCard
+
+
     }
 
     deleteCardFavorite() {

@@ -318,6 +318,7 @@ class Control_Favorites {
 
     sendFavoriteToView() {
         document.querySelector('#favorites').addEventListener('click', () => {
+            loadSpinner(false)
             if (this.favorites.length > 0 || null) {
                 const controllerResponseFavorite_Ok = {
                     list: this.favorites,
@@ -327,8 +328,10 @@ class Control_Favorites {
                 this.instance_View.display_FavoritesHeart(this.favorites)
                 this.instance_View.deleteCardFavorite()
                 controller_Cart_Instance.add_Cart_Listener()
-                this.handler_Favorites()
+                handler_Init_Page.handlerSingleProduct()
+                loadSpinner(true)
                 return controllerResponseFavorite_Ok
+
             }
             const ControllerResponseFavorite = {
                 list: null,
