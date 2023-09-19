@@ -21,7 +21,8 @@ const productsView = new TemplateCards()
 const loadSpinner = (flag) => {
     const overlay = document.querySelector('.overlay')
     if (overlay !== null) {
-        return !flag ? overlay.style.display = 'flex' : overlay.style.display = 'none'
+        const confirm = !flag ? overlay.style.display = 'flex' : overlay.style.display = 'none'
+        const result = confirm === 'flex' ? document.body.style.overflow = 'hidden': document.body.style.overflow = 'auto'
     }
 }
 
@@ -55,12 +56,30 @@ class Control_View_Information_At_DOM {
         finally {
 
             loadSpinner(true)
-            document.body.style.overflow = 'auto';
 
 
         }
     }
 
+    homeInit() {
+        const init = document.querySelector('#_home')
+        init.addEventListener('click', async () => {
+            //-----------------------------------//
+            const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
+            products_Instance.create_Card(returnAllProducts)
+            products_Instance.insertAllProducts()
+            //-----------------------------------//
+            const targetFavorites = favorites.favorites;
+            favorites.instance_View.display_FavoritesHeart(targetFavorites)
+            favorites.handler_Favorites()
+            this.handlerSingleProduct()
+
+            controller_Cart_Instance.add_Cart_Listener()
+            
+
+
+        })
+    }
 
     async control_View_Categories() {
         loadSpinner(false)
@@ -131,10 +150,10 @@ class Control_View_Information_At_DOM {
 
     handlerSingleProduct = () => {
         const view_Element = document.querySelectorAll('.individual_product')
-        loadSpinner(false)
         view_Element.forEach((element) => {
-
+            
             element.addEventListener('click', async (e) => {
+                loadSpinner(false)
 
                 try {
                     const data_Id = Number(e.target.dataset.id)
@@ -210,6 +229,7 @@ class ControlIndividualProduct {
                 favorites.id = this.id
                 const res = await favorites.callingApi()
                 const resList = favorites.save_And_Update_Favorites(res)
+                favorites.handler_Favorites()
                 return resList
             }
         })
@@ -674,8 +694,8 @@ if (typeof localStorage !== 'undefined') {
     const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
     products_Instance.create_Card(returnAllProducts)
     products_Instance.insertAllProducts(),
-
-        await handler_Init_Page.control_View_Categories()
+        handler_Init_Page.homeInit()
+    await handler_Init_Page.control_View_Categories()
     controller_Cart_Instance.add_Cart_Listener(),
         controller_Cart_Instance.assign_Events_Products(),
         handler_Init_Page.handlerSingleProduct(),

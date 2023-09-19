@@ -47,18 +47,6 @@ class TemplateCards {
             return this.modelCard
         })
 
-        const contentCards = document.querySelector('.favorites')
-
-        const contentTitleSection = document.createElement('h1')
-
-        contentTitleSection.innerHTML = 'Favorites'
-
-        contentTitleSection.classList.add('content_title_section')
-
-        contentTitleSection.classList.add('text-center')
-
-        contentCards.innerHTML = contentTitleSection
-
 
 
     }
@@ -69,13 +57,15 @@ class TemplateCards {
     /* -------------------------------------- */
 
     uI_Individual_Card(product) {
+        let model = ''
+        this.modelIndividualCard = ''
         const coincidentElements = this.heartsDom.find(i => {
             return i.dataset.id == product.id
         })
         //initialize color
         const initialColor = coincidentElements === undefined ? 'black' : 'red'
         //-----
-        this.modelIndividualCard =
+        model =
             `
             <div class='content-button-favorite' data-id="${ product.id }">
             <button type="button" class="favorite individual-favorite" data-id="${ product.id }" value="on"> 
@@ -102,6 +92,7 @@ class TemplateCards {
                 <button type="button" data-id ="${ product.id }" class="btn btn-primary btn-card individual_btn_add_to_cart">Add Cart</button>
             </div>
         `
+        this.modelIndividualCard = model
         return this.modelIndividualCard
     }
 
@@ -184,7 +175,6 @@ class Category_ui {
     }
 }
 
-// create shopping cart with vanilla javascript?    
 
 class View_Favorites {
 
@@ -198,7 +188,6 @@ class View_Favorites {
     createFavoriteListUI(favorites, section) {
         this.favorites = favorites
         const contentCardFavorite = document.querySelector('#favorites_section')
-        console.log(contentCardFavorite);
         products_Instance.create_Card(this.favorites, section)
         this.display_FavoritesHeart(this.favorites)
         contentCardFavorite.innerHTML = products_Instance.modelCard
@@ -447,12 +436,6 @@ const render_Total_And_Pay = (cart) => {
 
 class Handler_Displays_Ui {
 
-    initPage() {
-        document.querySelector('#init').addEventListener('click', () => {
-            console.log('init');
-        })
-    }
-
     handler_Display_(hash) {
 
         if (hash === 'categories') {
@@ -511,11 +494,12 @@ class Handler_Displays_Ui {
         }
 
     }
+
+
 }
 
 const handlerDisplay = new Handler_Displays_Ui
 
-handlerDisplay.initPage()
 
 
 const cart = new View_cart()
