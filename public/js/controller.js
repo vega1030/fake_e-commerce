@@ -22,7 +22,7 @@ const loadSpinner = (flag) => {
     const overlay = document.querySelector('.overlay')
     if (overlay !== null) {
         const confirm = !flag ? overlay.style.display = 'flex' : overlay.style.display = 'none'
-        const result = confirm === 'flex' ? document.body.style.overflow = 'hidden': document.body.style.overflow = 'auto'
+        const result = confirm === 'flex' ? document.body.style.overflow = 'hidden' : document.body.style.overflow = 'auto'
     }
 }
 
@@ -75,7 +75,7 @@ class Control_View_Information_At_DOM {
             this.handlerSingleProduct()
 
             controller_Cart_Instance.add_Cart_Listener()
-            
+
 
 
         })
@@ -151,7 +151,7 @@ class Control_View_Information_At_DOM {
     handlerSingleProduct = () => {
         const view_Element = document.querySelectorAll('.individual_product')
         view_Element.forEach((element) => {
-            
+
             element.addEventListener('click', async (e) => {
                 loadSpinner(false)
 
@@ -547,15 +547,31 @@ class Control_cart {
 
 
     assign_Event_Btn_Pay = () => {
-        const payEvent = document.querySelector('#view_section_cart')
-        payEvent.addEventListener('click', (event) => {
-            const target = event.target
+        const payEvent = document.querySelector('#view_section_cart');
+        payEvent.addEventListener('click', async (event) => {
+            const target = event.target;
             if (target.classList.contains('btn_confirm_buy')) {
-                this.confirm_Pay()
+                try {
+                    const canvas = await html2canvas(document.querySelector(".capture"),
+                    {
+                        quality:1.0,
+                        width :'30rem',
+                        height : '30rem'
+                    });
+                    const myCanvas = canvas;
+                    console.log(myCanvas);
+                    const test = document.querySelector('#view_section_cart');
+                    console.log(test);
+                    test.appendChild(canvas);
+                } catch (error) {
+                    console.error('Error:', error);
+                } finally {
+                    this.confirm_Pay();
+                }
             }
-        })
+        });
     }
-
+    
 
 
     /**
