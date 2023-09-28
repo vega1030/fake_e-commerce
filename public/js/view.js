@@ -1,3 +1,4 @@
+import {initPage}from './initPage.js'
 "use strict";
 
 
@@ -144,12 +145,13 @@ class TemplateCards {
 
     };
 }
+//---------------------------------------------------------------------------------------------------------------------------------------
 
 const products_Instance = new TemplateCards();
+//---------------------------------------------------------------------------------------------------------------------------------------
 
-if (typeof localStorage !== 'undefined') {
-    products_Instance.changeColorHeart()
-}
+
+//---------------------------------------------------------------------------------------------------------------------------------------
 
 class Category_ui {
     createDynamicCategoryNav(categories) {
@@ -175,6 +177,7 @@ class Category_ui {
     }
 }
 
+//---------------------------------------------------------------------------------------------------------------------------------------
 
 class View_Favorites {
 
@@ -185,14 +188,12 @@ class View_Favorites {
     }
 
 
-    createFavoriteListUI(favorites, section) {
-        this.favorites = favorites
-        const contentCardFavorite = document.querySelector('#favorites_section')
-        products_Instance.create_Card(this.favorites, section)
-        this.display_FavoritesHeart(this.favorites)
-        contentCardFavorite.innerHTML = products_Instance.modelCard
-
-
+    createFavoriteListUI(favorites) {
+            this.favorites = favorites
+            const contentCardFavorite = document.querySelector('#favorites_section')
+            products_Instance.create_Card(this.favorites)
+            this.display_FavoritesHeart(this.favorites)
+            contentCardFavorite.innerHTML = products_Instance.modelCard
     }
 
     deleteCardFavorite() {
@@ -207,7 +208,7 @@ class View_Favorites {
 
     display_FavoritesHeart(product) {
         //check color state here
-        const content_Cards = document.querySelector('.content-sale')
+        const content_Cards = document.querySelector('.main-grid')
 
         const cardsClass = String('.' + content_Cards.firstElementChild.classList[ 0 ])
         const cards = [ ...document.querySelectorAll(cardsClass) ]
@@ -235,8 +236,6 @@ class View_Favorites {
 
 
 }
-
-const favorites_View = new View_Favorites()
 //---------------------------------------------------------------------------------------------------------------------------------------
 class View_cart {
 
@@ -359,6 +358,7 @@ class View_cart {
 
 }
 
+/*-----||--- Special Functions ---||----- */
 
 /**
  * This function replaces the content of an HTML element with a trash basket icon or a minus symbol
@@ -435,8 +435,6 @@ const render_Total_And_Pay = (cart) => {
     render_Function()
 }
 
-
-
 /* This class is responsible for displaying the correct section of the page based on the hash in the url */
 
 class Handler_Displays_Ui {
@@ -468,7 +466,6 @@ class Handler_Displays_Ui {
                 document.querySelector('.cart_style').style.display = 'grid',
                 document.querySelector('#home').style.display = 'none',
                 document.querySelector('#content_card').style.display = 'none',
-                document.querySelector('#favorites_section').style.display = 'none',
                 document.querySelector('#section_cart').style.display = 'flex',
                 document.querySelector('#content').style.display = 'none',
                 document.querySelector('#individual_product').style.display = 'none'
@@ -493,7 +490,6 @@ class Handler_Displays_Ui {
                 document.querySelector('#content_card').style.display = 'none',
                 document.querySelector('.cart_style').style.display = 'none',
                 document.querySelector('#home').style.display = 'none',
-                document.querySelector('#content_card').style.display = 'none',
                 document.querySelector('#favorites_section').style.display = 'none'
             )
         }
@@ -503,14 +499,10 @@ class Handler_Displays_Ui {
 
 }
 
-const handlerDisplay = new Handler_Displays_Ui
 
-
-
-const cart = new View_cart()
-
-
-
+if (typeof localStorage !== 'undefined') {
+    products_Instance.changeColorHeart()
+}
 
 export {
     products_Instance,

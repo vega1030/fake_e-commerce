@@ -1,8 +1,4 @@
 /*Variables*/
-@font-face {
-   font-family: 'mainFont';
-   src: url('./../fonts/Exo_2/Exo2-VariableFont_wght.ttf') format('truetype');
-}
 
 :root {
    --color_2: rgb(245, 242, 237);
@@ -14,8 +10,23 @@
    --color_font_dark_mode: rgb(238, 238, 238);
    --color_background_card_dark_mode: rgb(58, 71, 80);
    --color_font: #242424;
-   --color-background: #e9ecef;
-   --color-background_count_cart: rgb(235, 186, 52, .98 );
+   --color-background: rgba(255, 255, 255, 0.9);
+   --color-background_count_cart: rgb(235, 186, 52, .98);
+}
+
+@font-face {
+   font-family: 'mainFont';
+   src: url('./../fonts/Exo_2/Exo2-VariableFont_wght.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'titleFont';
+   src: url('./../fonts/Electrolize/Electrolize-Regular.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'auxFont';
+   src: url('./../fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf') format('truetype');
 }
 
 /* header style */
@@ -23,14 +34,33 @@
    color: var(--color_font);
    font-family: 'mainFont', sans-serif;
 }
+
+* {
+   font-size: 1rem;
+}
+
 .count_elements_at_cart {
    background-color: var(--color-background_count_cart)
-};
-
-@media screen and (min-width: 360px) and (max-width: 428px) {
-*{
-   font-size: .75rem;
 }
+
+.btn-primary {
+   font-family: 'mainFont', sans-serif !important;
+   background-color: var(--color-background);
+   border-color: black;
+
+}
+
+.content_photo {
+   background-color: rgb(219, 219, 219);
+
+}
+#carouselIndicators{
+   background-color: rgb(219, 219, 219);
+}
+
+@media screen and (min-width:20rem) and (max-width: 30rem) {
+
+
    .count_elements_at_cart {
       background-color: var(--color-background_count_cart);
       position: absolute;
@@ -47,7 +77,6 @@
 
 body {
    background-color: var(--color-background);
-
 }
 
 .header {
@@ -125,10 +154,6 @@ ul {
    list-style: none;
 }
 
-.nav {
-   align-content: center;
-}
-
 .header,
 .navbar {
    background: var(--color_2) !important;
@@ -150,11 +175,17 @@ ul {
 
 
 
-.title {
+.content-title {
    width: 100%;
    display: grid;
    justify-content: center;
    align-items: center;
+}
+
+.content-title h1 {
+   font-family: 'auxFont', sans-serif;
+
+   font-weight: 500;
 }
 
 h1,

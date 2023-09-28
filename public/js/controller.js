@@ -179,7 +179,7 @@ class Control_View_Information_At_DOM {
         try {
             const res = await get_All_Products()
 
-            const id_SelectsElements = [ 4, 18, 9 ]
+            const id_SelectsElements = [ 10, 14, 13 ]
 
             const products = res.reduce((acc, i) => {
                 id_SelectsElements.filter(num => {
@@ -344,19 +344,26 @@ class Control_Favorites {
                     list: this.favorites,
                     validation: true
                 }
-                this.instance_View.createFavoriteListUI(controllerResponseFavorite_Ok.list)
-                this.instance_View.display_FavoritesHeart(this.favorites)
-                this.instance_View.deleteCardFavorite()
-                controller_Cart_Instance.add_Cart_Listener()
-                handler_Init_Page.handlerSingleProduct()
-                loadSpinner(true)
-                return controllerResponseFavorite_Ok
+                if(favorites.validation === true ){
+                    this.instance_View.createFavoriteListUI(controllerResponseFavorite_Ok)
+                    this.instance_View.display_FavoritesHeart(this.favorites)
+                    this.instance_View.deleteCardFavorite()
+                    controller_Cart_Instance.add_Cart_Listener()
+                    handler_Init_Page.handlerSingleProduct()
+                    loadSpinner(true)
+                    return controllerResponseFavorite_Ok
+                }
 
             }
             const ControllerResponseFavorite = {
                 list: null,
                 validation: false
             }
+            if (window.confirm("No hay favoritos")) {
+                
+                window.location.reload()
+            }
+
             return ControllerResponseFavorite
         })
     }
