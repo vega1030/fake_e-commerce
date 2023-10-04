@@ -29,7 +29,6 @@
    src: url('./../fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf') format('truetype');
 }
 
-/* header style */
 *:not(.pathHeart, .bi) {
    color: var(--color_font);
    font-family: 'mainFont', sans-serif;
@@ -39,6 +38,7 @@
    font-size: 1rem;
 }
 
+/* header style */
 .count_elements_at_cart {
    background-color: var(--color-background_count_cart)
 }
@@ -50,13 +50,10 @@
 
 }
 
-.content_photo {
+#carouselIndicators {
    background-color: rgb(219, 219, 219);
+}
 
-}
-#carouselIndicators{
-   background-color: rgb(219, 219, 219);
-}
 
 @media screen and (min-width:20rem) and (max-width: 30rem) {
 
@@ -79,15 +76,6 @@ body {
    background-color: var(--color-background);
 }
 
-.header {
-   background-color: var(--color_2);
-   box-shadow: var(--shadow_box);
-}
-
-.nav>.nav-links>a:hover {
-   background-color: rgba(232, 219, 219, 0.3);
-   color: black;
-}
 
 .content-sale__child {
    background-color: #ffffff;
@@ -335,39 +323,32 @@ h2 {
 .content_total {
    background-color: var(--color-background);
 }
+.nav>#nav-check:checked~.nav-links{
+ background-color: var(--color_2);  
+}
 
-@media (max-width:600px) {
-   .nav>.nav-links {
+@media screen and (min-device-width:18.75rem) and (max-device-width: 30rem) and (orientation: landscape) {
+   .header {
       background-color: var(--color_2);
-
+      box-shadow: var(--shadow_box);
    }
 
-
-
-}
-
-@media (min-width: 375px) and (max-width: 600px) {
-
-   .trash_count {
-      width: 65%;
+   .nav>.nav-links>a:hover {
+      background-color: rgba(232, 219, 219, 0.3);
+      color: black;
    }
 }
 
-@media (prefers-color-scheme: dark) {
-   img {
-      filter: brightness(.8) contrast(1.2);
+@media screen and (min-device-width:18.75rem) and (max-device-width: 30rem) and (orientation: portrait) {
+
+
+   .header {
+      background-color: var(--color_2);
+      box-shadow: var(--shadow_box);
    }
 
-   body {
-      color: var(--color_font_dark_mode)
+   .nav>.nav-links>a:hover {
+      background-color: rgba(232, 219, 219, 0.3);
+      color: black;
    }
-
-   .favorite {}
-
-   .content-sale__child {
-      background-color: #ffffff;
-      /*     background-color: var(--color_background_card_dark_mode);
- */
-   }
-
 }

@@ -1,4 +1,4 @@
-import {initPage}from './initPage.js'
+import { initPage } from './initPage.js'
 "use strict";
 
 
@@ -188,12 +188,12 @@ class View_Favorites {
     }
 
 
-    createFavoriteListUI(favorites) {
-            this.favorites = favorites
-            const contentCardFavorite = document.querySelector('#favorites_section')
-            products_Instance.create_Card(this.favorites)
-            this.display_FavoritesHeart(this.favorites)
-            contentCardFavorite.innerHTML = products_Instance.modelCard
+    createFavoriteListUI(data) {
+        const contentCardFavorite = document.querySelector('#favorites_section')
+        products_Instance.create_Card(data.list)
+        contentCardFavorite.innerHTML = products_Instance.modelCard
+        this.favorites = data
+        return this.favorites
     }
 
     deleteCardFavorite() {
