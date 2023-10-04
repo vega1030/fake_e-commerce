@@ -265,13 +265,10 @@ class Control_Favorites {
             element.addEventListener('click', (e) => {
                 const class_List = e.target.classList.value;
                 this.id = class_List === 'pathHeart' ? Number(e.target.parentElement.parentElement.dataset.id) : Number(e.target.dataset.id);
-                console.log(this.id);
                 this.send_Favorite_Product_To_LocalStorage()
                 this.callingApi()
                 loadSpinner()
-
             });
-
         });
     }
 
@@ -340,7 +337,6 @@ class Control_Favorites {
 
     sendFavoriteToView() {
         document.querySelector('#favorites').addEventListener('click', () => {
-            loadSpinner(false)
             //-----------validation of the create this.favorites-------------------//
             this.favorites.length > 0 ?
                 this.objectFav = {
@@ -355,7 +351,6 @@ class Control_Favorites {
             //------------------------------//
 
             if (this.objectFav.validation === true) {
-                loadSpinner(true)
                 this.instance_View.createFavoriteListUI(this.objectFav)
                 this.instance_View.display_FavoritesHeart(this.objectFav.list)
                 this.handler_Favorites()
