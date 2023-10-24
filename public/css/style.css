@@ -11,7 +11,7 @@
    --color_background_card_dark_mode: rgb(58, 71, 80);
    --color_font: #242424;
    --color-background: rgba(255, 255, 255, 0.9);
-   --color-background_count_cart: rgb(235, 186, 52, .98);
+   --color-decoration: rgb(235, 186, 52, .98);
 }
 
 @font-face {
@@ -39,9 +39,6 @@
 }
 
 /* header style */
-.count_elements_at_cart {
-   background-color: var(--color-background_count_cart)
-}
 
 .btn-primary {
    font-family: 'mainFont', sans-serif !important;
@@ -49,11 +46,6 @@
    border-color: black;
 
 }
-
-#carouselIndicators {
-   background-color: rgb(219, 219, 219);
-}
-
 
 @media screen and (min-width:20rem) and (max-width: 30rem) {
 
@@ -109,9 +101,7 @@ input[type=number]::-webkit-outer-spin-button {
    margin: 0;
 }
 
-input[type=number] {
-   -moz-appearance: textfield;
-}
+
 
 
 .content_card____cart {
@@ -181,12 +171,6 @@ h3 {
    display: block;
 }
 
-.form-control {
-   width: 100%;
-}
-
-
-
 .form-init {
    text-align: center;
 }
@@ -199,7 +183,6 @@ h3 {
    bottom: 0;
    z-index: 9999;
    background-color: rgba(0, 0, 0, 0.5);
-   backdrop-filter: blur(10px);
    pointer-events: none;
    transition: opacity 0.3s ease-in-out;
    opacity: 0;

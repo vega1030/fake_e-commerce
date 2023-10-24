@@ -1,6 +1,9 @@
 import { initPage } from './initPage.js'
 "use strict";
 
+if (window.innerWidth >= 666 && window.innerHeight < 666) {
+    console.log('ok');
+}
 
 class TemplateCards {
 
