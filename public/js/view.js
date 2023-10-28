@@ -123,30 +123,6 @@ class TemplateCards {
 
     }
 
-    heroCarouselImage = (productsHero) => {
-        const uniqueImages = productsHero.map(product => product.image);
-
-        const carouselItems = uniqueImages.map((image, index) => {
-            const isActive = index === 0 ? 'active' : '';
-            const altText = `Slide ${ index + 1 }`;
-
-            return `
-            <div class="carousel-item ${ isActive }">
-                <img class="d-block w-100" src="${ image }" alt="${ altText }">
-            </div>
-            `;
-        });
-
-        const carouselInner = `
-          <div class="carousel-inner carousel-edited">
-            ${ carouselItems.join('') }
-          </div>
-        `;
-        const model = carouselInner;
-        const contentCarousel = document.querySelector('#carouselIndicators')
-        contentCarousel.insertAdjacentHTML('afterbegin', model)
-
-    };
 }
 //---------------------------------------------------------------------------------------------------------------------------------------
 

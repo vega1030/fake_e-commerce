@@ -29,6 +29,16 @@
    src: url('./../fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf') format('truetype');
 }
 
+@font-face {
+   font-family: 'bannerFont';
+   src: url('./../fonts/brifa/Brifa-Personal.otf');
+}
+
+.font-video-legend{
+font-family: 'bannerFont' !important;
+font-size: 5.5em;
+}
+
 *:not(.pathHeart, .bi) {
    color: var(--color_font);
    font-family: 'mainFont', sans-serif;

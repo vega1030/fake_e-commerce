@@ -174,28 +174,6 @@ class Control_View_Information_At_DOM {
 
 
     }
-
-    handlerHeroImageCarrousel = async () => {
-        try {
-            const res = await get_All_Products()
-
-            const id_SelectsElements = [ 10, 14, 13 ]
-
-            const products = res.reduce((acc, i) => {
-                id_SelectsElements.filter(num => {
-                    num === i.id ? acc.push(i) : false
-
-                })
-                return acc
-            }, [])
-            if (typeof localStorage !== 'undefined') {
-                products_Instance.heroCarouselImage(products);
-            }
-        } catch (error) {
-            console.error(error);
-        };
-    }
-
 }
 
 class ControlIndividualProduct {
@@ -731,7 +709,6 @@ if (typeof localStorage !== 'undefined') {
     favorites.send_Favorite_Product_To_LocalStorage(),
         favorites.instance_View.display_FavoritesHeart(local_Storage.getItem(keysLocalStorage.FAVORITES)),
         controller_Cart_Instance.controller_Cart(local_Storage.getItem(keysLocalStorage.CART))
-    handler_Init_Page.handlerHeroImageCarrousel()
     controllerIndividualProduct.listenerAddCart()
     controllerIndividualProduct.listenerFavorite()
     favorites.sendFavoriteToView()
