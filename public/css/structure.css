@@ -17,11 +17,7 @@ body {
 /* ---Carousel ---*/
 
 .carousel-edited {
-<<<<<<< HEAD
-   padding: 1rem;
-=======
    padding: 3rem;
->>>>>>> 5ee9b33 (replace with new media queries)
 }
 
 .nav-link>span {
@@ -52,20 +48,6 @@ body {
    width: 100vw;
 }
 
-<<<<<<< HEAD
-.carousel {
-   display: flex;
-   grid-row: 2/5;
-   grid-column: 3/9;
-   justify-items: center;
-   max-width: 70vw;
-   min-height: 54vw;
-   min-width: 80vw;
-   justify-content: center;
-}
-
-=======
->>>>>>> 5ee9b33 (replace with new media queries)
 
 .section_home_page {
    display: grid;
@@ -384,11 +366,7 @@ h1 {
    display: grid;
    grid-template-columns: repeat(auto-fill, minmax(15ch, 1ch));
    grid-template-rows: repeat(20, .5fr);
-<<<<<<< HEAD
-   padding: 1%;
-=======
    padding: 0;
->>>>>>> 5ee9b33 (replace with new media queries)
    grid-column: 1/4;
    grid-row: 4/5;
 }
@@ -455,15 +433,9 @@ h1 {
 
 .app {
    display: grid;
-<<<<<<< HEAD
-   width: 100vw;
-   height: 100%;
-   grid-template-columns: repeat(auto-fill, minmax(11ch, .5ch));
-=======
    width: 100%;
    height: 100%;
    grid-template-columns: repeat(auto-fill, minmax(125ch, .5ch));
->>>>>>> 5ee9b33 (replace with new media queries)
    grid-template-rows: repeat(auto-fill, minmax(21ch, .5ch));
 }
 
@@ -541,8 +513,6 @@ h1 {
 }
 
 /* ------------------HEADER-------------------------- */
-<<<<<<< HEAD
-=======
 
 
 .header {
@@ -696,7 +666,6 @@ h1 {
 }
 
 @media only screen and (max-width: 48rem) {
->>>>>>> 5ee9b33 (replace with new media queries)
 
 
 .header {
@@ -861,13 +830,8 @@ h1 {
 
    .header {
       display: grid;
-<<<<<<< HEAD
-      grid-template-rows: repeat(2, 10ch);
-      height: 100%;
-=======
       grid-template-rows: 9ch;
       height: 78%;
->>>>>>> 5ee9b33 (replace with new media queries)
       gap: 1%;
       grid-row: 1/2;
    }
@@ -1324,34 +1288,6 @@ h1 {
 
    .content-card {
       width: 100%;
-<<<<<<< HEAD
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-content: center;
-      grid-column: 1/25;
-      grid-row: 1/4;
-      flex-flow: wrap;
-      height: 100%;
-   }
-
-   .content-title {
-      grid-row: 1/2;
-      width: 100vw;
-      height: 60%;
-   }
-
-   #carouselIndicators {
-      grid-row: 2/6;
-      grid-column: 1/6;
-      min-width: 90vw;
-   }
-
-   .content_section {
-      grid-row: 8/15;
-      grid-column: 1/6;
-      grid-template-columns: repeat(auto-fill, minmax(3ch, 1ch));
-=======
       display: flex;
       flex-direction: row;
       justify-content: center;
@@ -1402,26 +1338,17 @@ h1 {
       grid-row: 8/15;
       grid-column: 1/13;
       grid-template-columns: repeat(auto-fill, minmax(15ch, 1ch));
->>>>>>> 5ee9b33 (replace with new media queries)
       grid-template-rows: repeat(8, 10ch);
       height: 100%;
       width: 100vw;
    }
 
    .section_home_page {
-<<<<<<< HEAD
-      grid-template-columns: repeat(auto-fill, minmax(25ch, 1ch));
-      grid-template-rows: repeat(14, 12ch);
-      grid-column: 1/4;
-      grid-row: 2/5;
-      width: 100vw;
-=======
       grid-template-columns: repeat(auto-fill, minmax(20ch, 0.5ch));
       grid-template-rows: repeat(14, 12ch);
       grid-column: 1/4;
       grid-row: 2/5;
       width: 100%;
->>>>>>> 5ee9b33 (replace with new media queries)
       height: 100%;
       justify-items: center;
    }
@@ -1444,10 +1371,6 @@ h1 {
       grid-row: 10/20;
       width: 100vw;
       height: 100%;
-<<<<<<< HEAD
-
-=======
->>>>>>> 5ee9b33 (replace with new media queries)
    }
 
    /* -------------------------------------------- */
@@ -1459,19 +1382,5 @@ h1 {
       grid-column: 1/6;
       grid-row: 26/28
    }
-
-<<<<<<< HEAD
-   ;
-
-   /* -------------------------------------------- */
 }
-
-
-/********************************/
-
-/*769 - 843 */
-@media only screen and (max-width:48.0625rem) {
-
-=======
->>>>>>> 5ee9b33 (replace with new media queries)
 }
