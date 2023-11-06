@@ -299,16 +299,6 @@ h2 {
    padding: .5%;
 }
 
-.content-text__footer {
-   width: 50%;
-   height: 30%;
-}
-
-.content_icons {
-   width: 27%;
-   display: flex;
-}
-
 .icon {
    width: 35%;
 }

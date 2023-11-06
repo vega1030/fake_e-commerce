@@ -396,12 +396,12 @@ const render_Total_And_Pay = (cart) => {
         const $total = document.querySelector('#view_section_cart');
         const model_Total = `
         
-            <div id="content_total" class="content_total">
+            <aside id="content_total" class="content_total">
                 <h3 class="total">Subtotal ${ parseFloat(total_And_Quantity.total.toFixed(2)) }\u20AC</h3>
                 <a href="#pay" class="btn_confirm_buy quantity"  id="pay_confirm">
                     Pagar pedido (${ total_And_Quantity.quantity } productos)
                 </a>
-            </div>
+            </aside>
         
         
         `;
