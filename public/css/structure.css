@@ -14,17 +14,13 @@ body {
    width: 100vw;
 }
 
-/* ---Carousel ---*/
-
-.carousel-edited {
-   padding: 3rem;
-}
 
 .nav-link>span {
    margin: 0 0 0 6%;
    color: black;
 }
 
+/* ---------Home--------------- */
 .content-title {
    display: grid;
    justify-content: center;
@@ -34,6 +30,51 @@ body {
    width: 100vw;
 }
 
+.title-season {
+   font-size: 5rem;
+}
+
+.banner-gray {
+   width: 44%;
+}
+
+.content-season-legend {
+   position: relative;
+   background: silver;
+   height: 78%;
+   width: 40%;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+.content-video-home {
+   width: 64%;
+   grid-column: 1/3;
+   justify-self: flex-start;
+}
+
+.content-video-home video {
+   width: 40%;
+   height: 100%;
+}
+
+.content-banner {
+   grid-row: 8/13;
+   width: 99%;
+   height: 80%;
+   grid-column: 1/15;
+   display: flex;
+   justify-content: flex-end;
+   align-items: flex-start;
+   background-color: silver;
+}
+
+.content-season-legend img {
+   width: 20%;
+
+}
+
 .font-video-legend {
    position: relative;
    width: 100%;
@@ -41,7 +82,7 @@ body {
 
 .section_home_page {
    display: grid;
-   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
    grid-template-rows: repeat(14, 12ch);
    grid-column: 1/4;
    grid-row: 2/5;
@@ -50,6 +91,27 @@ body {
    justify-items: center;
 
 }
+
+.content-video-home {
+   grid-row: 1/7;
+   width: 100%;
+   height: 100%;
+   grid-column: 1/4;
+   display: flex;
+   padding: 1%;
+   justify-content: center;
+}
+
+.video-home-page {
+   min-width: 29%;
+   display: flex;
+   height: 100%;
+   justify-content: flex-start;
+   align-items: flex-end;
+}
+
+/* ---------End Home--------------- */
+
 
 
 .legend,
@@ -63,36 +125,6 @@ body {
    margin: 0 auto;
    min-width: 50%;
    text-align: center;
-}
-
-.content-card {
-   width: 100vw;
-   height: 100%;
-   display: flex;
-   flex-direction: column;
-   justify-content: center;
-   align-content: center;
-   grid-column: 1/5;
-   grid-row: 1/4;
-   height: 100%;
-   flex-wrap: wrap;
-}
-
-.content-card__reverse {
-   width: 100%;
-   display: flex;
-   flex-direction: row;
-   justify-content: center;
-   align-content: center;
-   grid-column: 1/25;
-   grid-row: 5/9;
-   flex-flow: wrap;
-   height: 100%;
-}
-
-
-.content_image {
-   width: 40%;
 }
 
 ul {
@@ -116,8 +148,8 @@ ul {
 }
 
 .content-legend-video {
-   grid-column: 3/6;
-   grid-row: 2/6;
+   grid-column: 3/5;
+   grid-row: 2/8;
    display: flex;
    justify-content: center;
    align-items: center;
@@ -533,13 +565,11 @@ h1 {
 
 .nav>.nav-header {
    display: flex;
-   justify-content: center;
-   align-items: center;
-   cursor: pointer;
-   align-items: center;
-   justify-content: center;
-   grid-column: 2/5;
+   grid-column: 1/6;
    grid-row: 1/1;
+   width: 30%;
+   align-items: center;
+   justify-self: center
 }
 
 .nav>.nav-btn>label:hover,
@@ -615,7 +645,6 @@ h1 {
    width: 87%;
 }
 
-/* --------------End Header-------------------------- */
 
 #content_count_cart {
    min-width: 66%;
@@ -633,6 +662,8 @@ h1 {
    max-width: 80%;
 }
 
+/* --------------End Header-------------------------- */
+
 
 /* ----------------------Cart------------------- */
 .cart_style {
@@ -643,13 +674,12 @@ h1 {
    background-color: #ffffff;
    grid-column: 1/-1;
    width: 100vw;
-   place-items: center;
 }
 
 .content_total {
    grid-column: 1/3;
    grid-row: 1/2;
-   width: 80%;
+   width: 100%;
    display: flex;
    flex-direction: column;
    align-items: center;
@@ -755,10 +785,52 @@ h1 {
    text-align: center;
 }
 
+
+
 /* -------------------------------------------------------- */
+@media only screen and (max-width: 31.25rem) {
 
-@media only screen and (max-width: 48rem) {
+   .content-legend-video {
+      grid-row: 1/7;
+      grid-column: 1/-1;
+      width: 90%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 0.5ch solid black;
+   }
 
+   .content-video-home {
+      grid-row: 5/15;
+      width: 82%;
+      height: 36%;
+      grid-column: 1/14;
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+   }
+
+   .content-banner {
+      grid-row: 9/13;
+      width: 90%;
+      height: 80%;
+      grid-column: 1/14;
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      background-color: silver;
+      border: 0.2ch solid black;
+      flex-direction: column-reverse;
+   }
+}
+
+/* -------------------------------------------------------- */
+@media only screen and (max-width: 31.25rem) {
+
+   .ui_Cart .content_card____cart {
+      grid-template-columns: 7rem repeat(4, 1fr);
+   }
 
    .header {
       display: grid;
@@ -845,8 +917,9 @@ h1 {
       cursor: pointer;
       align-items: center;
       justify-content: center;
-      grid-column: 2/5;
+      grid-column: 1/6;
       grid-row: 1/1;
+      width: 50%;
    }
 
    .nav>.nav-btn>label:hover,
@@ -996,17 +1069,6 @@ h1 {
       padding: 13px;
    }
 
-   .nav>.nav-header {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      align-items: center;
-      justify-content: center;
-      grid-column: 2/5;
-      grid-row: 1/1;
-   }
-
    .nav>.nav-btn>label:hover,
    .nav #nav-check:checked~.nav-btn>label {
       background-color: rgba(0, 0, 0, 0.3);
@@ -1083,16 +1145,6 @@ h1 {
 
    /* ------------------HOME-------------------------- */
 
-   .content-legend-video {
-      grid-row: 1/4;
-      grid-column: 1/14;
-      width: 90%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border: 0.5ch solid black;
-   }
 
 
    /* -------------------------------------- */
@@ -1114,22 +1166,6 @@ h1 {
       height: 60%;
    }
 
-   #carouselIndicators {
-      grid-row: 2/7;
-      grid-column: 1/13;
-      min-width: 100%;
-   }
-
-   .carousel {
-      display: flex;
-      grid-row: 2/5;
-      grid-column: 3/9;
-      justify-items: center;
-      max-width: 70vw;
-      min-height: 54vw;
-      min-width: 80vw;
-      justify-content: center;
-   }
 
    .content_section {
       grid-row: 8/15;
@@ -1140,29 +1176,11 @@ h1 {
       width: 100vw;
    }
 
-   .section_home_page {
-      grid-template-columns: repeat(auto-fill, minmax(13ch, 1ch));
-      grid-template-rows: repeat(14, 15ch);
-      grid-column: 1/5;
-      grid-row: 2/6;
-      width: 100vw;
-      height: 100%;
-      justify-items: center;
-   }
 
    .legend,
    .img-content {
       padding: 1%;
    }
-
-   /*    .main-grid {
-      grid-template-columns: repeat(auto-fill, minmax(29ch, 1ch));
-      grid-column: 1/5;
-      grid-row: 1/20;
-      height: 100%;
-      width: 100vw;
-   } */
-
 
    /* ------------------CARD-------------------------- */
 
@@ -1178,19 +1196,6 @@ h1 {
       grid-row: 1/4;
       flex-flow: wrap;
       height: 100%;
-   }
-
-   .content-banner {
-      grid-row: 9/13;
-      width: 90%;
-      height: 80%;
-      grid-column: 1/14;
-      display: flex;
-      justify-content: space-evenly;
-      align-items: center;
-      background-color: silver;
-      border: 0.2ch solid black;
-      flex-direction: column-reverse;
    }
 
    .content-banner .content-season-legend {
@@ -1220,12 +1225,13 @@ h1 {
       display: flex;
       justify-content: flex-start;
       align-items: flex-start;
+      display: none;
    }
 
    .font-video-legend {
       position: relative;
       width: 92%;
-      height: 90%;
+      height: 50%;
       font-size: 5em;
       text-align: center;
    }
@@ -1240,30 +1246,16 @@ h1 {
       grid-column: 1/5;
    }
 
-
 }
+
+
+
+
+
 
 /********************************/
 
 @media only screen and (min-width:48.0625rem) {
-
-   .title-season {
-      font-size: 5rem;
-   }
-
-   .banner-gray {
-      width: 44%;
-   }
-
-   .content-season-legend {
-      position: relative;
-      background: silver;
-      height: 78%;
-      width: 40%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-   }
 
    #carouselIndicators {
       grid-row: 1/5;
@@ -1298,27 +1290,6 @@ h1 {
       background-color: silver;
 
    }
-
-   .video-home-page {
-      min-width: 29%;
-      border: 1px solid black;
-      display: flex;
-      height: 100%;
-      justify-content: flex-start;
-      align-items: flex-end;
-   }
-
-   .content-video-home {
-      grid-row: 1/8;
-      width: 97%;
-      height: 100%;
-      grid-column: 1/4;
-      display: flex;
-      justify-content: flex-start;
-      align-items: flex-start;
-   }
-
-
 
    .content_section {
       grid-row: 8/15;
