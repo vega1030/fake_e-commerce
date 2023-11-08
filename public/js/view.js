@@ -460,7 +460,7 @@ class Handler_Displays_Ui {
                 document.querySelector('#content_card').style.display = 'none',
                 document.querySelector('#favorites_section').style.display = 'grid',
                 document.querySelector('#individual_product').style.display = 'none',
-                document.querySelector('#content').style.display = 'none'
+                document.querySelector('#content').style.display = 'grid'
             )
         }
         if (hash === 'individual_product') {
