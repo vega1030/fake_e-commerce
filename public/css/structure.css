@@ -837,8 +837,8 @@ h1 {
 
    .ui_Cart .content_card____cart {
       grid-template-columns: 7rem repeat(4, 1fr);
+      grid-template-rows: repeat(6, 1.5rem);
    }
-
    .header {
       display: grid;
       grid-template-rows: repeat(2, 1fr);
