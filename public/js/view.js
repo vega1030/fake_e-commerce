@@ -66,6 +66,8 @@ class TemplateCards {
         const coincidentElements = this.heartsDom.find(i => {
             return i.dataset.id == product.id
         })
+        const content_Individual_Cards = document.querySelector('#individual_product')
+        content_Individual_Cards.innerHTML = ''
         //initialize color
         const initialColor = coincidentElements === undefined ? 'black' : 'red'
         //-----
@@ -103,6 +105,7 @@ class TemplateCards {
     insertIndividualCard() {
         const content_Individual_Cards = document.querySelector('#individual_product')
         content_Individual_Cards.insertAdjacentHTML('afterbegin', this.modelIndividualCard)
+
     }
 
 
@@ -336,6 +339,70 @@ class View_cart {
     }
 
 }
+/* This class is responsible for displaying the correct section of the page based on the hash in the url */
+
+class Handler_Displays_Ui {
+
+    handler_Display_(hash) {
+
+        if (hash === 'categories') {
+            return (
+                document.querySelector('#home').style.display = 'none',
+                document.querySelector('.cart_style').style.display = 'none',
+                document.querySelector('#content_card').style.display = 'grid',
+                document.querySelector('#favorites_section').style.display = 'none',
+                document.querySelector('#individual_product').style.display = 'none',
+                document.querySelector('#content').style.display = 'grid'
+            )
+        }
+        if (hash === 'home') {
+            return (
+                document.querySelector('#home').style.display = 'grid',
+                document.querySelector('.cart_style').style.display = 'none',
+                document.querySelector('#content_card').style.display = 'grid',
+                document.querySelector('#favorites_section').style.display = 'none',
+                document.querySelector('#individual_product').style.display = 'none',
+                document.querySelector('#content').style.display = 'grid'
+            )
+        }
+        if (hash === 'cart') {
+            return (
+                document.querySelector('.cart_style').style.display = 'grid',
+                document.querySelector('#home').style.display = 'none',
+                document.querySelector('#content_card').style.display = 'none',
+                document.querySelector('#section_cart').style.display = 'flex',
+                document.querySelector('#content').style.display = 'none',
+                document.querySelector('#individual_product').style.display = 'none'
+
+            )
+        }
+        if (hash === 'favorites') {
+
+            return (
+                document.querySelector('#content_card').style.display = 'none',
+                document.querySelector('.cart_style').style.display = 'none',
+                document.querySelector('#home').style.display = 'none',
+                document.querySelector('#content_card').style.display = 'none',
+                document.querySelector('#favorites_section').style.display = 'grid',
+                document.querySelector('#individual_product').style.display = 'none',
+                document.querySelector('#content').style.display = 'grid'
+            )
+        }
+        if (hash === 'individual_product') {
+            return (
+                document.querySelector('#individual_product').style.display = 'grid',
+                document.querySelector('#content_card').style.display = 'none',
+                document.querySelector('.cart_style').style.display = 'none',
+                document.querySelector('#home').style.display = 'none',
+                document.querySelector('#favorites_section').style.display = 'none'
+            )
+        }
+
+    }
+
+
+}
+
 
 /*-----||--- Special Functions ---||----- */
 
@@ -414,69 +481,15 @@ const render_Total_And_Pay = (cart) => {
     render_Function()
 }
 
-/* This class is responsible for displaying the correct section of the page based on the hash in the url */
-
-class Handler_Displays_Ui {
-
-    handler_Display_(hash) {
-
-        if (hash === 'categories') {
-            return (
-                document.querySelector('#home').style.display = 'none',
-                document.querySelector('.cart_style').style.display = 'none',
-                document.querySelector('#content_card').style.display = 'grid',
-                document.querySelector('#favorites_section').style.display = 'none',
-                document.querySelector('#individual_product').style.display = 'none',
-                document.querySelector('#content').style.display = 'grid'
-            )
-        }
-        if (hash === 'home') {
-            return (
-                document.querySelector('#home').style.display = 'grid',
-                document.querySelector('.cart_style').style.display = 'none',
-                document.querySelector('#content_card').style.display = 'grid',
-                document.querySelector('#favorites_section').style.display = 'none',
-                document.querySelector('#individual_product').style.display = 'none',
-                document.querySelector('#content').style.display = 'grid'
-            )
-        }
-        if (hash === 'cart') {
-            return (
-                document.querySelector('.cart_style').style.display = 'grid',
-                document.querySelector('#home').style.display = 'none',
-                document.querySelector('#content_card').style.display = 'none',
-                document.querySelector('#section_cart').style.display = 'flex',
-                document.querySelector('#content').style.display = 'none',
-                document.querySelector('#individual_product').style.display = 'none'
-
-            )
-        }
-        if (hash === 'favorites') {
-
-            return (
-                document.querySelector('#content_card').style.display = 'none',
-                document.querySelector('.cart_style').style.display = 'none',
-                document.querySelector('#home').style.display = 'none',
-                document.querySelector('#content_card').style.display = 'none',
-                document.querySelector('#favorites_section').style.display = 'grid',
-                document.querySelector('#individual_product').style.display = 'none',
-                document.querySelector('#content').style.display = 'grid'
-            )
-        }
-        if (hash === 'individual_product') {
-            return (
-                document.querySelector('#individual_product').style.display = 'grid',
-                document.querySelector('#content_card').style.display = 'none',
-                document.querySelector('.cart_style').style.display = 'none',
-                document.querySelector('#home').style.display = 'none',
-                document.querySelector('#favorites_section').style.display = 'none'
-            )
-        }
-
-    }
-
-
+const filterProducts = () => {
+    const btnSearch = document.querySelector('#btn-search')
+    btnSearch.addEventListener('click', (e) => {
+        const inputValue = e.target.form.firstElementChild.value
+        // Here filter products
+        return inputValue
+    })
 }
+filterProducts()
 
 
 if (typeof localStorage !== 'undefined') {

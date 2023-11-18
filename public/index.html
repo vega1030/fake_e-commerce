@@ -44,7 +44,7 @@
                         placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-success search-button" type="submit">Search</button>
                 </form>
-                    <input type="checkbox" id="nav-check">
+                <input type="checkbox" id="nav-check">
                 <div class="nav-btn">
                     <label for="nav-check">
                         <span></span>
@@ -64,10 +64,10 @@
                         id="favorites">Favorites</a>
                     <form class="d-flex form-nav-links">
                         <input class="form-control me-2 form_input display-optional-input" type="search"
-                            placeholder="Search" aria-label="Search">
-                        <button class="btn btn-outline-success search-button" type="submit">Search</button>
+                            id="search-input" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success search-button" id="btn-search"
+                            type="button">Search</button>
                     </form>
-
                     <div class="title-content">
                         <div class="mb-3 form-init">
                             <label for="exampleFormControlInput1" class="form-label"></label>
@@ -98,20 +98,20 @@
 
         <!---------App---------------->
         <main class="section_home_page" id="home">
-        <aside class="container-video-banner">
-            <div class="content-legend-video">
-                <h3 class="font-video-legend">
-                    BUY FROM OUR WEBSITE 
-                </h3>
-            </div>
+            <aside class="container-video-banner">
+                <div class="content-legend-video">
+                    <h3 class="font-video-legend">
+                        BUY FROM OUR WEBSITE
+                    </h3>
+                </div>
 
-            <div class="content-video-home">
-                <video class="video-home-page" autoplay loop muted>
-                    <source src="./videos/vertical-orange-video(720p).mp4">
-                </video>
-            </div>
+                <div class="content-video-home">
+                    <video class="video-home-page" autoplay loop muted>
+                        <source src="./videos/vertical-orange-video(720p).mp4">
+                    </video>
+                </div>
 
-        </aside>
+            </aside>
             <div class="content-banner">
                 <div class="content-season-legend">
                     <p class="title-season">
@@ -136,9 +136,9 @@
             <section class="main-grid favorites " id="favorites_section">
                 <h1>Your Favorites</h1>
                 <hr>
-    
+
                 <!-- Dynamic template view.js -->
-    
+
             </section>
         </section>
         <section class="cart_style capture" id="view_section_cart">
