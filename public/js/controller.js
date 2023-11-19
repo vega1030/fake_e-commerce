@@ -3,6 +3,7 @@
 import { get_All_Products, get_Categories, get_View_Products_For_Category, get_Single_Product } from './api.js'
 import { keysLocalStorage } from './constants.js'
 import { Drive_Data_Cart, StorageService, Handler_Favorites } from './model.js';
+import { iniciarSesionConGoogle} from './auth.js';
 
 import {
     Category_ui, products_Instance, Handler_Displays_Ui,
@@ -687,7 +688,24 @@ class Control_cart {
         return this.cart_Model
     }
 
+}class Firebase_Functions {
+    constructor(auth) {
+        this.store = {}
+        this.user = {}
+        this.auth = auth
+    }
+
+    loginUser(){
+        const buttonLogin = document.querySelector('#google-sign-in-btn')
+        buttonLogin.addEventListener('click',(e)=>{
+            console.log(e.target)
+            iniciarSesionConGoogle()
+        })
+    }
+
 }
+const instanceFirebase = new Firebase_Functions()
+instanceFirebase.loginUser()
 
 const handler_Init_Page = new Control_View_Information_At_DOM()
 const controller_Cart_Instance = new Control_cart()
