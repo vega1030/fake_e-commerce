@@ -4,6 +4,10 @@
    box-sizing: border-box;
 }
 
+#google-sign-out-btn{
+   display: none;
+}
+
 html {
    height: 100%;
 }

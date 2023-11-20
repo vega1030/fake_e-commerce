@@ -1,10 +1,4 @@
-import { initPage } from './initPage.js'
 "use strict";
-
-if (window.innerWidth >= 666 && window.innerHeight < 666) {
-    console.log('ok');
-}
-
 class TemplateCards {
 
 
@@ -215,7 +209,39 @@ class View_Favorites {
         return this.fav_DOM
 
     }
+}
+//---------------------------------------------------------------------------------------------------------------------------------------
 
+class Display_Data_Firebase_User {
+
+    constructor(dataUser) {
+        this.dataUser = dataUser
+    }
+
+    displayProfilePhoto(userImg) {
+
+        const contentImageProfile = document.querySelector('#content-img-profile');
+        contentImageProfile.innerHTML = '';
+
+        const newUser = () => {
+            const imgProfile = document.createElement('IMG');
+            imgProfile.src = userImg;
+            imgProfile.alt = 'profile image';
+            imgProfile.className = 'img-user';
+            contentImageProfile.appendChild(imgProfile);
+            console.log(imgProfile);
+        }
+
+        userImg ? newUser() : console.log('no user');
+    }
+
+    displayUserName() {
+        return this.dataUser.displayName
+    }
+
+    displayUserEmail() {
+        return this.dataUser.email
+    }
 
 }
 //---------------------------------------------------------------------------------------------------------------------------------------
@@ -504,7 +530,8 @@ export {
     TemplateCards,
     Handler_Displays_Ui,
     View_Favorites,
+    Display_Data_Firebase_User,
+    View_cart,
     replace_Minus_Symbol_For_Trash_Basket,
     render_Total_And_Pay,
-    View_cart
 }

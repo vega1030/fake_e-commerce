@@ -1,15 +1,22 @@
 'use strict'
 
-import { get_All_Products, get_Categories, get_View_Products_For_Category, get_Single_Product } from './api.js'
+import {
+    get_All_Products,
+    get_Categories,
+    get_View_Products_For_Category,
+    get_Single_Product
+} from './api.js'
 import { keysLocalStorage } from './constants.js'
 import { Drive_Data_Cart, StorageService, Handler_Favorites } from './model.js';
-import { iniciarSesionConGoogle} from './auth.js';
+import { loginWithGmail } from './auth.js';
 
 import {
     Category_ui, products_Instance, Handler_Displays_Ui,
     View_Favorites, View_cart, replace_Minus_Symbol_For_Trash_Basket,
-    render_Total_And_Pay, TemplateCards
+    render_Total_And_Pay, Display_Data_Firebase_User,
+    TemplateCards
 } from "./view.js";
+
 const local_Storage = new StorageService()
 const handler_View = new Handler_Displays_Ui()
 const categories_UI = new Category_ui()
@@ -688,18 +695,30 @@ class Control_cart {
         return this.cart_Model
     }
 
-}class Firebase_Functions {
+} class Firebase_Functions {
     constructor(auth) {
         this.store = {}
         this.user = {}
         this.auth = auth
+        this.viewUser = new Display_Data_Firebase_User()
     }
 
-    loginUser(){
+    loginUser() {
+
         const buttonLogin = document.querySelector('#google-sign-in-btn')
-        buttonLogin.addEventListener('click',(e)=>{
-            console.log(e.target)
-            iniciarSesionConGoogle()
+        console.log(this.user)
+
+        buttonLogin.addEventListener('click', async (e) => {
+            const response = await loginWithGmail()
+            this.user = response
+            console.log(this.user)
+            let imgUser = this.user.photoURL
+            if (imgUser === undefined) {
+                imgUser = './images/user.png'
+            }
+            this.viewUser.displayProfilePhoto(imgUser)
+            !this.user ? e.target.textContent = 'Login' : e.target.textContent = 'Logout'
+
         })
     }
 
