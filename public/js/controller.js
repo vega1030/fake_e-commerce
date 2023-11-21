@@ -709,8 +709,8 @@ class Control_cart {
         const insertLogoUser = () => {
             if (this.user.photoURL === undefined) {
                 console.log(this.user.photoURL),
-                    this.user.photoURL
-                    = './icon/user.png'
+                    this.user.photoURL = './icon/user.png'
+                console.log(this.user.photoURL)
                 return this.viewUser.displayProfilePhoto(this.user.photoURL)
             }
         }
@@ -731,9 +731,9 @@ class Control_cart {
             finally {
                 !this.user ? e.target.textContent = 'Login' : e.target.textContent = 'Logout'
                 buttonLogin.disabled = false
-                insertLogoUser()
             }
         })
+        insertLogoUser()
     }
 
 }

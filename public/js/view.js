@@ -219,20 +219,14 @@ class Display_Data_Firebase_User {
     }
 
     displayProfilePhoto(userImg) {
-
         const contentImageProfile = document.querySelector('#content-img-profile');
         contentImageProfile.innerHTML = '';
-
-        const newUser = () => {
-            const imgProfile = document.createElement('IMG');
-            imgProfile.src = userImg;
-            imgProfile.alt = 'profile image';
-            imgProfile.className = 'img-user';
-            contentImageProfile.appendChild(imgProfile);
-            console.log(imgProfile);
-        }
-
-        userImg ? newUser() : console.log('no user');
+        const userAvatar = userImg === undefined ? './icon/user.png' : userImg
+        const imgProfile = document.createElement('IMG');
+        imgProfile.src = userAvatar
+        imgProfile.alt = 'avatar image';
+        imgProfile.className = 'img-user';
+        contentImageProfile.appendChild(imgProfile);
     }
 
     displayUserName() {

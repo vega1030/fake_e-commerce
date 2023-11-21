@@ -29,7 +29,6 @@ const loginWithGmail = async () => {
         if (auth.currentUser) {
             console.log(auth.currentUser)
             const signResponse = await signOut(auth)
-            console.log(signResponse)
             return false
         }
         else {
