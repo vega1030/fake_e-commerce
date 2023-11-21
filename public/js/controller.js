@@ -704,21 +704,35 @@ class Control_cart {
     }
 
     loginUser() {
-
         const buttonLogin = document.querySelector('#google-sign-in-btn')
-        console.log(this.user)
+
+        const insertLogoUser = () => {
+            if (this.user.photoURL === undefined) {
+                console.log(this.user.photoURL),
+                    this.user.photoURL
+                    = './icon/user.png'
+                return this.viewUser.displayProfilePhoto(this.user.photoURL)
+            }
+        }
+
+        insertLogoUser()
+        this.viewUser.displayProfilePhoto(this.user.photoURL)
 
         buttonLogin.addEventListener('click', async (e) => {
-            const response = await loginWithGmail()
-            this.user = response
-            console.log(this.user)
-            let imgUser = this.user.photoURL
-            if (imgUser === undefined) {
-                imgUser = './images/user.png'
+            buttonLogin.disabled = true
+            try {
+                const response = await loginWithGmail()
+                this.user = response
+                e.target.disable = true
+                this.viewUser.displayProfilePhoto(this.user.photoURL)
+            } catch (error) {
+                console.error(error);
             }
-            this.viewUser.displayProfilePhoto(imgUser)
-            !this.user ? e.target.textContent = 'Login' : e.target.textContent = 'Logout'
-
+            finally {
+                !this.user ? e.target.textContent = 'Login' : e.target.textContent = 'Logout'
+                buttonLogin.disabled = false
+                insertLogoUser()
+            }
         })
     }
 

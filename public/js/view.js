@@ -454,7 +454,7 @@ const replace_Minus_Symbol_For_Trash_Basket = (content_trash, flag = false) => {
     if (flag === true) {
         const dataSetId = content_trash.dataset.id;
         const model_Trash_Basket =
-            `<img src="../../public/icon/trash_basket.svg" alt="trash" class='trash_count' data-id=${ dataSetId }>`;
+            `<img src="./icon/trash_basket.svg" alt="trash" class='trash_count' data-id=${ dataSetId }>`;
         return content_trash.innerHTML = model_Trash_Basket;
     }
     else {
