@@ -6,9 +6,12 @@ import {
     get_View_Products_For_Category,
     get_Single_Product
 } from './api.js'
+
 import { keysLocalStorage } from './constants.js'
+
 import { Drive_Data_Cart, StorageService, Handler_Favorites } from './model.js';
-import { loginWithGmail } from './auth.js';
+
+import { loginWithGmail } from './firebase/auth.js';
 
 import {
     Category_ui, products_Instance, Handler_Displays_Ui,
@@ -16,6 +19,10 @@ import {
     render_Total_And_Pay, Display_Data_Firebase_User,
     TemplateCards
 } from "./view.js";
+
+import {
+    userData
+} from './firebase/realtimedatabase.js'
 
 const local_Storage = new StorageService()
 const handler_View = new Handler_Displays_Ui()
@@ -451,6 +458,7 @@ class Control_cart {
 
             return false;
         });
+
         const allQuantitiesAreZero = updatedCartReduced.every((product) => product.quantity === 0);
         if (isProductAddedOrUpdated || allQuantitiesAreZero) {
             this.cart_Model = updatedCartReduced;
@@ -695,17 +703,25 @@ class Control_cart {
         return this.cart_Model
     }
 
-} class Firebase_Functions {
+}
+
+
+class Firebase_Auth {
+
     constructor(auth) {
-        this.store = {}
         this.user = {}
+        this.id = ''
         this.auth = auth
         this.viewUser = new Display_Data_Firebase_User()
     }
 
-    loginUser() {
-        const buttonLogin = document.querySelector('#google-sign-in-btn')
+    returnUidUser(id) {
+        return this.id = id
+    }
 
+    loginUser() {
+
+        const buttonLogin = document.querySelector('#google-sign-in-btn')
         const insertLogoUser = () => {
             if (this.user.photoURL === undefined) {
                 console.log(this.user.photoURL),
@@ -714,8 +730,8 @@ class Control_cart {
                 return this.viewUser.displayProfilePhoto(this.user.photoURL)
             }
         }
-
         insertLogoUser()
+
         this.viewUser.displayProfilePhoto(this.user.photoURL)
 
         buttonLogin.addEventListener('click', async (e) => {
@@ -723,21 +739,41 @@ class Control_cart {
             try {
                 const response = await loginWithGmail()
                 this.user = response
-                e.target.disable = true
                 this.viewUser.displayProfilePhoto(this.user.photoURL)
+                this.id = this.user.uid
             } catch (error) {
                 console.error(error);
             }
             finally {
                 !this.user ? e.target.textContent = 'Login' : e.target.textContent = 'Logout'
                 buttonLogin.disabled = false
+                this.id ? userData(this.id) : console.log('error')
+                return this.id
             }
         })
         insertLogoUser()
     }
+}
+
+class Firebase_RealtimeDb {
+
+    constructor() {
+        this.db = firebase.database()
+    }
+
+    sendDataToDB() {
+        const cart = {
+            name: 'Cart',
+            price: 1000,
+            quantity: 1,
+            userId: this.id
+        }
+
+    }
 
 }
-const instanceFirebase = new Firebase_Functions()
+
+const instanceFirebase = new Firebase_Auth()
 instanceFirebase.loginUser()
 
 const handler_Init_Page = new Control_View_Information_At_DOM()

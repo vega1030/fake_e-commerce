@@ -1,5 +1,6 @@
 'use strict'
 
+
 const keysLocalStorage = {
     FAVORITES: 'favorites',
     CART: 'cart'
@@ -18,4 +19,8 @@ const sections = {
     ALL_PRODUCTS : 'All products',
 }
 
+/* const userData = {
+    userId : userUid
+}
+ */
 export { keysLocalStorage, URL_API,sections }
