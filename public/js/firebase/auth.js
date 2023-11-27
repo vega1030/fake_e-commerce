@@ -35,7 +35,6 @@ const loginWithGmail = async () => {
         else {
             const provider = new GoogleAuthProvider();
             const auth = getAuth(firebaseApp);
-            console.log(auth)
             await setPersistence(auth, browserLocalPersistence)
             const result = await signInWithPopup(auth, provider);
             const user = result.user;

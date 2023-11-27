@@ -14,35 +14,16 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 
-/*
-
-const userHistory=
-    'user':{
-        'userID':{
-            'id':id
-        }
-    }
-
-
-*/
-
-
 const database = getDatabase(firebaseApp);
 
 
-const saveData = async (userId) => {
-    console.log(userId)
-
+const saveData = async (uid, purchase) => {
     const db = getDatabase()
-
-    const newPurchaseRef = push(ref(db, userId, 'purchases'))
+    const newPurchaseRef = push(ref(db, uid, 'purchases'))
     const idPurchase = newPurchaseRef.key
     set(newPurchaseRef, {
 
-        'quantity': 2,
-        'product': 'T-shirt',
-        'price': 100,
-        'total': 200
+        purchase
 
     })
 }
@@ -64,5 +45,5 @@ const saveData = async (userId) => {
 
 
 export {
-    saveData as userData,
+    saveData
 }

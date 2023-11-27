@@ -94,6 +94,7 @@ body {
    height: 100%;
    justify-items: center;
    align-items: center;
+   padding: 2%;
 }
 
 .container-video-banner {

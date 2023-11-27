@@ -21,7 +21,7 @@ import {
 } from "./view.js";
 
 import {
-    userData
+    saveData
 } from './firebase/realtimedatabase.js'
 
 const local_Storage = new StorageService()
@@ -380,9 +380,9 @@ class Control_cart {
         this.shouldClearCart = false;
         this.model = new Drive_Data_Cart()
         this.acu = 0
+        this.total = 0
+        this.purchase = {}
     }
-
-
 
     clearCart() {
         this.shouldClearCart = true;
@@ -394,7 +394,17 @@ class Control_cart {
             cart_Ui.model_UiCart_List(this.cart_Model)
             this.model.setAndCopyLocalStorage(this.cart_Model)
             this.quantity_In_Cart(this.cart_Model)
-            render_Total_And_Pay(this.cart_Model)
+
+            // create total and quantity
+            const total_And_Quantity = this.cart_Model.reduce((previous, current) => {
+                previous.quantity = current.quantity + previous.quantity;
+                previous.total += current.quantity * current.price;
+                return previous
+            }, { total: 0, quantity: 0 })
+            //---------
+            this.total = Number(total_And_Quantity.total.toFixed(2))
+
+            render_Total_And_Pay(total_And_Quantity)
 
             return this.cart_Model
         }
@@ -402,7 +412,7 @@ class Control_cart {
 
     };
 
-    send_Id_To_Api = async (id) => {
+    async send_Id_To_Api(id) {
         loadSpinner(false)
 
         if (id) {
@@ -427,7 +437,7 @@ class Control_cart {
         };
     };
 
-    addProductsInCart = (paramProduct) => {
+    addProductsInCart(paramProduct) {
         if (this.shouldClearCart) {
             this.cart_Model = []
             this.shouldClearCart = false
@@ -473,7 +483,7 @@ class Control_cart {
         return { result: isProductAddedOrUpdated || allQuantitiesAreZero, cart: this.cart_Model };
     }
 
-    add_Cart_Listener = () => {
+    add_Cart_Listener() {
         const btns_Cart = document.querySelectorAll('.btn_add_to_cart')
         btns_Cart.forEach(item => item.addEventListener('click', (e) => {
             const id = Number(e.target.id);
@@ -489,7 +499,7 @@ class Control_cart {
     functions to handle subtracting, adding, and deleting items from a shopping cart. These functions
     update the quantity of items in the cart and call the "modify_Quantity" function. */
 
-    assign_Events_Products = () => {
+    assign_Events_Products() {
 
         const sectionCart = document.querySelector('#section_cart')
 
@@ -512,7 +522,6 @@ class Control_cart {
 
                 add: (target) => {
                     this.modify_Quantity();
-                    console.log(target);
                     const id = target.getAttribute('data-id');
                     const input = target.previousElementSibling;
                     const count = parseInt(input.value, 10);
@@ -528,7 +537,6 @@ class Control_cart {
             };
             //recibe el classlist de target
             for (const className of target.classList) {
-                console.log(className);
                 if (className in cartHandler) {
                     //pasa la class a cartHandler()
                     cartHandler[ className ](target);
@@ -542,14 +550,24 @@ class Control_cart {
         sectionCart.addEventListener('click', listenerTarget())
     }
 
-    confirm_Pay = () => {
+    confirm_Pay() {
+    }
 
-        alert('alert');
+    createdPurchase() {
 
+        const purchase = {
+            cart: this.cart_Model,
+            total: this.total
+        }
+        this.purchase = purchase
+    }
+
+    sendPurchaseToDB = () => {
+        saveData(instanceFirebase.uid, this.purchase)
     }
 
 
-    assign_Event_Btn_Pay = () => {
+    assign_Event_Btn_Pay() {
         const payEvent = document.querySelector('#view_section_cart');
         payEvent.addEventListener('click', async (event) => {
             const target = event.target;
@@ -564,12 +582,12 @@ class Control_cart {
                     const myCanvas = canvas;
                     console.log(myCanvas);
                     const test = document.querySelector('#view_section_cart');
-                    console.log(test);
                     test.appendChild(canvas);
                 } catch (error) {
                     console.error('Error:', error);
                 } finally {
-                    this.confirm_Pay();
+                    this.createdPurchase();
+                    this.sendPurchaseToDB()
                 }
             }
         });
@@ -588,7 +606,7 @@ class Control_cart {
      * the accumulated quantity (`acu`) as an argument.
      */
 
-    quantity_In_Cart = (data) => {
+    quantity_In_Cart(data) {
         if (!data) {
             return 0
         }
@@ -619,7 +637,7 @@ class Control_cart {
     cart with the new quantity value using the `update_Quantity_Cart` method. If the quantity value is
     1, it replaces the trash basket icon with a minus symbol */
     //------------------------------------------------------------------------------------------------------------------
-    modify_Quantity = () => {
+    modify_Quantity() {
 
 
 
@@ -669,7 +687,6 @@ class Control_cart {
             elements.addEventListener('click', (e) => {
                 const id = Number(e.target.previousElementSibling.dataset.id)
                 this.acu = Number(e.target.previousElementSibling.value) + 1
-                console.log('acu add: ', this.acu);
                 if (this.acu === 2) {
                     this.elementDom = e.target.previousElementSibling.previousElementSibling
                     replace_Minus_Symbol_For_Trash_Basket(this.elementDom, false)
@@ -687,7 +704,7 @@ class Control_cart {
 
     //------------------------------------------------------------------------------------------------------------------
 
-    update_Quantity_Cart = (id = "", flag) => {
+    update_Quantity_Cart(id = "", flag) {
         if (flag === true) {
             console.log('update: ', flag);
             const updateCart_Minus = this.cart_Model.map
@@ -710,13 +727,14 @@ class Firebase_Auth {
 
     constructor(auth) {
         this.user = {}
-        this.id = ''
+        this.uid = ''
         this.auth = auth
         this.viewUser = new Display_Data_Firebase_User()
     }
 
-    returnUidUser(id) {
-        return this.id = id
+    returnUidUser() {
+        console.log(this.uid)
+        return this.uid;
     }
 
     loginUser() {
@@ -724,8 +742,7 @@ class Firebase_Auth {
         const buttonLogin = document.querySelector('#google-sign-in-btn')
         const insertLogoUser = () => {
             if (this.user.photoURL === undefined) {
-                console.log(this.user.photoURL),
-                    this.user.photoURL = './icon/user.png'
+                this.user.photoURL = './icon/user.png'
                 console.log(this.user.photoURL)
                 return this.viewUser.displayProfilePhoto(this.user.photoURL)
             }
@@ -740,20 +757,22 @@ class Firebase_Auth {
                 const response = await loginWithGmail()
                 this.user = response
                 this.viewUser.displayProfilePhoto(this.user.photoURL)
-                this.id = this.user.uid
+                this.uid = this.user.uid
             } catch (error) {
                 console.error(error);
             }
             finally {
                 !this.user ? e.target.textContent = 'Login' : e.target.textContent = 'Logout'
                 buttonLogin.disabled = false
-                this.id ? userData(this.id) : console.log('error')
-                return this.id
+                this.uid ? this.uid : console.log('error')
+                console.log(this.uid)
+                return this.uid
             }
         })
         insertLogoUser()
     }
 }
+const auth = new Firebase_Auth()
 
 class Firebase_RealtimeDb {
 
@@ -778,7 +797,6 @@ instanceFirebase.loginUser()
 
 const handler_Init_Page = new Control_View_Information_At_DOM()
 const controller_Cart_Instance = new Control_cart()
-
 //--------------------------------------------------------------
 if (typeof localStorage !== 'undefined') {
     const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
@@ -833,5 +851,6 @@ export {
     Control_View_Information_At_DOM,
     Control_Favorites,
     Control_cart,
-    loadSpinner
+    loadSpinner,
+    Firebase_Auth,
 }

@@ -469,15 +469,10 @@ const replace_Minus_Symbol_For_Trash_Basket = (content_trash, flag = false) => {
  * on the first line.
  */
 
-const render_Total_And_Pay = (cart) => {
+const render_Total_And_Pay = (total_And_Quantity) => {
     if (cart === null) { return }
-    const total_And_Quantity = cart.reduce((previous, current) => {
-        previous.quantity = current.quantity + previous.quantity;
-        previous.total += current.quantity * current.price;
-        return previous
-    }, { total: 0, quantity: 0 })
-
     const content_Model_Total = document.querySelector('#content_total')
+
     const render_Function = () => {
         if (content_Model_Total) {
             content_Model_Total.remove();
@@ -498,6 +493,7 @@ const render_Total_And_Pay = (cart) => {
 
             return $total.insertAdjacentHTML('afterbegin', model_Total);
         }
+        
     }
 
     render_Function()
