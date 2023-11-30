@@ -30,5 +30,6 @@ window.addEventListener("load", (event) => {
     window[ "_categories" ].addEventListener("click", event => new_Routes.push_Id(event))
     window[ "#individual_product" ].addEventListener("click", event => new_Routes.push_Id(event))
     window[ "cart" ].addEventListener("click", event => new_Routes.push_Id(event))
+    window[ "pay" ].addEventListener("click", event => new_Routes.push_Id(event))
 })
 

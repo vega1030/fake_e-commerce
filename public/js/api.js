@@ -7,6 +7,8 @@ import { URL_API } from "./constants.js"
  * @returns The function `get_All_Products` is returning a Promise that resolves to an array of objects
  * representing all the products from the fakestoreapi.com.
  */
+
+
 const get_All_Products = async () => {
     try {
         const result = await fetch(URL_API.ALL_PRODUCTS)

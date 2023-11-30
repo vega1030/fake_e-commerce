@@ -11,7 +11,7 @@ import { keysLocalStorage } from './constants.js'
 
 import { Drive_Data_Cart, StorageService, Handler_Favorites } from './model.js';
 
-import { loginWithGmail } from './firebase/auth.js';
+import { Auth } from './firebase/auth.js';
 
 import {
     Category_ui, products_Instance, Handler_Displays_Ui,
@@ -21,7 +21,7 @@ import {
 } from "./view.js";
 
 import {
-    saveData
+    RealTimeDB
 } from './firebase/realtimedatabase.js'
 
 const local_Storage = new StorageService()
@@ -30,8 +30,8 @@ const categories_UI = new Category_ui()
 const cart_Ui = new View_cart()
 const modelFavorites = new Handler_Favorites()
 const productsView = new TemplateCards()
-
-
+const authInstance = new Auth
+const instanceRealTimeDb = new RealTimeDB()
 //----------------------------------------------------------------
 const loadSpinner = (flag) => {
     const overlay = document.querySelector('.overlay')
@@ -53,6 +53,7 @@ class Control_View_Information_At_DOM {
     }
 
     async controller_get_All_Products() {
+        console.log('kdkd')
         //spinner
         loadSpinner(false)
 
@@ -374,6 +375,7 @@ class Control_cart {
     constructor(total = 0, elementDom) {
         this.cart_Model = []
         this.cart_Model = local_Storage.getItem(keysLocalStorage.CART)
+        this.RealTimeDB = new RealTimeDB()
         this.elementDom = elementDom
         this.single_Product = null
         this.id = null;
@@ -562,8 +564,20 @@ class Control_cart {
         this.purchase = purchase
     }
 
-    sendPurchaseToDB = () => {
-        saveData(instanceFirebase.uid, this.purchase)
+    async sendPurchaseToDB() {
+        try {
+            const snapshotRealTimeDb = await instanceRealTimeDb.saveData(instanceFirebaseAuth.uid, this.purchase)
+            const lastPurchase = []
+            lastPurchase.push(await instanceRealTimeDb.returnRealTimeDb())
+            lastPurchase.map((item, index) => {
+                console.log(instanceRealTimeDb.purchase)
+            })
+
+        } catch (error) {
+            console.log(error)
+        } finally {
+        }
+
     }
 
 
@@ -573,21 +587,20 @@ class Control_cart {
             const target = event.target;
             if (target.classList.contains('btn_confirm_buy')) {
                 try {
-                    const canvas = await html2canvas(document.querySelector(".capture"),
-                        {
-                            quality: 1.0,
-                            width: '30rem',
-                            height: '30rem'
-                        });
-                    const myCanvas = canvas;
-                    console.log(myCanvas);
+
                     const test = document.querySelector('#view_section_cart');
-                    test.appendChild(canvas);
+
                 } catch (error) {
+
                     console.error('Error:', error);
+
                 } finally {
                     this.createdPurchase();
                     this.sendPurchaseToDB()
+
+
+                    handler_Init_Page.controller_get_All_Products()
+
                 }
             }
         });
@@ -754,7 +767,7 @@ class Firebase_Auth {
         buttonLogin.addEventListener('click', async (e) => {
             buttonLogin.disabled = true
             try {
-                const response = await loginWithGmail()
+                const response = await authInstance.loginWithGmail()
                 this.user = response
                 this.viewUser.displayProfilePhoto(this.user.photoURL)
                 this.uid = this.user.uid
@@ -765,6 +778,7 @@ class Firebase_Auth {
                 !this.user ? e.target.textContent = 'Login' : e.target.textContent = 'Logout'
                 buttonLogin.disabled = false
                 this.uid ? this.uid : console.log('error')
+
                 console.log(this.uid)
                 return this.uid
             }
@@ -772,28 +786,9 @@ class Firebase_Auth {
         insertLogoUser()
     }
 }
-const auth = new Firebase_Auth()
 
-class Firebase_RealtimeDb {
-
-    constructor() {
-        this.db = firebase.database()
-    }
-
-    sendDataToDB() {
-        const cart = {
-            name: 'Cart',
-            price: 1000,
-            quantity: 1,
-            userId: this.id
-        }
-
-    }
-
-}
-
-const instanceFirebase = new Firebase_Auth()
-instanceFirebase.loginUser()
+const instanceFirebaseAuth = new Firebase_Auth()
+instanceFirebaseAuth.loginUser()
 
 const handler_Init_Page = new Control_View_Information_At_DOM()
 const controller_Cart_Instance = new Control_cart()

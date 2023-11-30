@@ -9,6 +9,7 @@ import {
     signOut,
     browserLocalPersistence,
     browserSessionPersistence,
+    signInWithRedirect,
     inMemoryPersistence
 } from 'https://www.gstatic.com/firebasejs/9.2.0/firebase-auth.js';
 
@@ -25,29 +26,40 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp)
 
-const loginWithGmail = async () => {
-    try {
-        if (auth.currentUser) {
-            console.log(auth.currentUser)
-            const signResponse = await signOut(auth)
-            return false
-        }
-        else {
-            const provider = new GoogleAuthProvider();
+class Auth {
+    constructor() {
+
+        this.uid = ''
+
+    }
+
+
+    async loginWithGmail() {
+
+        try {
             const auth = getAuth(firebaseApp);
-            await setPersistence(auth, browserLocalPersistence)
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
-            console.log('Usuario autenticado con Google:', user);
-            return user
+
+            if (auth.currentUser) {
+                console.log(auth.currentUser)
+                const signResponse = await signOut(auth)
+                console.log('user disconnected: ', signResponse)
+                return false
+            }
+            else {
+                await setPersistence(auth, inMemoryPersistence)
+                const provider = new GoogleAuthProvider();
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                this.id = user
+                return user
+            }
+        } catch (error) {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.error('Error de inicio de sesión con Google:', errorCode, errorMessage);
         }
-    } catch (error) {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error('Error de inicio de sesión con Google:', errorCode, errorMessage);
     }
 }
-
 export {
-    loginWithGmail,
+    Auth,
 }

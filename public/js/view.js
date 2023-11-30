@@ -364,7 +364,6 @@ class View_cart {
 class Handler_Displays_Ui {
 
     handler_Display_(hash) {
-
         if (hash === 'categories') {
             return (
                 document.querySelector('#home').style.display = 'none',
@@ -416,6 +415,7 @@ class Handler_Displays_Ui {
                 document.querySelector('#home').style.display = 'none',
                 document.querySelector('#favorites_section').style.display = 'none'
             )
+
         }
 
     }
@@ -482,7 +482,7 @@ const render_Total_And_Pay = (total_And_Quantity) => {
         
             <aside id="content_total" class="content_total">
                 <h3 class="total">Subtotal ${ parseFloat(total_And_Quantity.total.toFixed(2)) }\u20AC</h3>
-                <a href="#pay" class="btn_confirm_buy quantity"  id="pay_confirm">
+                <a href="#home" class="btn_confirm_buy quantity"  id="pay_confirm">
                     Pagar pedido (${ total_And_Quantity.quantity } productos)
                 </a>
             </aside>
@@ -493,7 +493,7 @@ const render_Total_And_Pay = (total_And_Quantity) => {
 
             return $total.insertAdjacentHTML('afterbegin', model_Total);
         }
-        
+
     }
 
     render_Function()
