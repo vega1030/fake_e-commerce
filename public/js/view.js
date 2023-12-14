@@ -166,7 +166,7 @@ class View_Favorites {
 
     createFavoriteListUI(data) {
         const contentCardFavorite = document.querySelector('#favorites_section')
-        products_Instance.create_Card(data.list)
+        products_Instance.create_Card(data)
         contentCardFavorite.innerHTML = products_Instance.modelCard
         this.favorites = data
         return this.favorites
@@ -223,10 +223,16 @@ class Display_Data_Firebase_User {
         contentImageProfile.innerHTML = '';
         const userAvatar = userImg === undefined ? './icon/user.png' : userImg
         const imgProfile = document.createElement('IMG');
+        const listenerMenu = document.createElement('A')
+
         imgProfile.src = userAvatar
         imgProfile.alt = 'avatar image';
         imgProfile.className = 'img-user';
-        contentImageProfile.appendChild(imgProfile);
+        listenerMenu.className = 'link-to-user-menu'
+
+        console.log(listenerMenu)
+        listenerMenu.appendChild(imgProfile)
+        contentImageProfile.appendChild(listenerMenu);
     }
 
     displayUserName() {

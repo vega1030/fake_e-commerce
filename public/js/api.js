@@ -8,10 +8,9 @@ import { URL_API } from "./constants.js"
  * representing all the products from the fakestoreapi.com.
  */
 
-
 const get_All_Products = async () => {
     try {
-        const result = await fetch(URL_API.ALL_PRODUCTS)
+        const result = await fetch(URL_API.ALL_PRODUCTS,)
         const res = await result.json()
         return res
 

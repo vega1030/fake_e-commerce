@@ -34,9 +34,9 @@
    src: url('./../fonts/brifa/Brifa-Personal.otf');
 }
 
-.font-video-legend{
-font-family: 'bannerFont' !important;
-font-size: 5.5em;
+.font-video-legend {
+   font-family: 'bannerFont' !important;
+   font-size: 5.5em;
 }
 
 *:not(.pathHeart, .bi) {
@@ -54,23 +54,6 @@ font-size: 5.5em;
    font-family: 'mainFont', sans-serif !important;
    background-color: var(--color-background);
    border-color: black;
-
-}
-
-@media screen and (min-width:20rem) and (max-width: 30rem) {
-
-
-   .count_elements_at_cart {
-      background-color: var(--color-background_count_cart);
-      position: absolute;
-      top: 1.85rem;
-      /* bottom: -0.1rem; */
-      right: 0.6rem;
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      text-align: center;
-   }
 
 }
 
@@ -299,8 +282,9 @@ h2 {
 .content_total {
    background-color: var(--color-background);
 }
-.nav>#nav-check:checked~.nav-links{
- background-color: var(--color_2);  
+
+.nav>#nav-check:checked~.nav-links {
+   background-color: var(--color_2);
 }
 
 @media screen and (min-device-width:18.75rem) and (max-device-width: 30rem) and (orientation: landscape) {
