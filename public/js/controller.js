@@ -53,7 +53,6 @@ class Control_View_Information_At_DOM {
     }
 
     async controller_get_All_Products() {
-        console.log('kdkd')
         //spinner
         loadSpinner(false)
 
@@ -80,7 +79,9 @@ class Control_View_Information_At_DOM {
     homeInit() {
         const init = document.querySelector('#_home')
         init.addEventListener('click', async () => {
+            const favorites = new Control_Favorites()
             //-----------------------------------//
+            const handler_Init_Page = new Control_View_Information_At_DOM()
             const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
             products_Instance.create_Card(returnAllProducts)
             products_Instance.insertAllProducts()
@@ -126,6 +127,8 @@ class Control_View_Information_At_DOM {
 
         loadSpinner(false)
         try {
+            const handler_Init_Page = new Control_View_Information_At_DOM()
+            const favorites = new Control_Favorites()
             const result = await get_View_Products_For_Category(category)
             //Add Listeners
             categories_UI.displayProductsByCategory(result)
@@ -210,6 +213,7 @@ class ControlIndividualProduct {
     }
 
     listenerFavorite() {
+        const favorites = new Control_Favorites()
         this.delegationContent.addEventListener('click', async (e) => {
             const targetElement = e.target.classList.contains('pathHeart')
             const targetId = e.target.classList.value === 'pathHeart' ? e.target.dataset.id : e.target.dataset.id
@@ -244,7 +248,8 @@ class Control_Favorites {
         this.objectFav
         this.instance_View = new View_Favorites()
         this.id = ''
-        this.favoritesRealTimeDb = new RealTimeDB()
+        this.realTimeDb = ''
+        this.authFirebase = new Auth()
     }
 
     /* The above code is adding a click event listener to all elements with the class "favorite". When an
@@ -293,6 +298,7 @@ class Control_Favorites {
     }
 
     saveFavoriteOfLocalStorage(favorites) {
+
         this.favorites = favorites
         return this.favorites
     }
@@ -335,17 +341,19 @@ class Control_Favorites {
     }
 
     async setDataRealTimeDb() {
-        return this.favoritesRealTimeDb.saveFavoritesRealTimeDb(instanceFirebaseAuth.uid, this.favorites)
+        return this.realTimeDb.saveFavoritesRealTimeDb(instanceFirebaseAuth.uid, this.favorites)
     }
 
-    async returnFavoritesToFirebase() {
-        const res = await instanceRealTimeDb.returnFavoritesRealTimeDb(instanceFirebaseAuth.uid)
-        console.log(res)
+    returnFavoriteRealTimeAuth(favorites) {
+        this.realTimeDb = favorites
+        this.instance_View.createFavoriteListUI(this.realTimeDb)
     }
 
 
     sendFavoriteToView() {
-        document.querySelector('#favorites').addEventListener('click', () => {
+        document.querySelector('#favorites').addEventListener('click', async () => {
+
+
             //-----------validation of the create this.favorites-------------------//
             this.favorites.length > 0 ?
                 this.objectFav = {
@@ -360,16 +368,12 @@ class Control_Favorites {
             //------------------------------//
 
             if (this.objectFav.validation === true) {
-                console.log(this.favoritesRealTimeDb.realTimeFavorites)
-                this.instance_View.createFavoriteListUI(this.favoritesRealTimeDb.realTimeFavorites)
-                this.favoritesRealTimeDb.returnFavoritesRealTimeDb(authInstance.uid)
-                console.log(authInstance.uid)
+                const handler_Init_Page = new Control_View_Information_At_DOM()
                 this.instance_View.display_FavoritesHeart(this.objectFav.list)
                 this.handler_Favorites()
                 this.instance_View.deleteCardFavorite()
                 controller_Cart_Instance.add_Cart_Listener()
                 handler_Init_Page.handlerSingleProduct()
-                favorites.returnFavoritesToFirebase()
                 return this.objectFav
             }
 
@@ -385,8 +389,6 @@ class Control_Favorites {
 
 }
 
-
-const favorites = new Control_Favorites()
 
 //------------------------------------------------------------------------------------------------------------------
 class Control_cart {
@@ -616,8 +618,7 @@ class Control_cart {
                 } finally {
                     this.createdPurchase();
                     this.sendPurchaseToDB()
-
-
+                    const handler_Init_Page = new Control_View_Information_At_DOM()
                     handler_Init_Page.controller_get_All_Products()
 
                 }
@@ -769,7 +770,16 @@ class Firebase_Auth {
     }
 
     async loginUser() {
+
         const buttonLogin = document.querySelector('#google-sign-in-btn')
+
+
+        /**
+         * The function `insertLogoUser` checks if the user's photoURL is undefined and if so, assigns a
+         * default photoURL and displays it on the user's profile.
+         * @returns the result of calling the `displayProfilePhoto` method with the `user.photoURL` as an
+         * argument.
+         */
         const insertLogoUser = () => {
             if (this.user.photoURL === undefined) {
                 this.user.photoURL = './icon/user.png'
@@ -779,39 +789,67 @@ class Firebase_Auth {
         }
 
         insertLogoUser()
+        //------------------------------------------------------------------------------
 
         this.viewUser.displayProfilePhoto(this.user.photoURL)
+
         buttonLogin.addEventListener('click', async (e) => {
             buttonLogin.disabled = true
             try {
+                //if/else statement
+                const realTime = new RealTimeDB()
+                const favorites = new Control_Favorites()
                 const response = await authInstance.loginWithGmail()
                 this.user = response
                 this.viewUser.displayProfilePhoto(this.user.photoURL)
                 this.uid = this.user.uid
-                console.log(this.uid)
-                const res = await favorites.favoritesRealTimeDb.returnFavoritesRealTimeDb(this.uid)
-                console.log(res)
+                //------------------------------------------------------------------------------
+                const res_favorites = await realTime.returnFavoritesRealTimeDb(this.uid)
+                const res_Purchase = await realTime.returnPurchaseRealTimeDb(this.uid)
+                favorites.returnFavoriteRealTimeAuth(res_favorites)
+                //------------------------------------------------------------------------------
+                favorites.instance_View.display_FavoritesHeart(res_favorites)
+                const dataSetState = 'connect'
+                e.target.dataset.userState = dataSetState
+
             } catch (error) {
-                console.error(error);
+                const returnInitState = async () => {
+                    instance_Control_Routes.reception_Hash('#home')
+                    e.target.textContent = 'Logout'
+                    const handler_Init_Page = new Control_View_Information_At_DOM()
+                    const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
+                    products_Instance.create_Card(returnAllProducts)
+                    products_Instance.insertAllProducts()
+                    //-----------------------------------//
+                    const targetFavorites = favorites.favorites;
+                    favorites.instance_View.display_FavoritesHeart(targetFavorites)
+                    favorites.handler_Favorites()
+                    handler_Init_Page.handlerSingleProduct()
+                    controller_Cart_Instance.add_Cart_Listener()
+                }
+                this.user === false ? returnInitState() : true
             }
             finally {
                 !this.user ? e.target.textContent = 'Login' : e.target.textContent = 'Logout'
                 buttonLogin.disabled = false
-                this.uid ? this.uid : console.log('error')
-                return this.uid
+                return this.user
             }
         })
+
         insertLogoUser()
+
     }
 }
 
 const instanceFirebaseAuth = new Firebase_Auth()
 instanceFirebaseAuth.loginUser()
 
-const handler_Init_Page = new Control_View_Information_At_DOM()
+
 const controller_Cart_Instance = new Control_cart()
 //--------------------------------------------------------------
 if (typeof localStorage !== 'undefined') {
+    const handler_Init_Page = new Control_View_Information_At_DOM()
+    const favorites = new Control_Favorites()
     const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
     products_Instance.create_Card(returnAllProducts)
     products_Instance.insertAllProducts(),

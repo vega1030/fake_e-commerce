@@ -1,22 +1,23 @@
-import { getDatabase, ref, set, child, get, push, orderByKey, limitToLast, query, onValue } from 'https://www.gstatic.com/firebasejs/9.2.0/firebase-database.js';
+import { getDatabase, ref, set, get, push } from 'https://www.gstatic.com/firebasejs/9.2.0/firebase-database.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.2.0/firebase-app.js';
 import { firebaseConfig } from './config.js'
-
+import { Auth } from './auth.js';
 
 const firebaseApp = initializeApp(firebaseConfig);
-const database = getDatabase(firebaseApp);
 
 class RealTimeDB {
 
     constructor() {
         this.idPurchase = ''
         this.purchase = ''
-        this.uid = ''
+        this.newUid = new Auth()
         this.realTimeFavorites = ''
     }
 
+    /* -------Purchase------- */
 
     async saveDataPurchase(uid, purchase) {
+
         try {
             const db = getDatabase();
             const newPurchaseRef = push(ref(db, `user/ ${ uid }/PURCHASES/`));
@@ -25,7 +26,7 @@ class RealTimeDB {
             await set(newPurchaseRef, {
                 purchase
             });
-            console.log(newPurchaseRef)
+
             const snapshot = await get(newPurchaseRef);
             const savedData = snapshot.val();
 
@@ -37,36 +38,39 @@ class RealTimeDB {
                 id: this.uid,
                 purchase: this.purchase,
                 idPurchase: this.idPurchase
-            } ]
+            } ];
             return snapShotDb
 
-        } catch (error) {
+        }
+        catch (error) {
             console.error('Error al guardar datos:', error);
         };
     };
 
-    async returnPurchaseRealTimeDb() {
-
+    async returnPurchaseRealTimeDb(uid) {
         try {
             const db = getDatabase();
             const reference = ref(db, `user/ ${ uid }/PURCHASES/`);
-            const refQuery = query(reference, orderByKey(), limitToLast(1));
-            const snapshot = await get(refQuery)
+            const snapshot = await get(reference);
+
             if (snapshot.exists()) {
-                const data = snapshot.val()
-                return data
+                const data = snapshot.val();
+                this.purchase = data
+                return this.purchase
             }
             else {
                 console.log('no hay')
-            }
-        } catch (err) {
+            };
+        }
+        catch (err) {
             console.log('error: ', err)
             throw err
         }
     }
 
+
+    /* ------Favorites------ */
     async saveFavoritesRealTimeDb(uid, favorite) {
-        this.uid = uid
         try {
             const db = getDatabase();
             const refFavorites = ref(db, `user/ ${ uid }/FAVORITES/`);
@@ -80,28 +84,26 @@ class RealTimeDB {
 
     async returnFavoritesRealTimeDb(uid) {
         try {
+
             const db = getDatabase();
             const refFavorites = ref(db, `user/ ${ uid }/FAVORITES/`);
-            await onValue(refFavorites, (snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.val()
-                    this.realTimeFavorites = data
-                    console.log(this.realTimeFavorites)
-                    return this.realTimeFavorites
-                }
-                else {
-                    console.log('no hay')
-                }
-            })
+            const snapshot = await get(refFavorites)
+
+            if (snapshot.exists()) {
+                const data = snapshot.val()
+                this.realTimeFavorites = data
+                return this.realTimeFavorites
+            }
+            else {
+                console.log('no hay')
+            }
+
         } catch (err) {
             console.log('error: ', err)
             throw err
         }
     }
 }
-
-
-
 
 export {
     RealTimeDB

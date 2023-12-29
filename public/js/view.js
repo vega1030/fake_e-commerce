@@ -165,6 +165,7 @@ class View_Favorites {
 
 
     createFavoriteListUI(data) {
+        console.log(data)
         const contentCardFavorite = document.querySelector('#favorites_section')
         products_Instance.create_Card(data)
         contentCardFavorite.innerHTML = products_Instance.modelCard
@@ -183,6 +184,7 @@ class View_Favorites {
     }
 
     display_FavoritesHeart(product) {
+
         //check color state here
         const content_Cards = document.querySelector('.main-grid')
 
@@ -190,7 +192,7 @@ class View_Favorites {
         const cards = [ ...document.querySelectorAll(cardsClass) ]
         const select =
             cards.map(current => {
-                //initial color
+
                 current.firstElementChild.firstElementChild.style.color = 'black'
                 //____
                 const matchingProduct = product.find(item => item.id === Number(current.firstElementChild.dataset.id));
@@ -200,7 +202,8 @@ class View_Favorites {
 
         this.fav_DOM.map(i => i.children[ 0 ].firstElementChild).forEach(i => {
 
-            i.style.color === 'black' ? i.style.color = 'red' : i.style.color = 'black'
+            const changueColor = () => { i.style.color === 'black' ? i.style.color = 'red' : i.style.color = 'black' }
+            product === undefined ? i.style.color === 'black' : changueColor()
         })
         /* The above code is assigning the value of `this.fav_DOM` to the `heartsDom` property of the
         `products_Instance` object in JavaScript. */

@@ -12,6 +12,7 @@ import {
 } from 'https://www.gstatic.com/firebasejs/9.2.0/firebase-auth.js';
 import { firebaseConfig } from './config.js';
 
+
 class Auth {
     constructor() {
         this.uid = ''
@@ -29,11 +30,12 @@ class Auth {
                 return false
             }
             else {
-                const provider = new GoogleAuthProvider();
                 await setPersistence(auth, browserLocalPersistence)
+                const provider = new GoogleAuthProvider();
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
-                this.id = user
+                this.uid = user
+
                 console.log('Usuario autenticado con Google:', user);
                 return user;
             }
