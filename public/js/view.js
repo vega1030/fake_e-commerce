@@ -165,7 +165,6 @@ class View_Favorites {
 
 
     createFavoriteListUI(data) {
-        console.log(data)
         const contentCardFavorite = document.querySelector('#favorites_section')
         products_Instance.create_Card(data)
         contentCardFavorite.innerHTML = products_Instance.modelCard
@@ -184,7 +183,7 @@ class View_Favorites {
     }
 
     display_FavoritesHeart(product) {
-
+console.log(product)
         //check color state here
         const content_Cards = document.querySelector('.main-grid')
 

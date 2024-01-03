@@ -92,6 +92,7 @@ class RealTimeDB {
             if (snapshot.exists()) {
                 const data = snapshot.val()
                 this.realTimeFavorites = data
+                console.log(data)
                 return this.realTimeFavorites
             }
             else {

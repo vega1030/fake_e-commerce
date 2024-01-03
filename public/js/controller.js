@@ -31,7 +31,6 @@ const cart_Ui = new View_cart()
 const modelFavorites = new Handler_Favorites()
 const productsView = new TemplateCards()
 const authInstance = new Auth()
-const instanceRealTimeDb = new RealTimeDB()
 //----------------------------------------------------------------
 const loadSpinner = (flag) => {
     const overlay = document.querySelector('.overlay')
@@ -86,11 +85,12 @@ class Control_View_Information_At_DOM {
             products_Instance.create_Card(returnAllProducts)
             products_Instance.insertAllProducts()
             //-----------------------------------//
+
+            await favorites.returnFavoriteRealTimeAuth() //this method assign realtime db to this.favorites
             const targetFavorites = favorites.favorites;
             favorites.instance_View.display_FavoritesHeart(targetFavorites)
             favorites.handler_Favorites()
             this.handlerSingleProduct()
-
             controller_Cart_Instance.add_Cart_Listener()
 
 
@@ -248,7 +248,7 @@ class Control_Favorites {
         this.objectFav
         this.instance_View = new View_Favorites()
         this.id = ''
-        this.realTimeDb = ''
+        this.realTimeDb = new RealTimeDB()
         this.authFirebase = new Auth()
     }
 
@@ -267,6 +267,7 @@ class Control_Favorites {
                 this.id = class_List === 'pathHeart' ? Number(e.target.parentElement.parentElement.dataset.id) : Number(e.target.dataset.id);
                 this.send_Favorite_Product_To_LocalStorage()
                 this.callingApi()
+                this.setDataRealTimeDb()
                 loadSpinner()
             });
         });
@@ -341,12 +342,15 @@ class Control_Favorites {
     }
 
     async setDataRealTimeDb() {
-        return this.realTimeDb.saveFavoritesRealTimeDb(instanceFirebaseAuth.uid, this.favorites)
+        instanceFirebaseAuth.uid !== undefined ? this.realTimeDb.saveFavoritesRealTimeDb(instanceFirebaseAuth.uid, this.favorites) : console.log('Error')
+        console.log(instanceFirebaseAuth.uid, ' ---- ', this.favorites)
+        return
     }
 
-    returnFavoriteRealTimeAuth(favorites) {
-        this.realTimeDb = favorites
-        this.instance_View.createFavoriteListUI(this.realTimeDb)
+    async returnFavoriteRealTimeAuth() {
+        const dbFavorites = await this.realTimeDb.returnFavoritesRealTimeDb(instanceFirebaseAuth.uid)
+        this.favorites = dbFavorites
+        return this.favorites
     }
 
 
@@ -796,33 +800,38 @@ class Firebase_Auth {
         buttonLogin.addEventListener('click', async (e) => {
             buttonLogin.disabled = true
             try {
-                //if/else statement
+
+                /* ----Login---- */
+
                 const realTime = new RealTimeDB()
                 const favorites = new Control_Favorites()
                 const response = await authInstance.loginWithGmail()
                 this.user = response
                 this.viewUser.displayProfilePhoto(this.user.photoURL)
                 this.uid = this.user.uid
+
                 //------------------------------------------------------------------------------
                 const res_favorites = await realTime.returnFavoritesRealTimeDb(this.uid)
                 const res_Purchase = await realTime.returnPurchaseRealTimeDb(this.uid)
-                favorites.returnFavoriteRealTimeAuth(res_favorites)
-                //------------------------------------------------------------------------------
                 favorites.instance_View.display_FavoritesHeart(res_favorites)
+                //------------------------------------------------------------------------------
                 const dataSetState = 'connect'
                 e.target.dataset.userState = dataSetState
 
             } catch (error) {
+
+                /* -----Logout----- */
+
                 const returnInitState = async () => {
                     instance_Control_Routes.reception_Hash('#home')
                     e.target.textContent = 'Logout'
+
                     const handler_Init_Page = new Control_View_Information_At_DOM()
                     const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
                     products_Instance.create_Card(returnAllProducts)
                     products_Instance.insertAllProducts()
                     //-----------------------------------//
-                    const targetFavorites = favorites.favorites;
-                    favorites.instance_View.display_FavoritesHeart(targetFavorites)
+                    const favorites = new Control_Favorites()
                     favorites.handler_Favorites()
                     handler_Init_Page.handlerSingleProduct()
                     controller_Cart_Instance.add_Cart_Listener()
