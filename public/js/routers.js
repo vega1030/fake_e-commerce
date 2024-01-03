@@ -1,4 +1,4 @@
-import { instance_Control_Routes } from './controller.js';
+import { instance_Control_Routes } from './controller/controller.js';
 
 class Create_Routes {
 
