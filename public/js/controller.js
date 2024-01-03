@@ -350,14 +350,15 @@ class Control_Favorites {
     async returnFavoriteRealTimeAuth() {
         const dbFavorites = await this.realTimeDb.returnFavoritesRealTimeDb(instanceFirebaseAuth.uid)
         this.favorites = dbFavorites
+        console.log(this.favorites)
         return this.favorites
     }
 
 
     sendFavoriteToView() {
         document.querySelector('#favorites').addEventListener('click', async () => {
-
-
+            this.returnFavoriteRealTimeAuth()
+            console.log(this.favorites)
             //-----------validation of the create this.favorites-------------------//
             this.favorites.length > 0 ?
                 this.objectFav = {
@@ -373,6 +374,7 @@ class Control_Favorites {
 
             if (this.objectFav.validation === true) {
                 const handler_Init_Page = new Control_View_Information_At_DOM()
+                this.instance_View.createFavoriteListUI(this.objectFav.list)
                 this.instance_View.display_FavoritesHeart(this.objectFav.list)
                 this.handler_Favorites()
                 this.instance_View.deleteCardFavorite()
@@ -813,6 +815,7 @@ class Firebase_Auth {
                 //------------------------------------------------------------------------------
                 const res_favorites = await realTime.returnFavoritesRealTimeDb(this.uid)
                 const res_Purchase = await realTime.returnPurchaseRealTimeDb(this.uid)
+                //------------------------------------------------------------------------------
                 favorites.instance_View.display_FavoritesHeart(res_favorites)
                 //------------------------------------------------------------------------------
                 const dataSetState = 'connect'
