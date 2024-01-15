@@ -42,15 +42,6 @@ class Drive_Data_Cart {
         local_Storage.setItem(keysLocalStorage.CART, this.responseCart)
         return this.responseCart
     }
-    //***********--Cart--**************/ 
-
-
-    /* A function that receives an id as a parameter, gets the cart from local storage, subtracts the
-    product from the cart, and then saves the cart back to local storage. */
-
-
-    //*****************//***************** */
-
 
 }
 /***********--------------***************/
