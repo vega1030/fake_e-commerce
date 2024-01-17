@@ -424,7 +424,8 @@ class Control_Favorites {
 class Control_cart {
 
     constructor(total = 0, elementDom) {
-        this.cart_Model = []
+        this.cart_Model = new Drive_Data_Cart()
+        this.cartTest = new Drive_Data_Cart()
         this.cart_Model = local_Storage.getItem(keysLocalStorage.CART)
         this.RealTimeDB = new RealTimeDB()
         this.elementDom = elementDom
@@ -443,13 +444,13 @@ class Control_cart {
 
     controller_Cart(cart = '') {
         if (typeof localStorage !== 'undefined') {
-            this.cart_Model = cart
-            cart_Ui.model_UiCart_List(this.cart_Model)
-            this.model.setAndCopyLocalStorage(this.cart_Model)
-            this.quantity_In_Cart(this.cart_Model)
+            this.cartTest.modelCart = cart
+            cart_Ui.model_UiCart_List(this.cartTest.modelCart)
+            this.model.setAndCopyLocalStorage(this.cartTest.modelCart)
+            this.quantity_In_Cart(this.cartTest.modelCart)
 
             // create total and quantity	
-            const total_And_Quantity = this.cart_Model.reduce((previous, current) => {
+            const total_And_Quantity = this.cartTest.modelCart.reduce((previous, current) => {
                 previous.quantity = current.quantity + previous.quantity;
                 previous.total += current.quantity * current.price;
                 return previous
@@ -469,7 +470,6 @@ class Control_cart {
         loadSpinner(false)
 
         if (id) {
-
             try {
                 const result = await get_Single_Product(id);
                 this.single_Product = result;
@@ -482,7 +482,6 @@ class Control_cart {
 
             } catch (error) {
                 console.log(error);
-                console.error('the id not exist');
             }
             finally {
                 loadSpinner(true)
@@ -492,11 +491,10 @@ class Control_cart {
 
     addProductsInCart(paramProduct) {
         if (this.shouldClearCart) {
-            this.cart_Model = []
+            this.cartTest.modelCart = []
             this.shouldClearCart = false
         }
-        const updatedCart = [ ...this.cart_Model, paramProduct ];
-
+        const updatedCart = [ ...this.cartTest.modelCart, paramProduct ];
         const updatedCartReduced = updatedCart.reduce((acc, e) => {
             const existingIndex = acc.findIndex((x) => e.id === x.id);
 
@@ -510,7 +508,7 @@ class Control_cart {
 
         const isProductAddedOrUpdated = updatedCartReduced.some((product) => {
 
-            const existingProduct = this.cart_Model.find((p) => p.id === product.id);
+            const existingProduct = this.cartTest.modelCart.find((p) => p.id === product.id);
 
             if (!existingProduct) {
                 return true;
@@ -524,16 +522,16 @@ class Control_cart {
 
         const allQuantitiesAreZero = updatedCartReduced.every((product) => product.quantity === 0);
         if (isProductAddedOrUpdated || allQuantitiesAreZero) {
-            this.cart_Model = updatedCartReduced;
+            this.cartTest.modelCart = updatedCartReduced;
         }
 
         if (typeof localStorage !== 'undefined') {
 
-            this.controller_Cart(this.cart_Model)
+            this.controller_Cart(this.cartTest.modelCart)
         }
-        this.cart_Model = updatedCartReduced;
+        this.cartTest.modelCart = updatedCartReduced;
 
-        return { result: isProductAddedOrUpdated || allQuantitiesAreZero, cart: this.cart_Model };
+        return { result: isProductAddedOrUpdated || allQuantitiesAreZero, cart: this.cartTest.modelCart };
     }
 
     add_Cart_Listener() {
@@ -887,9 +885,11 @@ const instanceFirebaseAuth = new Firebase_Auth()
 instanceFirebaseAuth.loginUser()
 
 
-const controller_Cart_Instance = new Control_cart()
 //--------------------------------------------------------------	
 if (typeof localStorage !== 'undefined') {
+    const controller_Cart_Instance = new Control_cart()
+    const storage = new StorageService()
+    controller_Cart_Instance.quantity_In_Cart(storage.getItem(keysLocalStorage.CART))
     const handler_Init_Page = new Control_View_Information_At_DOM()
     const favorites = new Control_Favorites()
     const returnAllProducts = await handler_Init_Page.controller_get_All_Products()

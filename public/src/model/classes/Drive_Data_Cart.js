@@ -1,10 +1,11 @@
 'use strict'
 import { StorageService } from "./StorageService.js"
+import { keysLocalStorage } from "../../constants.js"
 
 export class Drive_Data_Cart {
 
     constructor() {
-        this.modelCart = ''
+        this.modelCart = []
         this.local_Storage = new StorageService()
     }
 
