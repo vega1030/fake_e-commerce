@@ -6,6 +6,11 @@ const keysLocalStorage = {
     CART: 'cart'
 }
 
+const keySessionStorage = {
+    UID: 'uid',
+    TOKEN: 'token'
+}
+
 const URL_API = {
     ALL_PRODUCTS: 'https://fakestoreapi.com/products',
     GET_CATEGORIES: 'https://fakestoreapi.com/products/categories',
@@ -14,13 +19,14 @@ const URL_API = {
 }
 
 const sections = {
-    FAVORITES : 'Your favorites',
-    CART : 'Your cart',
-    ALL_PRODUCTS : 'All products',
+    FAVORITES: 'Your favorites',
+    CART: 'Your cart',
+    ALL_PRODUCTS: 'All products',
 }
+
 
 /* const userData = {
     userId : userUid
 }
  */
-export { keysLocalStorage, URL_API,sections }
+export { keysLocalStorage, URL_API, sections, keySessionStorage }

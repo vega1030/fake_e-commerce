@@ -2,6 +2,8 @@ import { getDatabase, ref, set, get, push } from 'https://www.gstatic.com/fireba
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.2.0/firebase-app.js';
 import { firebaseConfig } from './config.js'
 import { Auth } from './auth.js';
+import { StorageService } from '../model/classes/StorageService.js';
+import { keySessionStorage } from '../constants.js';
 
 const firebaseApp = initializeApp(firebaseConfig);
 
@@ -10,8 +12,9 @@ class RealTimeDB {
     constructor() {
         this.idPurchase = ''
         this.purchase = ''
-        this.newUid = new Auth()
+        this.newUid = new StorageService()
         this.realTimeFavorites = ''
+        this.cart = ''
     }
 
     /* -------Purchase------- */
@@ -56,7 +59,6 @@ class RealTimeDB {
             if (snapshot.exists()) {
                 const data = snapshot.val();
                 this.purchase = data
-                console.log('data: ', data)
                 return this.purchase
             }
             else {
@@ -69,6 +71,7 @@ class RealTimeDB {
         }
     }
 
+    /* --------------------- */
 
     /* ------Favorites------ */
     async saveFavoritesRealTimeDb(uid, favorite) {
@@ -104,6 +107,40 @@ class RealTimeDB {
             throw err
         }
     }
+
+    /* --------------------- */
+
+    async saveCart(cart) {
+
+        try {
+            const sessionStorageUid = this.newUid.getSessionStorageUid(keySessionStorage.UID)
+            const db = getDatabase();
+            const refCart = ref(db, `user/ ${ sessionStorageUid }/CART/`);
+            await set(refCart, cart);
+            console.log('Datos de carrito guardados con éxito.');
+        }
+        catch {
+            console.error('Error al guardar datos')
+        }
+    }
+    async returnCartRealTimeDb() {
+
+        try {
+            const sessionStorageUid = this.newUid.getSessionStorageUid(keySessionStorage.UID)
+            const db = getDatabase();
+            const refCart = ref(db, `user/ ${ sessionStorageUid }/CART/`);
+            const snapshot = await get(refCart)
+            if (snapshot.exists()) {
+                const data = snapshot.val()
+                this.realTimeCart = data
+                return this.realTimeCart
+            }
+        }
+        catch {
+            console.error('Error al guardar datos')
+        }
+    }
+
 }
 
 export {

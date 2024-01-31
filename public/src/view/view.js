@@ -184,7 +184,6 @@ class View_Favorites {
     }
 
     display_FavoritesHeart(product) {
-        console.log(product)
         //check color state here
         const content_Cards = document.querySelector('.main-grid')
 

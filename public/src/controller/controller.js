@@ -7,7 +7,7 @@ import {
     get_Single_Product
 } from '../api.js'
 
-import { keysLocalStorage } from '../constants.js'
+import { keySessionStorage, keysLocalStorage } from '../constants.js'
 
 import { Drive_Data_Cart } from '../../src/model/classes/Drive_Data_Cart.js'
 import { StorageService } from '../model/classes/StorageService.js'
@@ -80,8 +80,9 @@ class Control_View_Information_At_DOM {
         const init = document.querySelector('#_home')
         init.addEventListener('click', async () => {
             const favorites = new Control_Favorites()
-            //-----------------------------------//	
             const handler_Init_Page = new Control_View_Information_At_DOM()
+            const controller_Cart_Instance = new Control_cart()
+            //-----------------------------------//	
             const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
             products_Instance.create_Card(returnAllProducts)
             products_Instance.insertAllProducts()
@@ -424,15 +425,14 @@ class Control_Favorites {
 class Control_cart {
 
     constructor(total = 0, elementDom) {
-        this.cart_Model = new Drive_Data_Cart()
-        this.cartTest = new Drive_Data_Cart()
-        this.cart_Model = local_Storage.getItem(keysLocalStorage.CART)
+        this.cart = ''
+        this.model = new Drive_Data_Cart()
         this.RealTimeDB = new RealTimeDB()
+        this.auth = new Auth()
         this.elementDom = elementDom
         this.single_Product = null
         this.id = null;
         this.shouldClearCart = false;
-        this.model = new Drive_Data_Cart()
         this.acu = 0
         this.total = 0
         this.purchase = {}
@@ -444,13 +444,15 @@ class Control_cart {
 
     controller_Cart(cart = '') {
         if (typeof localStorage !== 'undefined') {
-            this.cartTest.modelCart = cart
-            cart_Ui.model_UiCart_List(this.cartTest.modelCart)
-            this.model.setAndCopyLocalStorage(this.cartTest.modelCart)
-            this.quantity_In_Cart(this.cartTest.modelCart)
+            const firebaseRealTime = new RealTimeDB()
+            this.model.modelCart = cart
+            cart_Ui.model_UiCart_List(this.model.modelCart)
+            this.model.setCart(this.model.modelCart)
 
+            this.quantity_In_Cart(this.model.modelCart)
             // create total and quantity	
-            const total_And_Quantity = this.cartTest.modelCart.reduce((previous, current) => {
+
+            const total_And_Quantity = this.model.modelCart.reduce((previous, current) => {
                 previous.quantity = current.quantity + previous.quantity;
                 previous.total += current.quantity * current.price;
                 return previous
@@ -460,9 +462,10 @@ class Control_cart {
 
             render_Total_And_Pay(total_And_Quantity)
 
-            return this.cart_Model
+
+            return this.cart
         }
-        return this.cart_Model
+        return this.cart
 
     };
 
@@ -489,12 +492,21 @@ class Control_cart {
         };
     };
 
+    /**
+     * The function `addProductsInCart` adds products to a shopping cart, updates quantities if the product
+     * already exists, and clears the cart if necessary.
+     * @param paramProduct - The `paramProduct` parameter is an object that represents a product. It should
+     * have the following properties:
+     * @returns an object with two properties: "result" and "cart". The "result" property indicates whether
+     * a product was added or updated in the cart or if all quantities are zero. The "cart" property
+     * contains the updated cart after adding or updating the product.
+     */
     addProductsInCart(paramProduct) {
         if (this.shouldClearCart) {
-            this.cartTest.modelCart = []
+            this.model.modelCart = []
             this.shouldClearCart = false
         }
-        const updatedCart = [ ...this.cartTest.modelCart, paramProduct ];
+        const updatedCart = [ ...this.model.modelCart, paramProduct ];
         const updatedCartReduced = updatedCart.reduce((acc, e) => {
             const existingIndex = acc.findIndex((x) => e.id === x.id);
 
@@ -508,7 +520,7 @@ class Control_cart {
 
         const isProductAddedOrUpdated = updatedCartReduced.some((product) => {
 
-            const existingProduct = this.cartTest.modelCart.find((p) => p.id === product.id);
+            const existingProduct = this.model.modelCart.find((p) => p.id === product.id);
 
             if (!existingProduct) {
                 return true;
@@ -522,16 +534,17 @@ class Control_cart {
 
         const allQuantitiesAreZero = updatedCartReduced.every((product) => product.quantity === 0);
         if (isProductAddedOrUpdated || allQuantitiesAreZero) {
-            this.cartTest.modelCart = updatedCartReduced;
+            this.model.modelCart = updatedCartReduced;
         }
 
         if (typeof localStorage !== 'undefined') {
 
-            this.controller_Cart(this.cartTest.modelCart)
+            this.controller_Cart(this.model.modelCart)
         }
-        this.cartTest.modelCart = updatedCartReduced;
+        this.model.modelCart = updatedCartReduced;
 
-        return { result: isProductAddedOrUpdated || allQuantitiesAreZero, cart: this.cartTest.modelCart };
+        console.log(this.model.modelCart)
+        return { result: isProductAddedOrUpdated || allQuantitiesAreZero, cart: this.model.modelCart };
     }
 
     add_Cart_Listener() {
@@ -607,7 +620,7 @@ class Control_cart {
     createdPurchase() {
 
         const purchase = {
-            cart: this.cart_Model,
+            cart: this.cart,
             total: this.total
         }
         this.purchase = purchase
@@ -668,8 +681,8 @@ class Control_cart {
      */
 
     quantity_In_Cart(data) {
-        if (!data) {
-            return 0
+        if (data === 0) {
+            return cart_Ui.createCartCont(0)
         }
         const acu = data === undefined ? 0 : data.reduce((previous, current) => {
             return current.quantity === undefined ? previous : previous + current.quantity
@@ -768,17 +781,17 @@ class Control_cart {
     update_Quantity_Cart(id = "", flag) {
         if (flag === true) {
             console.log('update: ', flag);
-            const updateCart_Minus = this.cart_Model.map
+            const updateCart_Minus = this.model.modelCart.map
                 (i => i.id === id ? { ...i, quantity: i.quantity - 1 } : i).filter(i => i.quantity > 0);
-            this.cart_Model = updateCart_Minus
-            this.model.setAndCopyLocalStorage(this.cart_Model)
-            return this.cart_Model
+            this.model.modelCart = updateCart_Minus
+            this.model.modelCart.setAndCopyLocalStorage(this.model.modelCart)
+            return this.cart
         }
-        const updateCart_Add = this.cart_Model.map
+        const updateCart_Add = this.model.modelCart.map
             (i => i.id === id ? { ...i, quantity: i.quantity + 1 } : i).filter(i => i.quantity > 0);
-        this.cart_Model = updateCart_Add
-        this.model.setAndCopyLocalStorage(this.cart_Model)
-        return this.cart_Model
+        this.model.modelCart = updateCart_Add
+        this.model.modelCart.setAndCopyLocalStorage(this.modelCartl)
+        return this.cart
     }
 
 }
@@ -791,10 +804,6 @@ class Firebase_Auth {
         this.uid = ''
         this.auth = auth
         this.viewUser = new Display_Data_Firebase_User()
-    }
-
-    returnUidUser() {
-        return this.uid;
     }
 
     async loginUser() {
@@ -823,53 +832,80 @@ class Firebase_Auth {
 
         buttonLogin.addEventListener('click', async (e) => {
             buttonLogin.disabled = true
-            const storageService = new StorageService()
             try {
 
                 /* ----Login---- */
 
                 const realTime = new RealTimeDB()
                 const favorites = new Control_Favorites()
+                const storage = new StorageService()
+                const cart = new Control_cart()
+                const driveCart = new Drive_Data_Cart()
+                //------------------------------------------------------------------------------	
                 const response = await authInstance.loginWithGmail()
                 this.user = response
                 this.viewUser.displayProfilePhoto(this.user.photoURL)
-                this.uid = this.user.uid
 
                 //------------------------------------------------------------------------------	
-                const res_favorites = await realTime.returnFavoritesRealTimeDb(this.uid)
-                const res_Purchase = await realTime.returnPurchaseRealTimeDb(this.uid)
-                //------------------------------------------------------------------------------	
-
-                favorites.instance_View.display_FavoritesHeart(res_favorites)
-                storageService.setItem(keysLocalStorage.FAVORITES, res_favorites)
-                //------------------------------------------------------------------------------	
-                const dataSetState = 'connect'
-                e.target.dataset.userState = dataSetState
-
-            } catch (error) {
-
-                /* -----Logout----- */
-
-                const returnInitState = async () => {
-                    instance_Control_Routes.reception_Hash('#home')
-                    e.target.textContent = 'Logout'
-
-                    const handler_Init_Page = new Control_View_Information_At_DOM()
-                    const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
-                    products_Instance.create_Card(returnAllProducts)
-                    products_Instance.insertAllProducts()
-                    storageService.removeItem(keysLocalStorage.FAVORITES)
+                const handlerStateStorageConnected = async () => {
+                    const dataSetState = 'connect'
+                    e.target.dataset.userState = dataSetState
+                    const resFavorites = await realTime.returnFavoritesRealTimeDb(this.user.uid)
+                    const res_Purchase = await realTime.returnPurchaseRealTimeDb(this.user.uid)
+                    const resCart = await realTime.returnCartRealTimeDb()
+                    const mergedCarts = driveCart.mergeCart(resCart, storage.getItem(keysLocalStorage.CART))
+                    cart.quantity_In_Cart(mergedCarts)
+                    storage.setItem(keysLocalStorage.CART, mergedCarts)
+                    favorites.instance_View.display_FavoritesHeart(resFavorites)
+                    storage.setItem(keysLocalStorage.FAVORITES, resFavorites)
+                }
+                const handlerStateStorageDisconnected = async () => {
+                    instance_Control_Routes.reception_Hash('#home');
+                    e.target.textContent = 'Logout';
+                    const storage = new StorageService();
+                    const handler_Init_Page = new Control_View_Information_At_DOM();
+                    const cart = new Control_cart();
+                    const favorites = new Control_Favorites();
+                    const returnAllProducts = await handler_Init_Page.controller_get_All_Products();
+                    products_Instance.create_Card(returnAllProducts);
+                    products_Instance.insertAllProducts();
+                    storage.removeItem(keysLocalStorage.FAVORITES);
+                    storage.removeItem(keysLocalStorage.CART);
+                    favorites.handler_Favorites();
+                    handler_Init_Page.handlerSingleProduct();
+                    cart.add_Cart_Listener();
+                    cart.quantity_In_Cart(storage.getItem(keysLocalStorage.CART))
 
                     //-----------------------------------//	
-                    const favorites = new Control_Favorites()
-                    favorites.handler_Favorites()
-                    handler_Init_Page.handlerSingleProduct()
-                    controller_Cart_Instance.add_Cart_Listener()
 
                 }
-                this.user === false ? returnInitState() : true
+                //------------------------------------------------------------------------------	
+                !this.user ? handlerStateStorageDisconnected() : handlerStateStorageConnected()
+
+
+                /* resCart !== undefined && keySessionStorage.UID ?
+                    mergedCarts :
+                    realTime.saveCart(storage.getItem(keysLocalStorage.CART))
+                console.log(mergedCarts) */
+                //llamar a la base de datos y sumar los elementos del localstorage
+                //guardar
+                realTime.saveCart(mergedCarts)
+                //------------------------------------------------------------------------------	
+
+
+            } catch (error) {
+                const storage = new StorageService();
+                this.uid = storage.getSessionStorageUid(keySessionStorage.UID) || '';
+
+                /* -----Logout----- */
+                const returnInitState = async () => {
+                }
+                this.uid === undefined ? returnInitState() : true;
             }
             finally {
+                const storage = new StorageService();
+                const realTime = new RealTimeDB();
+                this.uid = storage.getSessionStorageUid(keySessionStorage.UID) || '';
                 !this.user ? e.target.textContent = 'Login' : e.target.textContent = 'Logout'
                 buttonLogin.disabled = false
                 return this.user
@@ -889,7 +925,9 @@ instanceFirebaseAuth.loginUser()
 if (typeof localStorage !== 'undefined') {
     const controller_Cart_Instance = new Control_cart()
     const storage = new StorageService()
-    controller_Cart_Instance.quantity_In_Cart(storage.getItem(keysLocalStorage.CART))
+
+    /*     controller_Cart_Instance.quantity_In_Cart(controller_Cart_Instance.model.returnCopyLocalStorage())
+     */
     const handler_Init_Page = new Control_View_Information_At_DOM()
     const favorites = new Control_Favorites()
     const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
@@ -902,7 +940,8 @@ if (typeof localStorage !== 'undefined') {
         handler_Init_Page.handlerSingleProduct(),
         handler_Init_Page.listener_Category(),
         controller_Cart_Instance.assign_Event_Btn_Pay(),
-        favorites.handler_Favorites(),
+        controller_Cart_Instance.quantity_In_Cart(storage.getItem(keysLocalStorage.CART))
+    favorites.handler_Favorites(),
         /*         favorites.instance_View.display_FavoritesHeart(local_Storage.getItem(keysLocalStorage.FAVORITES)),	
          */
         controllerIndividualProduct.listenerAddCart()

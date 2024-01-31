@@ -7,11 +7,13 @@ import {
     GoogleAuthProvider,
     signOut,
     browserLocalPersistence,
+    browserSessionPersistence,
     signInWithRedirect,
     inMemoryPersistence
 } from 'https://www.gstatic.com/firebasejs/9.2.0/firebase-auth.js';
 import { firebaseConfig } from './config.js';
-
+import { StorageService } from '../model/classes/StorageService.js';
+import { keySessionStorage, keysLocalStorage } from '../constants.js';
 
 class Auth {
     constructor() {
@@ -20,12 +22,13 @@ class Auth {
 
 
     async loginWithGmail() {
-
         try {
             const firebaseApp = initializeApp(firebaseConfig);
             const auth = getAuth(firebaseApp);
             if (auth.currentUser) {
                 const signResponse = await signOut(auth)
+                const storage = new StorageService()
+                storage.removeItem(keysLocalStorage.CART)
                 console.log('user disconnected: ', signResponse)
                 return false
             }
@@ -34,9 +37,10 @@ class Auth {
                 const provider = new GoogleAuthProvider();
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
+                const userToken = await result.user.getIdToken();
+                const sessionToken = new StorageService()
+                sessionToken.sessionStorageToken(keySessionStorage.TOKEN, userToken)
                 this.uid = user
-
-                console.log('Usuario autenticado con Google:', user);
                 return user;
             }
         } catch (error) {

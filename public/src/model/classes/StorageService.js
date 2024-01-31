@@ -7,7 +7,6 @@ export class StorageService {
             localStorage.setItem(key, setValue);
         }
     }
-
     getItem(key) {
         if (typeof localStorage !== 'undefined') {
             const value = JSON.parse(localStorage.getItem(key)) || []
@@ -18,6 +17,20 @@ export class StorageService {
 
     removeItem(key) {
         localStorage.removeItem(key);
+    }
+
+    sessionStorageUid(key, value) {
+        sessionStorage.setItem(key, value)
+    }
+
+    getSessionStorageUid(key) {
+        return sessionStorage.getItem(key)
+    }
+    sessionStorageToken(key,value){
+        sessionStorage.setItem(key,value)
+    }
+    getSessionStorageToken(key){
+        return sessionStorage.getItem(key)
     }
 }
 

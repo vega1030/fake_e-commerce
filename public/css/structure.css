@@ -1092,7 +1092,7 @@ h1 {
    }
 
    #content_count_cart {
-      min-width: 66%;
+      min-width: 100%;
    }
 
    /* ------------------HEADER-------------------------- */
@@ -1279,7 +1279,7 @@ h1 {
 
    #content_count_cart {
       width: 100%;
-      height: 4ch;
+      height: 3ch;
    }
 
    .navbar_cart {
@@ -1295,7 +1295,7 @@ h1 {
    }
 
    .content-link-cart {
-      grid-column: 8/11;
+      grid-column: 9/11;
       grid-row: 1/1;
       width: 100%;
       display: flex;
