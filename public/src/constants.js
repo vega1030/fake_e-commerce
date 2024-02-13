@@ -3,7 +3,8 @@
 
 const keysLocalStorage = {
     FAVORITES: 'favorites',
-    CART: 'cart'
+    CART: 'cart',
+    UID: 'uid'
 }
 
 const keySessionStorage = {

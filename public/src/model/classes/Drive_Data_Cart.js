@@ -6,13 +6,13 @@ export class Drive_Data_Cart {
 
     constructor() {
         this.local_Storage = new StorageService()
-        this.modelCart = this.local_Storage.getItem(keysLocalStorage.CART)
+        this.modelCart = this.local_Storage.getItem(keysLocalStorage.CART) || []
     }
 
 
     setCart(cart) {
-        this.modelCart = cart
-        console.log(this.modelCart)
+
+        console.log(cart)
         this.setCartLocalStorage()
 
     }
@@ -66,20 +66,25 @@ export class Drive_Data_Cart {
         const combinedMap = new Map();
 
         // Combina los elementos del primer array
-        cartFromDB.forEach(item => {
-            const { id, ...rest } = item;
-            combinedMap.set(id, { id, ...rest });
-        });
+        if (cartFromDB) {
+
+            cartFromDB.forEach(item => {
+                const { id, ...rest } = item;
+                combinedMap.set(id, { id, ...rest });
+            });
+        }
 
         // Combina los elementos del segundo array y suma la quantity si ya existe
-        cartFromLocalStorage.forEach(item => {
-            const { id, ...rest } = item;
-            if (combinedMap.has(id)) {
-                combinedMap.set(id, { ...combinedMap.get(id), quantity: (combinedMap.get(id).quantity || 0) + (item.quantity || 0) });
-            } else {
-                combinedMap.set(id, { id, ...rest, quantity: item.quantity || 0 });
-            }
-        });
+        if (cartFromLocalStorage) {
+            cartFromLocalStorage.forEach(item => {
+                const { id, ...rest } = item;
+                if (combinedMap.has(id)) {
+                    combinedMap.set(id, { ...combinedMap.get(id), quantity: (combinedMap.get(id).quantity || 0) + (item.quantity || 0) });
+                } else {
+                    combinedMap.set(id, { id, ...rest, quantity: item.quantity || 0 });
+                }
+            });
+        }
 
         // Convierte el Map de nuevo a un array
         const combinedArray = Array.from(combinedMap.values());

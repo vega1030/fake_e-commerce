@@ -442,30 +442,29 @@ class Control_cart {
         this.shouldClearCart = true;
     }
 
-    controller_Cart(cart = '') {
-        if (typeof localStorage !== 'undefined') {
-            const firebaseRealTime = new RealTimeDB()
-            this.model.modelCart = cart
-            cart_Ui.model_UiCart_List(this.model.modelCart)
-            this.model.setCart(this.model.modelCart)
+    controller_Cart() {
+        /*         if (typeof localStorage !== 'undefined') {
+        } */
+        // create total and quantity
+        const total_And_Quantity = this.model.modelCart.reduce((previous, current) => {
+            previous.quantity = current.quantity + previous.quantity;
+            previous.total += current.quantity * current.price;
+            return previous
+        }, { total: 0, quantity: 0 })
+        //---------	
+        this.total = Number(total_And_Quantity.total.toFixed(2))
 
-            this.quantity_In_Cart(this.model.modelCart)
-            // create total and quantity	
+        cart_Ui.model_UiCart_List(this.model.modelCart)
+        this.quantity_In_Cart(this.model.modelCart)
+        render_Total_And_Pay(total_And_Quantity)
 
-            const total_And_Quantity = this.model.modelCart.reduce((previous, current) => {
-                previous.quantity = current.quantity + previous.quantity;
-                previous.total += current.quantity * current.price;
-                return previous
-            }, { total: 0, quantity: 0 })
-            //---------	
-            this.total = Number(total_And_Quantity.total.toFixed(2))
-
-            render_Total_And_Pay(total_And_Quantity)
+        const storage = new StorageService()
+        storage.setItem(keysLocalStorage.CART, this.model.modelCart)
 
 
-            return this.cart
-        }
+
         return this.cart
+
 
     };
 
@@ -506,6 +505,8 @@ class Control_cart {
             this.model.modelCart = []
             this.shouldClearCart = false
         }
+        this.model.modelCart = JSON.parse(localStorage.getItem(keysLocalStorage.CART))||[]
+        console.log('localStorage ', this.model.modelCart)
         const updatedCart = [ ...this.model.modelCart, paramProduct ];
         const updatedCartReduced = updatedCart.reduce((acc, e) => {
             const existingIndex = acc.findIndex((x) => e.id === x.id);
@@ -533,16 +534,16 @@ class Control_cart {
         });
 
         const allQuantitiesAreZero = updatedCartReduced.every((product) => product.quantity === 0);
+
         if (isProductAddedOrUpdated || allQuantitiesAreZero) {
             this.model.modelCart = updatedCartReduced;
-        }
+        };
 
-        if (typeof localStorage !== 'undefined') {
-
-            this.controller_Cart(this.model.modelCart)
-        }
         this.model.modelCart = updatedCartReduced;
 
+        if (typeof localStorage !== 'undefined') {
+            this.controller_Cart();
+        };
         console.log(this.model.modelCart)
         return { result: isProductAddedOrUpdated || allQuantitiesAreZero, cart: this.model.modelCart };
     }
@@ -551,7 +552,8 @@ class Control_cart {
         const btns_Cart = document.querySelectorAll('.btn_add_to_cart')
         btns_Cart.forEach(item => item.addEventListener('click', (e) => {
             const id = Number(e.target.id);
-            return this.send_Id_To_Api(id);;
+            this.send_Id_To_Api(id);
+            return
         }))
     }
 
@@ -712,9 +714,6 @@ class Control_cart {
     1, it replaces the trash basket icon with a minus symbol */
     //------------------------------------------------------------------------------------------------------------------	
     modify_Quantity() {
-
-
-
         const btn_Add_Quantity = document.querySelectorAll('.add')
         const btns_Subtract = document.querySelectorAll('.subtract')
         btns_Subtract.forEach(elements => {
@@ -836,9 +835,7 @@ class Firebase_Auth {
 
                 /* ----Login---- */
 
-                const realTime = new RealTimeDB()
                 const favorites = new Control_Favorites()
-                const storage = new StorageService()
                 const cart = new Control_cart()
                 const driveCart = new Drive_Data_Cart()
                 //------------------------------------------------------------------------------	
@@ -848,24 +845,39 @@ class Firebase_Auth {
 
                 //------------------------------------------------------------------------------	
                 const handlerStateStorageConnected = async () => {
+                    const realTime = new RealTimeDB()
+                    const storage = new StorageService()
+                    console.log('connected')
                     const dataSetState = 'connect'
                     e.target.dataset.userState = dataSetState
+
+                    storage.setItem(keysLocalStorage.UID, this.user.uid)
+                    console.log(storage.getItem(keysLocalStorage.UID))
+
                     const resFavorites = await realTime.returnFavoritesRealTimeDb(this.user.uid)
                     const res_Purchase = await realTime.returnPurchaseRealTimeDb(this.user.uid)
                     const resCart = await realTime.returnCartRealTimeDb()
                     const mergedCarts = driveCart.mergeCart(resCart, storage.getItem(keysLocalStorage.CART))
+                    console.log(resCart, 'favorites ', resFavorites)
+
+
                     cart.quantity_In_Cart(mergedCarts)
-                    storage.setItem(keysLocalStorage.CART, mergedCarts)
                     favorites.instance_View.display_FavoritesHeart(resFavorites)
                     storage.setItem(keysLocalStorage.FAVORITES, resFavorites)
+                    storage.setItem(keysLocalStorage.CART, mergedCarts)
                 }
+
                 const handlerStateStorageDisconnected = async () => {
-                    instance_Control_Routes.reception_Hash('#home');
-                    e.target.textContent = 'Logout';
+                    const realTime = new RealTimeDB()
                     const storage = new StorageService();
                     const handler_Init_Page = new Control_View_Information_At_DOM();
                     const cart = new Control_cart();
+                    const modelCart = new Drive_Data_Cart()
                     const favorites = new Control_Favorites();
+                    console.log('disconnected')
+                    instance_Control_Routes.reception_Hash('#home');
+                    e.target.textContent = 'Logout';
+                    realTime.saveCart(storage.getItem(keysLocalStorage.CART))
                     const returnAllProducts = await handler_Init_Page.controller_get_All_Products();
                     products_Instance.create_Card(returnAllProducts);
                     products_Instance.insertAllProducts();
@@ -875,32 +887,16 @@ class Firebase_Auth {
                     handler_Init_Page.handlerSingleProduct();
                     cart.add_Cart_Listener();
                     cart.quantity_In_Cart(storage.getItem(keysLocalStorage.CART))
-
+                    modelCart.modelCart = storage.getItem(keysLocalStorage.CART)
+                    console.log(modelCart.modelCart)
                     //-----------------------------------//	
 
                 }
                 //------------------------------------------------------------------------------	
-                !this.user ? handlerStateStorageDisconnected() : handlerStateStorageConnected()
-
-
-                /* resCart !== undefined && keySessionStorage.UID ?
-                    mergedCarts :
-                    realTime.saveCart(storage.getItem(keysLocalStorage.CART))
-                console.log(mergedCarts) */
-                //llamar a la base de datos y sumar los elementos del localstorage
-                //guardar
-                realTime.saveCart(mergedCarts)
-                //------------------------------------------------------------------------------	
-
+                return !this.user ? handlerStateStorageDisconnected() : handlerStateStorageConnected()
 
             } catch (error) {
-                const storage = new StorageService();
-                this.uid = storage.getSessionStorageUid(keySessionStorage.UID) || '';
-
-                /* -----Logout----- */
-                const returnInitState = async () => {
-                }
-                this.uid === undefined ? returnInitState() : true;
+                console.log('error', error)
             }
             finally {
                 const storage = new StorageService();

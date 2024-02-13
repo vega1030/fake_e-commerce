@@ -3,7 +3,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.2.0/firebase
 import { firebaseConfig } from './config.js'
 import { Auth } from './auth.js';
 import { StorageService } from '../model/classes/StorageService.js';
-import { keySessionStorage } from '../constants.js';
+import { keySessionStorage, keysLocalStorage } from '../constants.js';
 
 const firebaseApp = initializeApp(firebaseConfig);
 
@@ -22,8 +22,9 @@ class RealTimeDB {
     async saveDataPurchase(uid, purchase) {
 
         try {
+            const sessionStorageUid = await this.newUid.getItem(keysLocalStorage.UID)            
             const db = getDatabase();
-            const newPurchaseRef = push(ref(db, `user/ ${ uid }/PURCHASES/`));
+            const newPurchaseRef = push(ref(db, `user/ ${ sessionStorageUid }/PURCHASES/`));
             const idPurchase = newPurchaseRef.key;
 
             await set(newPurchaseRef, {
@@ -50,10 +51,11 @@ class RealTimeDB {
         };
     };
 
-    async returnPurchaseRealTimeDb(uid) {
+    async returnPurchaseRealTimeDb() {
         try {
+            const sessionStorageUid = await this.newUid.getItem(keysLocalStorage.UID)            
             const db = getDatabase();
-            const reference = ref(db, `user/ ${ uid }/PURCHASES/`);
+            const reference = ref(db, `user/ ${ sessionStorageUid }/PURCHASES/`);
             const snapshot = await get(reference);
 
             if (snapshot.exists()) {
@@ -74,10 +76,11 @@ class RealTimeDB {
     /* --------------------- */
 
     /* ------Favorites------ */
-    async saveFavoritesRealTimeDb(uid, favorite) {
-        try {
+    async saveFavoritesRealTimeDb(favorite) {
+        try {            
+            const sessionStorageUid = await this.newUid.getItem(keysLocalStorage.UID)
             const db = getDatabase();
-            const refFavorites = ref(db, `user/ ${ uid }/FAVORITES/`);
+            const refFavorites = ref(db, `user/ ${ sessionStorageUid }/FAVORITES/`);
             await set(refFavorites, favorite);
             console.log('Datos de favorito guardados con éxito.');
         }
@@ -86,11 +89,11 @@ class RealTimeDB {
         }
     }
 
-    async returnFavoritesRealTimeDb(uid) {
+    async returnFavoritesRealTimeDb() {
         try {
-
+            const sessionStorageUid = await this.newUid.getItem(keysLocalStorage.UID)
             const db = getDatabase();
-            const refFavorites = ref(db, `user/ ${ uid }/FAVORITES/`);
+            const refFavorites = ref(db, `user/ ${ sessionStorageUid }/FAVORITES/`);
             const snapshot = await get(refFavorites)
 
             if (snapshot.exists()) {
@@ -113,7 +116,7 @@ class RealTimeDB {
     async saveCart(cart) {
 
         try {
-            const sessionStorageUid = this.newUid.getSessionStorageUid(keySessionStorage.UID)
+            const sessionStorageUid = this.newUid.getItem(keysLocalStorage.UID)
             const db = getDatabase();
             const refCart = ref(db, `user/ ${ sessionStorageUid }/CART/`);
             await set(refCart, cart);
@@ -126,12 +129,12 @@ class RealTimeDB {
     async returnCartRealTimeDb() {
 
         try {
-            const sessionStorageUid = this.newUid.getSessionStorageUid(keySessionStorage.UID)
+            const sessionStorageUid = await this.newUid.getItem(keysLocalStorage.UID)
             const db = getDatabase();
-            const refCart = ref(db, `user/ ${ sessionStorageUid }/CART/`);
+            const refCart = await ref(db, `user/ ${ sessionStorageUid }/CART/`);
             const snapshot = await get(refCart)
             if (snapshot.exists()) {
-                const data = snapshot.val()
+                const data = await snapshot.val()
                 this.realTimeCart = data
                 return this.realTimeCart
             }

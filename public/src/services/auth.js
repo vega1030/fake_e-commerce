@@ -27,20 +27,15 @@ class Auth {
             const auth = getAuth(firebaseApp);
             if (auth.currentUser) {
                 const signResponse = await signOut(auth)
-                const storage = new StorageService()
-                storage.removeItem(keysLocalStorage.CART)
                 console.log('user disconnected: ', signResponse)
                 return false
             }
             else {
-                await setPersistence(auth, browserLocalPersistence)
+                await setPersistence(auth, browserSessionPersistence)
                 const provider = new GoogleAuthProvider();
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
                 const userToken = await result.user.getIdToken();
-                const sessionToken = new StorageService()
-                sessionToken.sessionStorageToken(keySessionStorage.TOKEN, userToken)
-                this.uid = user
                 return user;
             }
         } catch (error) {

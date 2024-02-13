@@ -572,7 +572,7 @@ h1 {
 
 .navbar_cart {
    max-width: 4rem;
-   min-width: 3rem;
+   min-width: 2.1rem;
 }
 
 .nav-link {
@@ -583,7 +583,7 @@ h1 {
 
 .nav>.nav-header>.nav-title {
    display: inline-block;
-   font-size: 1.8rem;
+   font-size: 1.3rem;
    font-weight: 600;
    letter-spacing: .1rem;
 }
@@ -694,7 +694,7 @@ h1 {
    border-radius: 50%;
    display: flex;
    justify-content: flex-start;
-   font-size: 2.1ch;
+   font-size: 1.6ch;
    max-width: 2rem;
    font-weight: 600;
 }
@@ -1115,13 +1115,13 @@ h1 {
    .nav {
       width: 100%;
       position: relative;
-      padding: 2%;
+      padding: 3%;
       display: grid;
       grid-template-columns: repeat(10, 1fr);
       grid-template-rows: 1fr 1fr 1fr;
       grid-column: 1/4;
       grid-row: 1/1;
-      height: 14vh;
+      height: 11vh;
       place-items: center;
 
    }
@@ -1279,7 +1279,7 @@ h1 {
 
    #content_count_cart {
       width: 100%;
-      height: 3ch;
+      height: 2.6ch;
    }
 
    .navbar_cart {
