@@ -1,4 +1,5 @@
 'use strict'
+import { loadSpinner } from '../view/functions/spinner.js';
 
 import {
     get_All_Products,
@@ -13,6 +14,7 @@ import { Drive_Data_Cart } from '../../src/model/classes/Drive_Data_Cart.js'
 import { StorageService } from '../model/classes/StorageService.js'
 import { Handler_Favorites } from '../model/classes/Handler_Favorites.js'
 
+import { ControlIndividualProduct } from './classes/ControlIndividualProduct.js'
 
 import { Auth } from '../services/auth.js';
 
@@ -33,13 +35,7 @@ const categories_UI = new Category_ui()
 const cart_Ui = new View_cart()
 const authInstance = new Auth()
 //----------------------------------------------------------------	
-const loadSpinner = (flag) => {
-    const overlay = document.querySelector('.overlay')
-    if (overlay !== null) {
-        const confirm = !flag ? overlay.style.display = 'flex' : overlay.style.display = 'none'
-        const result = confirm === 'flex' ? document.body.style.overflow = 'hidden' : document.body.style.overflow = 'auto'
-    }
-}
+
 
 
 class Control_View_Information_At_DOM {
@@ -95,7 +91,7 @@ class Control_View_Information_At_DOM {
 
             favorites.instance_View.display_FavoritesHeart(serviceStorage.getItem(keysLocalStorage.FAVORITES))
             favorites.handler_Favorites()
-            this.handlerSingleProduct()
+            this.handlerSingleProduct() //create instance of controlindividualproduct
             controller_Cart_Instance.add_Cart_Listener()
 
 
@@ -132,6 +128,7 @@ class Control_View_Information_At_DOM {
 
         loadSpinner(false)
         try {
+            const controller_Cart_Instance = new Control_cart()
             const handler_Init_Page = new Control_View_Information_At_DOM()
             const favorites = new Control_Favorites()
             const result = await get_View_Products_For_Category(category)
@@ -172,75 +169,43 @@ class Control_View_Information_At_DOM {
     }
 
 
-    handlerSingleProduct = () => {
+    controllerViewIndividualProduct() {
         const view_Element = document.querySelectorAll('.individual_product')
         view_Element.forEach((element) => {
-
             element.addEventListener('click', async (e) => {
-                loadSpinner(false)
-
-                try {
-                    const data_Id = Number(e.target.dataset.id)
-                    const res = await get_Single_Product(data_Id)
-                    products_Instance.uI_Individual_Card(res)
-                    products_Instance.insertIndividualCard()
-
-                } catch (error) {
-
-                }
-                finally {
-                    loadSpinner(true)
-
-                }
+                e.target.dataset.id
+                const instanceIndividualProduct = new ControlIndividualProduct()
+                const product = await instanceIndividualProduct.handlerSingleProduct(e.target.dataset.id)
+                console.log(product)
+                products_Instance.uI_Individual_Card(product)
+                products_Instance.insertIndividualCard()
 
             })
         })
-
-
+        /*         const view_Element = document.querySelectorAll('.individual_product')
+                view_Element.forEach((element) => {
+        
+                    element.addEventListener('click', async (e) => {
+                        loadSpinner(false)
+        
+                        try {
+                            const data_Id = Number(e.target.dataset.id)
+                            const res = await get_Single_Product(data_Id)
+                            products_Instance.uI_Individual_Card(res)
+                            products_Instance.insertIndividualCard()
+        
+                        } catch (error) {
+        
+                        }
+                        finally {
+                            loadSpinner(true)
+        
+                        }
+        
+                    })
+                }) */
     }
 }
-
-class ControlIndividualProduct {
-
-    constructor() {
-        this.id = ''
-        this.delegationContent = document.querySelector('#individual_product')
-
-    }
-
-    listenerAddCart() {
-        this.delegationContent.addEventListener('click', async (e) => {
-            const targetElement = e.target.classList.contains('individual_btn_add_to_cart')
-            this.id = e.target.dataset.id
-            const result = targetElement === true ? await controller_Cart_Instance.send_Id_To_Api(this.id) : undefined
-            return result
-        })
-    }
-
-    listenerFavorite() {
-        const favorites = new Control_Favorites()
-        this.delegationContent.addEventListener('click', async (e) => {
-            const targetElement = e.target.classList.contains('pathHeart')
-            const targetId = e.target.classList.value === 'pathHeart' ? e.target.dataset.id : e.target.dataset.id
-            this.id = targetId
-
-            if (this.id === undefined) {
-                return this.id
-            }
-
-            if (targetElement === true) {
-                favorites.id = this.id
-                const res = await favorites.callingApi()
-                const resList = favorites.save_And_Update_Favorites(res)
-                favorites.handler_Favorites()
-                return resList
-            }
-        })
-    }
-}
-
-
-const controllerIndividualProduct = new ControlIndividualProduct
 
 
 
@@ -249,10 +214,11 @@ const controllerIndividualProduct = new ControlIndividualProduct
 class Control_Favorites {
 
     constructor() {
-        this.favorites = []
+        this.favorites
         this.objectFav
         this.instance_View = new View_Favorites()
         this.id = ''
+        this.instanceModelFavorites = new Handler_Favorites()
         this.realTimeDb = new RealTimeDB()
         this.authFirebase = new Auth()
     }
@@ -272,13 +238,10 @@ class Control_Favorites {
     }
 
 
-    assignDbFavorites(favorites) {
-        this.favorites = favorites
-    }
-    getDbFavorites() {
-        return this.favorites
-    }
-
+    /**
+     * The function `handler_Favorites()` adds event listeners to elements with the class "favorite" and
+     * performs various actions when clicked.
+     */
     handler_Favorites() {
         const favoriteId = document.querySelectorAll('.favorite');
         favoriteId.forEach(element => {
@@ -287,12 +250,23 @@ class Control_Favorites {
                 this.id = class_List === 'pathHeart' ? Number(e.target.parentElement.parentElement.dataset.id) : Number(e.target.dataset.id);
                 this.callingApi()
                 this.handlerResponseApi()
-                this.getDbFavorites()
                 loadSpinner()
             });
         });
     }
 
+    async handlerResponseApi() {
+        const res = await this.callingApi()
+        if (res === undefined) {
+            return
+        }
+        this.favorites = await this.instanceModelFavorites.save_And_Update_Favorites(res)
+        this.handlerViewFavorites()
+    }
+
+    handlerViewFavorites() {
+        this.instance_View.display_FavoritesHeart(this.favorites)
+    }
     /* The above code defines an asynchronous function called `send_Favorite_Product_To_LocalStorage`. When	
     this function is called, it first selects an HTML element with the class "overlay" and sets its	
     display property to "flex". Then, it tries to retrieve a single product using the	
@@ -318,60 +292,10 @@ class Control_Favorites {
 
     }
 
-    /* 
-        saveFavoriteOfLocalStorage(favorites) {	
-    
-            this.favorites = favorites	
-            return this.favorites	
-        }	
-    */
-
-
-    async handlerResponseApi() {
-        const res = await this.callingApi()
-        if (res === undefined) {
-            return
-        }
-        this.save_And_Update_Favorites(res)
-
-    }
 
 
 
-    //------------------------------------------------------------------------------	
-    //------------------------------------------------------------------------------	
 
-    async save_And_Update_Favorites(favoriteProduct) {
-        await this.returnFavoriteRealTimeAuth(instanceFirebaseAuth.uid)
-        const storageService = new StorageService()
-        const id = favoriteProduct.id && favoriteProduct ? favoriteProduct.id : null;
-        const index = this.favorites.findIndex(i => i.id === favoriteProduct.id);
-        if (index !== -1) {
-            this.favorites.splice(index, 1);
-            await this.setDataRealTimeDb()
-            storageService.setItem(keysLocalStorage.FAVORITES, this.favorites)
-            this.instance_View.display_FavoritesHeart(this.favorites)
-            return this.favorites
-        }
-        else {
-            this.favorites.push(favoriteProduct);
-            await this.setDataRealTimeDb()
-            storageService.setItem(keysLocalStorage.FAVORITES, this.favorites)
-            this.instance_View.display_FavoritesHeart(this.favorites)
-
-            return this.favorites
-        }
-    }
-
-    async setDataRealTimeDb() {
-        instanceFirebaseAuth.uid !== undefined ? this.realTimeDb.saveFavoritesRealTimeDb(instanceFirebaseAuth.uid, this.favorites) : console.log('Error')
-        console.log(instanceFirebaseAuth.uid, ' ---- ', this.favorites)
-        return
-    }
-
-    saveLocalStorage() {
-
-    }
 
     async returnFavoriteRealTimeAuth(uid) {
         const dbFavorites = await this.realTimeDb.returnFavoritesRealTimeDb(uid)
@@ -383,7 +307,6 @@ class Control_Favorites {
     sendFavoriteToView() {
         document.querySelector('#favorites').addEventListener('click', async () => {
             this.returnFavoriteRealTimeAuth()
-            console.log(this.favorites)
             //-----------validation of the create this.favorites-------------------//	
             this.favorites.length > 0 ?
                 this.objectFav = {
@@ -501,12 +424,12 @@ class Control_cart {
      * contains the updated cart after adding or updating the product.
      */
     addProductsInCart(paramProduct) {
+        const storage = new StorageService()
         if (this.shouldClearCart) {
             this.model.modelCart = []
             this.shouldClearCart = false
         }
-        this.model.modelCart = JSON.parse(localStorage.getItem(keysLocalStorage.CART))||[]
-        console.log('localStorage ', this.model.modelCart)
+        this.model.modelCart = storage.getItem(keysLocalStorage.CART) || []
         const updatedCart = [ ...this.model.modelCart, paramProduct ];
         const updatedCartReduced = updatedCart.reduce((acc, e) => {
             const existingIndex = acc.findIndex((x) => e.id === x.id);
@@ -838,6 +761,8 @@ class Firebase_Auth {
                 const favorites = new Control_Favorites()
                 const cart = new Control_cart()
                 const driveCart = new Drive_Data_Cart()
+                const modelHandlerFavorite = new Handler_Favorites()
+
                 //------------------------------------------------------------------------------	
                 const response = await authInstance.loginWithGmail()
                 this.user = response
@@ -850,42 +775,54 @@ class Firebase_Auth {
                     console.log('connected')
                     const dataSetState = 'connect'
                     e.target.dataset.userState = dataSetState
-
                     storage.setItem(keysLocalStorage.UID, this.user.uid)
-                    console.log(storage.getItem(keysLocalStorage.UID))
 
-                    const resFavorites = await realTime.returnFavoritesRealTimeDb(this.user.uid)
+                    /* ------------------------------ */
+                    const resFavorites = await realTime.returnFavoritesRealTimeDb()
                     const res_Purchase = await realTime.returnPurchaseRealTimeDb(this.user.uid)
                     const resCart = await realTime.returnCartRealTimeDb()
-                    const mergedCarts = driveCart.mergeCart(resCart, storage.getItem(keysLocalStorage.CART))
-                    console.log(resCart, 'favorites ', resFavorites)
+                    /* ------------------------------ */
 
+                    const mergedCarts = driveCart.mergeCart(resCart, storage.getItem(keysLocalStorage.CART))
+                    const mergedFavorites = modelHandlerFavorite.mergeFavorites(resFavorites, storage.getItem(keysLocalStorage.FAVORITES))
 
                     cart.quantity_In_Cart(mergedCarts)
-                    favorites.instance_View.display_FavoritesHeart(resFavorites)
-                    storage.setItem(keysLocalStorage.FAVORITES, resFavorites)
+
+                    storage.setItem(keysLocalStorage.FAVORITES, mergedFavorites)
                     storage.setItem(keysLocalStorage.CART, mergedCarts)
                 }
 
                 const handlerStateStorageDisconnected = async () => {
+
+                    /* The above code is creating instances of various classes and services in
+                    JavaScript. */
                     const realTime = new RealTimeDB()
                     const storage = new StorageService();
                     const handler_Init_Page = new Control_View_Information_At_DOM();
                     const cart = new Control_cart();
                     const modelCart = new Drive_Data_Cart()
                     const favorites = new Control_Favorites();
+                    /*  ------------------------------------- */
+
                     console.log('disconnected')
+
                     instance_Control_Routes.reception_Hash('#home');
                     e.target.textContent = 'Logout';
+
                     realTime.saveCart(storage.getItem(keysLocalStorage.CART))
+                    realTime.saveFavoritesRealTimeDb(storage.getItem(keysLocalStorage.FAVORITES))
+
                     const returnAllProducts = await handler_Init_Page.controller_get_All_Products();
                     products_Instance.create_Card(returnAllProducts);
                     products_Instance.insertAllProducts();
+
                     storage.removeItem(keysLocalStorage.FAVORITES);
                     storage.removeItem(keysLocalStorage.CART);
                     favorites.handler_Favorites();
+
                     handler_Init_Page.handlerSingleProduct();
                     cart.add_Cart_Listener();
+
                     cart.quantity_In_Cart(storage.getItem(keysLocalStorage.CART))
                     modelCart.modelCart = storage.getItem(keysLocalStorage.CART)
                     console.log(modelCart.modelCart)
@@ -917,10 +854,15 @@ const instanceFirebaseAuth = new Firebase_Auth()
 instanceFirebaseAuth.loginUser()
 
 
+
+
 //--------------------------------------------------------------	
 if (typeof localStorage !== 'undefined') {
     const controller_Cart_Instance = new Control_cart()
     const storage = new StorageService()
+    const individualProduct = new ControlIndividualProduct()
+    individualProduct.handlerSingleProduct()
+
 
     /*     controller_Cart_Instance.quantity_In_Cart(controller_Cart_Instance.model.returnCopyLocalStorage())
      */
@@ -933,15 +875,15 @@ if (typeof localStorage !== 'undefined') {
     await handler_Init_Page.control_View_Categories()
     controller_Cart_Instance.add_Cart_Listener(),
         controller_Cart_Instance.assign_Events_Products(),
-        handler_Init_Page.handlerSingleProduct(),
-        handler_Init_Page.listener_Category(),
+        handler_Init_Page.controllerViewIndividualProduct()
+    handler_Init_Page.listener_Category(),
         controller_Cart_Instance.assign_Event_Btn_Pay(),
         controller_Cart_Instance.quantity_In_Cart(storage.getItem(keysLocalStorage.CART))
     favorites.handler_Favorites(),
-        /*         favorites.instance_View.display_FavoritesHeart(local_Storage.getItem(keysLocalStorage.FAVORITES)),	
-         */
-        controllerIndividualProduct.listenerAddCart()
-    controllerIndividualProduct.listenerFavorite()
+        favorites.instance_View.display_FavoritesHeart(storage.getItem(keysLocalStorage.FAVORITES)),
+
+        individualProduct.listenerAddCart()
+    individualProduct.listenerFavorite()
     favorites.sendFavoriteToView()
 }
 //----------------------------------------------------------------	

@@ -1,7 +1,6 @@
 'use strict'
-import { StorageService } from "./StorageService.js"
+import { StorageService } from "../classes/StorageService.js"
 import { keysLocalStorage } from "../../constants.js"
-
 export class Drive_Data_Cart {
 
     constructor() {
@@ -29,45 +28,10 @@ export class Drive_Data_Cart {
     mergeCart(cartFromDB, cartFromLocalStorage) {
         console.log('storage Real TIme: ', cartFromDB)
         console.log('storage LocalStorage: ', cartFromLocalStorage)
-        /*         console.log('merge cart ', cartFromDB, cartFromLocalStorage);
-                const mergedCart = {};
-        
-                if (cartFromDB) {
-                    cartFromDB.forEach(product => {
-                        const productId = product.id;
-                        const quantity = product.quantity;
-                        mergedCart[ productId ] = mergedCart[ productId ] || { ...product, quantity: 0 };
-                        mergedCart[ productId ].quantity += quantity;
-                        console.log(product);
-                        console.log('merge cart ', mergedCart);
-                    });
-                }
-        
-                if (cartFromLocalStorage) {
-                    const localStorageCart = JSON.parse(this.local_Storage.getItem(keysLocalStorage.CART));
-        
-                    Object.keys(localStorageCart).forEach(productId => {
-                        const quantity = localStorageCart[ productId ];
-                        mergedCart[ productId ] = mergedCart[ productId ] || { quantity: 0 };
-                        mergedCart[ productId ].quantity += quantity;
-                    });
-                    console.log(mergedCart);
-                }
-        
-                const resultArray = [ ...Object.values(mergedCart) ];
-                console.log(resultArray);
-        
-                // Corregir el uso del setItem en el localStorage
-                this.local_Storage.setItem(keysLocalStorage.CART, resultArray);
-        
-                return resultArray;
-         */
-
         const combinedMap = new Map();
 
         // Combina los elementos del primer array
         if (cartFromDB) {
-
             cartFromDB.forEach(item => {
                 const { id, ...rest } = item;
                 combinedMap.set(id, { id, ...rest });
