@@ -1,29 +1,28 @@
 'use strict'
-
-import { StorageService } from "../classes/StorageService.js"
+import { StorageService } from "../../model/classes/StorageService.js"
 import { keysLocalStorage } from "../../constants.js"
 
-export class Handler_Favorites {
-    constructor() {
-        this.favoritesStorage = new StorageService()
-        this.favorites
 
+export class Drive_Data_Favorites {
+
+    constructor() {
+        this.favorites = []
+        this.storageService = new StorageService()
     }
 
     async save_And_Update_Favorites(favoriteProduct) {
-        console.log(favoriteProduct)
-        this.favorites = this.favoritesStorage.getItem(keysLocalStorage.FAVORITES) || []
+        this.favorites = this.storageService.getItem(keysLocalStorage.FAVORITES) || []
         const index = this.favorites.findIndex(i => i.id === favoriteProduct.id);
 
         if (index !== -1) {
             this.favorites.splice(index, 1);
-            this.favoritesStorage.setItem(keysLocalStorage.FAVORITES, this.favorites)
+            this.storageService.setItem(keysLocalStorage.FAVORITES, this.favorites)
             return this.favorites
         }
 
         else {
             this.favorites.push(favoriteProduct);
-            this.favoritesStorage.setItem(keysLocalStorage.FAVORITES, this.favorites)
+            this.storageService.setItem(keysLocalStorage.FAVORITES, this.favorites)
             return this.favorites
         }
     }
@@ -46,6 +45,4 @@ export class Handler_Favorites {
         this.favorites = resultArray;
         return resultArray;
     }
-
-
 }

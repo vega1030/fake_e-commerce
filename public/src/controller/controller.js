@@ -12,7 +12,7 @@ import { keySessionStorage, keysLocalStorage } from '../constants.js'
 
 import { Drive_Data_Cart } from '../../src/model/classes/Drive_Data_Cart.js'
 import { StorageService } from '../model/classes/StorageService.js'
-import { Handler_Favorites } from '../model/classes/Handler_Favorites.js'
+import { Controller_Favorites } from './classes/Controller_Favorites.js'
 
 import { ControlIndividualProduct } from './classes/ControlIndividualProduct.js'
 
@@ -28,6 +28,8 @@ import {
 import {
     RealTimeDB
 } from '../services/realtimedatabase.js'
+
+import {Drive_Data_Favorites} from '../model/classes/Drive_Data_Favorites.js'
 
 const local_Storage = new StorageService()
 const handler_View = new Handler_Displays_Ui()
@@ -75,7 +77,7 @@ class Control_View_Information_At_DOM {
     homeInit() {
         const init = document.querySelector('#_home')
         init.addEventListener('click', async () => {
-            const favorites = new Control_Favorites()
+            const favorites = new Controller_Favorites()
             const handler_Init_Page = new Control_View_Information_At_DOM()
             const controller_Cart_Instance = new Control_cart()
             //-----------------------------------//	
@@ -130,7 +132,7 @@ class Control_View_Information_At_DOM {
         try {
             const controller_Cart_Instance = new Control_cart()
             const handler_Init_Page = new Control_View_Information_At_DOM()
-            const favorites = new Control_Favorites()
+            const favorites = new Controller_Favorites()
             const result = await get_View_Products_For_Category(category)
             //Add Listeners	
             categories_UI.displayProductsByCategory(result)
@@ -174,174 +176,43 @@ class Control_View_Information_At_DOM {
         view_Element.forEach((element) => {
             element.addEventListener('click', async (e) => {
                 e.target.dataset.id
+                /* The above code is written in JavaScript and it appears to be creating a new instance of a class
+                named `ControlIndividualProduct` and then using that instance to handle a single product based on
+                the dataset ID from the event target. The `handlerSingleProduct` method is being called
+                asynchronously using `await`. */
                 const instanceIndividualProduct = new ControlIndividualProduct()
                 const product = await instanceIndividualProduct.handlerSingleProduct(e.target.dataset.id)
-                console.log(product)
+                /* ---------------------- */
+
+                /* The code provided is a mix of JavaScript and comments. It seems to be calling a method
+                `uI_Individual_Card` on an object `products_Instance` with the `product` parameter, and then calling
+                `insertIndividualCard` method on the same object. However, the code is not properly formatted and
+                may not be valid JavaScript syntax. */
                 products_Instance.uI_Individual_Card(product)
                 products_Instance.insertIndividualCard()
+                
+                /* ---------------------- */
 
             })
         })
-        /*         const view_Element = document.querySelectorAll('.individual_product')
-                view_Element.forEach((element) => {
-        
-                    element.addEventListener('click', async (e) => {
-                        loadSpinner(false)
-        
-                        try {
-                            const data_Id = Number(e.target.dataset.id)
-                            const res = await get_Single_Product(data_Id)
-                            products_Instance.uI_Individual_Card(res)
-                            products_Instance.insertIndividualCard()
-        
-                        } catch (error) {
-        
-                        }
-                        finally {
-                            loadSpinner(true)
-        
-                        }
-        
-                    })
-                }) */
     }
 }
 
 
 
 //------------------------------------------------------------------------------------------------------------------	
-
-class Control_Favorites {
-
-    constructor() {
-        this.favorites
-        this.objectFav
+class Favorites_To_View{
+    
+    constructor(){
+        this.favorites = new StorageService()
         this.instance_View = new View_Favorites()
-        this.id = ''
-        this.instanceModelFavorites = new Handler_Favorites()
-        this.realTimeDb = new RealTimeDB()
-        this.authFirebase = new Auth()
-    }
-
-    /* The above code is adding a click event listener to all elements with the class "favorite". When an	
-    element with this class is clicked, it checks if the clicked element has a class "pathHeart". If it	
-    does, it gets the ID of the parent element's parent element (two levels up) and assigns it to the	
-    "id" variable. If it doesn't have the "pathHeart" class, it gets the ID of the clicked element and	
-    assigns it to the "id" variable. Then, it calls a function "send_Favorite_Product_To_LocalStorage()"	
-    with the "id" */
-    assignUid(uid) {
-        this.uid = uid
-    }
-
-    getUid() {
-        return this.uid
-    }
-
-
-    /**
-     * The function `handler_Favorites()` adds event listeners to elements with the class "favorite" and
-     * performs various actions when clicked.
-     */
-    handler_Favorites() {
-        const favoriteId = document.querySelectorAll('.favorite');
-        favoriteId.forEach(element => {
-            element.addEventListener('click', (e) => {
-                const class_List = e.target.classList.value;
-                this.id = class_List === 'pathHeart' ? Number(e.target.parentElement.parentElement.dataset.id) : Number(e.target.dataset.id);
-                this.callingApi()
-                this.handlerResponseApi()
-                loadSpinner()
-            });
-        });
-    }
-
-    async handlerResponseApi() {
-        const res = await this.callingApi()
-        if (res === undefined) {
-            return
-        }
-        this.favorites = await this.instanceModelFavorites.save_And_Update_Favorites(res)
-        this.handlerViewFavorites()
     }
 
     handlerViewFavorites() {
         this.instance_View.display_FavoritesHeart(this.favorites)
     }
-    /* The above code defines an asynchronous function called `send_Favorite_Product_To_LocalStorage`. When	
-    this function is called, it first selects an HTML element with the class "overlay" and sets its	
-    display property to "flex". Then, it tries to retrieve a single product using the	
-    `get_Single_Product` function with an ID that is passed to the function. If successful, it saves and	
-    updates the retrieved product in the favorites list using the	
-    `model_Favorites.save_And_Update_Favorites` function and returns the updated favorites list. If	
-    there is an error, it logs the error to the console. */
-
-    async callingApi() {
-        loadSpinner(false)
-
-
-        try {
-            const res = await get_Single_Product(this.id)
-            return res
-        }
-        catch (error) {
-            return error;
-        }
-        finally {
-            loadSpinner(true)
-        }
-
-    }
-
-
-
-
-
-
-    async returnFavoriteRealTimeAuth(uid) {
-        const dbFavorites = await this.realTimeDb.returnFavoritesRealTimeDb(uid)
-        this.favorites = dbFavorites
-        return this.favorites
-    }
-
-
-    sendFavoriteToView() {
-        document.querySelector('#favorites').addEventListener('click', async () => {
-            this.returnFavoriteRealTimeAuth()
-            //-----------validation of the create this.favorites-------------------//	
-            this.favorites.length > 0 ?
-                this.objectFav = {
-                    list: this.favorites,
-                    validation: true
-                } :
-                this.objectFav = {
-                    list: null,
-                    validation: false
-                }
-
-            //------------------------------//	
-
-            if (this.objectFav.validation === true) {
-                const handler_Init_Page = new Control_View_Information_At_DOM()
-                this.instance_View.createFavoriteListUI(this.objectFav.list)
-                this.instance_View.display_FavoritesHeart(this.objectFav.list)
-                this.handler_Favorites()
-                this.instance_View.deleteCardFavorite()
-                controller_Cart_Instance.add_Cart_Listener()
-                handler_Init_Page.handlerSingleProduct()
-                return this.objectFav
-            }
-
-            //------------------------------//	
-
-            this.objectFav = {
-                list: null,
-                validation: false
-            }
-            return this.objectFav
-        })
-    }
-
 }
+
 
 
 //------------------------------------------------------------------------------------------------------------------	
@@ -719,6 +590,8 @@ class Control_cart {
 }
 
 
+
+
 class Firebase_Auth {
 
     constructor(auth) {
@@ -758,10 +631,10 @@ class Firebase_Auth {
 
                 /* ----Login---- */
 
-                const favorites = new Control_Favorites()
+                const favorites = new Controller_Favorites()
                 const cart = new Control_cart()
                 const driveCart = new Drive_Data_Cart()
-                const modelHandlerFavorite = new Handler_Favorites()
+                const modelHandlerFavorite = new Drive_Data_Favorites()
 
                 //------------------------------------------------------------------------------	
                 const response = await authInstance.loginWithGmail()
@@ -801,7 +674,7 @@ class Firebase_Auth {
                     const handler_Init_Page = new Control_View_Information_At_DOM();
                     const cart = new Control_cart();
                     const modelCart = new Drive_Data_Cart()
-                    const favorites = new Control_Favorites();
+                    const favorites = new Controller_Favorites();
                     /*  ------------------------------------- */
 
                     console.log('disconnected')
@@ -867,7 +740,7 @@ if (typeof localStorage !== 'undefined') {
     /*     controller_Cart_Instance.quantity_In_Cart(controller_Cart_Instance.model.returnCopyLocalStorage())
      */
     const handler_Init_Page = new Control_View_Information_At_DOM()
-    const favorites = new Control_Favorites()
+    const favorites = new Controller_Favorites()
     const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
     products_Instance.create_Card(returnAllProducts)
     products_Instance.insertAllProducts(),
@@ -917,7 +790,6 @@ const instance_Control_Routes = new Control_Routes()
 export {
     instance_Control_Routes,
     Control_View_Information_At_DOM,
-    Control_Favorites,
     Control_cart,
     loadSpinner,
     Firebase_Auth,
