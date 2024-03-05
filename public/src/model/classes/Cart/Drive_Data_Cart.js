@@ -1,6 +1,6 @@
 'use strict'
-import { StorageService } from "../classes/StorageService.js"
-import { keysLocalStorage } from "../../constants.js"
+import { StorageService } from "../../../model/classes/storage/StorageService.js"
+import { keysLocalStorage } from "../../../constants.js"
 export class Drive_Data_Cart {
 
     constructor() {

@@ -120,6 +120,23 @@ class TemplateCards {
 
     }
 
+    //create a method for creating the view of the purchases of the user
+    createPurchasesView(purchases) {
+        const contentPurchases = document.querySelector('#content_purchases');
+        contentPurchases.innerHTML = '';
+        purchases.forEach(purchase => {
+            const purchaseElement = document.createElement('div');
+            purchaseElement.classList.add('purchase');
+            purchaseElement.innerHTML = `
+                <h3>${purchase.title}</h3>
+                <p>${purchase.description}</p>
+                <p>${purchase.price}</p>
+            `;
+            contentPurchases.appendChild(purchaseElement);
+        });
+    }
+
+
 }
 //---------------------------------------------------------------------------------------------------------------------------------------
 

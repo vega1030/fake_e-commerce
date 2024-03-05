@@ -1,6 +1,6 @@
 'use strict'
-import { StorageService } from "../../model/classes/StorageService.js"
-import { keysLocalStorage } from "../../constants.js"
+import { StorageService } from "../storage/StorageService.js"
+import { keysLocalStorage } from "../../../constants.js"
 
 
 export class Drive_Data_Favorites {
@@ -12,6 +12,7 @@ export class Drive_Data_Favorites {
 
     async save_And_Update_Favorites(favoriteProduct) {
         this.favorites = this.storageService.getItem(keysLocalStorage.FAVORITES) || []
+        console.log(this.favorites)
         const index = this.favorites.findIndex(i => i.id === favoriteProduct.id);
 
         if (index !== -1) {

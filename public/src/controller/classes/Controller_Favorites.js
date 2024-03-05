@@ -1,11 +1,13 @@
 'use strict'
 
-import { StorageService } from "../../model/classes/StorageService.js"
+import { StorageService } from "../../model/classes/storage/StorageService.js"
 import { keysLocalStorage } from "../../constants.js"
 import { View_Favorites } from "../../view/view.js"
 import { RealTimeDB } from "../../services/realtimedatabase.js"
 import { Auth } from "../../services/auth.js"
-
+import { loadSpinner } from "../controller.js"
+import { Drive_Data_Favorites } from "../../model/classes/Favorites/Drive_Data_Favorites.js"
+import {get_Single_Product} from '../../api.js'
 
 export class Controller_Favorites {
     constructor() {
@@ -16,7 +18,7 @@ export class Controller_Favorites {
         this.authFirebase = new Auth()
     }
 
-/* --------------------------------------- */
+    /* --------------------------------------- */
 
     /*     async save_And_Update_Favorites(favoriteProduct) {
             this.favorites = this.favoritesStorage.getItem(keysLocalStorage.FAVORITES) || []
@@ -35,26 +37,26 @@ export class Controller_Favorites {
             }
         } */
 
-/*     mergeFavorites(favoritesFromDB, favoritesFromLocalStorage) {
-        const mergedFavorites = {};
+    /*     mergeFavorites(favoritesFromDB, favoritesFromLocalStorage) {
+            const mergedFavorites = {};
+    
+            const mergeArray = (array) => {
+                if (!array) return;
+    
+                array.forEach(product => {
+                    const productId = product.id;
+                    mergedFavorites[ productId ] = { ...product };
+                });
+            };
+    
+            mergeArray(favoritesFromDB);
+            mergeArray(Object.values(favoritesFromLocalStorage));
+            const resultArray = Object.values(mergedFavorites);
+            this.favorites = resultArray;
+            return resultArray;
+        } */
 
-        const mergeArray = (array) => {
-            if (!array) return;
-
-            array.forEach(product => {
-                const productId = product.id;
-                mergedFavorites[ productId ] = { ...product };
-            });
-        };
-
-        mergeArray(favoritesFromDB);
-        mergeArray(Object.values(favoritesFromLocalStorage));
-        const resultArray = Object.values(mergedFavorites);
-        this.favorites = resultArray;
-        return resultArray;
-    } */
-
-/* --------------------------------------- */
+    /* --------------------------------------- */
 
 
     /* The above code is adding a click event listener to all elements with the class "favorite". When an	
@@ -75,7 +77,7 @@ export class Controller_Favorites {
     /*
      * The function `handler_Favorites()` adds event listeners to elements with the class "favorite" and
      * performs various actions when clicked */
-    
+
     handler_Favorites() {
         const favoriteId = document.querySelectorAll('.favorite');
         favoriteId.forEach(element => {
@@ -84,22 +86,33 @@ export class Controller_Favorites {
                 this.id = class_List === 'pathHeart' ?
                     Number(e.target.parentElement.parentElement.dataset.id) :
                     Number(e.target.dataset.id);
-                this.callingApi()
                 this.handlerResponseApi()
-                loadSpinner()
             });
         });
     }
 
     async handlerResponseApi() {
         const res = await this.callingApi()
+        console.log()
+        loadSpinner(false)
         if (res === undefined) {
             return
         }
-        this.favorites = await this.instanceModelFavorites.save_And_Update_Favorites(res)
-        this.handlerViewFavorites()
-    }
+        //create try catch an finally catch the error
+        try {
+            const instanceModelFavorites = new Drive_Data_Favorites()
+            console.log(res)
+            this.favorites = await instanceModelFavorites.save_And_Update_Favorites(res)
+            this.handlerViewFavorites()
+        }
+        catch (error) {
+            console.error(error)
+        }
+        finally {
+            loadSpinner(true)
 
+        }
+    }
     handlerViewFavorites() {
         this.instance_View.display_FavoritesHeart(this.favorites)
     }

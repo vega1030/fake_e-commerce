@@ -10,8 +10,8 @@ import {
 
 import { keySessionStorage, keysLocalStorage } from '../constants.js'
 
-import { Drive_Data_Cart } from '../../src/model/classes/Drive_Data_Cart.js'
-import { StorageService } from '../model/classes/StorageService.js'
+import { Drive_Data_Cart } from '../model/classes/Cart/Drive_Data_Cart.js'
+import { StorageService } from '../model/classes/storage/StorageService.js'
 import { Controller_Favorites } from './classes/Controller_Favorites.js'
 
 import { ControlIndividualProduct } from './classes/ControlIndividualProduct.js'
@@ -29,7 +29,7 @@ import {
     RealTimeDB
 } from '../services/realtimedatabase.js'
 
-import {Drive_Data_Favorites} from '../model/classes/Drive_Data_Favorites.js'
+import {Drive_Data_Favorites} from '../model/classes/Favorites/Drive_Data_Favorites.js'
 
 const local_Storage = new StorageService()
 const handler_View = new Handler_Displays_Ui()
@@ -727,8 +727,6 @@ const instanceFirebaseAuth = new Firebase_Auth()
 instanceFirebaseAuth.loginUser()
 
 
-
-
 //--------------------------------------------------------------	
 if (typeof localStorage !== 'undefined') {
     const controller_Cart_Instance = new Control_cart()
@@ -751,10 +749,10 @@ if (typeof localStorage !== 'undefined') {
         handler_Init_Page.controllerViewIndividualProduct()
     handler_Init_Page.listener_Category(),
         controller_Cart_Instance.assign_Event_Btn_Pay(),
-        controller_Cart_Instance.quantity_In_Cart(storage.getItem(keysLocalStorage.CART))
+        /* controller_Cart_Instance.quantity_In_Cart(storage.getItem(keysLocalStorage.CART)) */
     favorites.handler_Favorites(),
-        favorites.instance_View.display_FavoritesHeart(storage.getItem(keysLocalStorage.FAVORITES)),
-
+/*         favorites.instance_View.display_FavoritesHeart(storage.getItem(keysLocalStorage.FAVORITES)),
+ */
         individualProduct.listenerAddCart()
     individualProduct.listenerFavorite()
     favorites.sendFavoriteToView()

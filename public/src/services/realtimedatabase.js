@@ -2,7 +2,7 @@ import { getDatabase, ref, set, get, push } from 'https://www.gstatic.com/fireba
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.2.0/firebase-app.js';
 import { firebaseConfig } from './config.js'
 import { Auth } from './auth.js';
-import { StorageService } from '../model/classes/StorageService.js';
+import { StorageService } from '../model/classes/storage/StorageService.js';
 import { keySessionStorage, keysLocalStorage } from '../constants.js';
 
 const firebaseApp = initializeApp(firebaseConfig);

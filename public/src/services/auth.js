@@ -12,7 +12,7 @@ import {
     inMemoryPersistence
 } from 'https://www.gstatic.com/firebasejs/9.2.0/firebase-auth.js';
 import { firebaseConfig } from './config.js';
-import { StorageService } from '../model/classes/StorageService.js';
+import { StorageService } from '../model/classes/storage/StorageService.js';
 import { keySessionStorage, keysLocalStorage } from '../constants.js';
 
 class Auth {

@@ -12,4 +12,9 @@ export class Purchases {
         console.log(this.auth)
         this.realtimeDb.returnPurchaseRealTimeDb(this.auth)
     }
+    //create a method to return purchase and displaying in view
+    returnPurchases() {
+        this.realtimeDb.returnPurchaseRealTimeDb(this.auth)
+
+    }
 }
