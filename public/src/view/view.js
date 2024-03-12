@@ -1,4 +1,5 @@
 "use strict";
+import { TemplateCardsHome } from "./classes/TemplateCardsHome.js";
 class TemplateCards {
 
 
@@ -10,57 +11,20 @@ class TemplateCards {
     }
 
     /* Creating a card with the information of the product. */
-    create_Card(products, section) {
-        this.products = ''
-        this.modelCard = ''
-        this.products = products
-        let model = ''
-        this.products.forEach(data => {
 
 
-            //------------------
-            model +=
-                `
-                <div class=" content-sale__child shadow-sm p-3 mb-5 bg-body-tertiary rounded" data-category="${ data.category }" data-id="${ data.id }">
-                    <button  type="button" class="favorite" id=${ data.id } data-id="${ data.id }" value = "on"> 
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
-                            <path class= "pathHeart" fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
-                            </svg>
-                    </button>
-                    <div class="content_photo">
-                        <img src="${ data.image }" class="${ data.title } img-cards-product" alt="" srcset="">
-                    </div>
-                <div class="content-text">
-                    <a href="#individual_product" class="content_names view_one_element individual_product" data-id="${ data.id }">
-                        ${ data.title.slice(0, 20) }
-                    </a>                      
-                    <h4 class= price> ${ data.price.toLocaleString('es-AR', { style: 'currency', currency: 'EUR' }) }</h4>  
-                </div>
-                <button class='btn_add_to_cart' id='${ data.id }'>
-                Add Cart 
-                </button>
-                </div>
-                `;
-            this.modelCard = model
-            return this.modelCard
-        })
-
-
-
-    }
-    insertAllProducts() {
-        const content_Cards = document.querySelector("#content_card");
-        content_Cards ? content_Cards.innerHTML = this.modelCard : null;
-    }
     /* -------------------------------------- */
 
-    uI_Individual_Card(product) {
+    uI_Individual_Card(product, productDOMId = 0) {
+        console.log(product)
         let model = ''
         this.modelIndividualCard = ''
-        const coincidentElements = this.heartsDom.find(i => {
-            return i.dataset.id == product.id
-        })
+
+        
+        const coincidentElements = Number(this.heartsDom.dataset.id) === product.id
+
         const content_Individual_Cards = document.querySelector('#individual_product')
+        
         content_Individual_Cards.innerHTML = ''
         //initialize color
         const initialColor = coincidentElements === undefined ? 'black' : 'red'
@@ -128,9 +92,9 @@ class TemplateCards {
             const purchaseElement = document.createElement('div');
             purchaseElement.classList.add('purchase');
             purchaseElement.innerHTML = `
-                <h3>${purchase.title}</h3>
-                <p>${purchase.description}</p>
-                <p>${purchase.price}</p>
+                <h3>${ purchase.title }</h3>
+                <p>${ purchase.description }</p>
+                <p>${ purchase.price }</p>
             `;
             contentPurchases.appendChild(purchaseElement);
         });
@@ -140,7 +104,6 @@ class TemplateCards {
 }
 //---------------------------------------------------------------------------------------------------------------------------------------
 
-const products_Instance = new TemplateCards();
 //---------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -165,6 +128,7 @@ class Category_ui {
 
     displayProductsByCategory = (data) => {
         const contentCards = document.querySelector('#content_card')
+        const products_Instance = new TemplateCardsHome()
         products_Instance.create_Card(data)
         contentCards.innerHTML = products_Instance.modelCard
     }
@@ -223,6 +187,7 @@ class View_Favorites {
         })
         /* The above code is assigning the value of `this.fav_DOM` to the `heartsDom` property of the
         `products_Instance` object in JavaScript. */
+        const products_Instance = new TemplateCards()
         products_Instance.heartsDom = this.fav_DOM
         //------------------------------------------------------------------------------------------------------------------------------
         return this.fav_DOM
@@ -389,6 +354,7 @@ class View_cart {
 class Handler_Displays_Ui {
 
     handler_Display_(hash) {
+        console.log(hash)
         if (hash === 'categories') {
             return (
                 document.querySelector('#home').style.display = 'none',
@@ -536,11 +502,11 @@ filterProducts()
 
 
 if (typeof localStorage !== 'undefined') {
-    products_Instance.changeColorHeart()
+    const colorHeartInstance = new TemplateCards()
+    colorHeartInstance.changeColorHeart()
 }
 
 export {
-    products_Instance,
     Category_ui,
     TemplateCards,
     Handler_Displays_Ui,

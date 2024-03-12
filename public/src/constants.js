@@ -4,12 +4,14 @@
 const keysLocalStorage = {
     FAVORITES: 'favorites',
     CART: 'cart',
-    UID: 'uid'
 }
 
 const keySessionStorage = {
     UID: 'uid',
-    TOKEN: 'token'
+    TOKEN: 'token',
+    PROFILE_PHOTO: 'profile_photo',
+    USER_NAME: 'user_name',
+
 }
 
 const URL_API = {
@@ -25,9 +27,4 @@ const sections = {
     ALL_PRODUCTS: 'All products',
 }
 
-
-/* const userData = {
-    userId : userUid
-}
- */
 export { keysLocalStorage, URL_API, sections, keySessionStorage }

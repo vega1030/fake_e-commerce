@@ -19,7 +19,7 @@ import { ControlIndividualProduct } from './classes/ControlIndividualProduct.js'
 import { Auth } from '../services/auth.js';
 
 import {
-    Category_ui, products_Instance, Handler_Displays_Ui,
+    Category_ui, Handler_Displays_Ui,
     View_Favorites, View_cart, replace_Minus_Symbol_For_Trash_Basket,
     render_Total_And_Pay, Display_Data_Firebase_User,
     TemplateCards
@@ -29,7 +29,10 @@ import {
     RealTimeDB
 } from '../services/realtimedatabase.js'
 
-import {Drive_Data_Favorites} from '../model/classes/Favorites/Drive_Data_Favorites.js'
+import { Drive_Data_Favorites } from '../model/classes/Favorites/Drive_Data_Favorites.js'
+
+import { TemplateCardsHome } from '../view/classes/TemplateCardsHome.js';
+
 
 const local_Storage = new StorageService()
 const handler_View = new Handler_Displays_Ui()
@@ -58,7 +61,6 @@ class Control_View_Information_At_DOM {
             if (this.products.status >= 200 && this.products.status < 300) {
 
             }
-            /* const res = products_Instance.create_Card(this.products) */
             return this.products
         }
 
@@ -78,8 +80,10 @@ class Control_View_Information_At_DOM {
         const init = document.querySelector('#_home')
         init.addEventListener('click', async () => {
             const favorites = new Controller_Favorites()
+            const individualProduct = new Control_View_Information_At_DOM()
             const handler_Init_Page = new Control_View_Information_At_DOM()
             const controller_Cart_Instance = new Control_cart()
+            const products_Instance = new TemplateCardsHome()
             //-----------------------------------//	
             const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
             products_Instance.create_Card(returnAllProducts)
@@ -93,7 +97,7 @@ class Control_View_Information_At_DOM {
 
             favorites.instance_View.display_FavoritesHeart(serviceStorage.getItem(keysLocalStorage.FAVORITES))
             favorites.handler_Favorites()
-            this.handlerSingleProduct() //create instance of controlindividualproduct
+            individualProduct.controllerViewIndividualProduct() //create instance of controlindividualproduct
             controller_Cart_Instance.add_Cart_Listener()
 
 
@@ -138,8 +142,6 @@ class Control_View_Information_At_DOM {
             categories_UI.displayProductsByCategory(result)
             controller_Cart_Instance.add_Cart_Listener()
             favorites.handler_Favorites()
-            handler_Init_Page.handlerSingleProduct()
-
             /* The above code is defining a function called `searchCoincidentElements` that takes an array called	
             `result` as input. The function uses the `reduce` method to iterate over the `result` array and	
             compare each element's `category` property to the `category` property of each element in an array	
@@ -158,6 +160,7 @@ class Control_View_Information_At_DOM {
             }, []);
 
             favorites.instance_View.display_FavoritesHeart(searchCoincidentElements)
+            this.controllerViewIndividualProduct()
 
         }
         catch (error) {
@@ -175,22 +178,27 @@ class Control_View_Information_At_DOM {
         const view_Element = document.querySelectorAll('.individual_product')
         view_Element.forEach((element) => {
             element.addEventListener('click', async (e) => {
-                e.target.dataset.id
+                const targetHeart = e.target.parentElement.parentElement.firstElementChild
+                // search element father of element clicked
+
                 /* The above code is written in JavaScript and it appears to be creating a new instance of a class
                 named `ControlIndividualProduct` and then using that instance to handle a single product based on
                 the dataset ID from the event target. The `handlerSingleProduct` method is being called
                 asynchronously using `await`. */
                 const instanceIndividualProduct = new ControlIndividualProduct()
                 const product = await instanceIndividualProduct.handlerSingleProduct(e.target.dataset.id)
+                const products_Instance = new TemplateCards()
+
                 /* ---------------------- */
 
                 /* The code provided is a mix of JavaScript and comments. It seems to be calling a method
                 `uI_Individual_Card` on an object `products_Instance` with the `product` parameter, and then calling
                 `insertIndividualCard` method on the same object. However, the code is not properly formatted and
                 may not be valid JavaScript syntax. */
+                products_Instance.heartsDom = targetHeart
                 products_Instance.uI_Individual_Card(product)
                 products_Instance.insertIndividualCard()
-                
+
                 /* ---------------------- */
 
             })
@@ -201,9 +209,9 @@ class Control_View_Information_At_DOM {
 
 
 //------------------------------------------------------------------------------------------------------------------	
-class Favorites_To_View{
-    
-    constructor(){
+class Favorites_To_View {
+
+    constructor() {
         this.favorites = new StorageService()
         this.instance_View = new View_Favorites()
     }
@@ -675,6 +683,7 @@ class Firebase_Auth {
                     const cart = new Control_cart();
                     const modelCart = new Drive_Data_Cart()
                     const favorites = new Controller_Favorites();
+                    const products_Instance = new TemplateCardsHome()
                     /*  ------------------------------------- */
 
                     console.log('disconnected')
@@ -693,8 +702,8 @@ class Firebase_Auth {
                     storage.removeItem(keysLocalStorage.CART);
                     favorites.handler_Favorites();
 
-                    handler_Init_Page.handlerSingleProduct();
-                    cart.add_Cart_Listener();
+/*                     handler_Init_Page.handlerSingleProduct();
+ */                    cart.add_Cart_Listener();
 
                     cart.quantity_In_Cart(storage.getItem(keysLocalStorage.CART))
                     modelCart.modelCart = storage.getItem(keysLocalStorage.CART)
@@ -731,31 +740,33 @@ instanceFirebaseAuth.loginUser()
 if (typeof localStorage !== 'undefined') {
     const controller_Cart_Instance = new Control_cart()
     const storage = new StorageService()
-    const individualProduct = new ControlIndividualProduct()
-    individualProduct.handlerSingleProduct()
-
+    const auth = new Firebase_Auth()
+    const data = JSON.parse(sessionStorage.getItem('firebase:authUser:AIzaSyB6C0ZD9j_WGUd0Wwrygb0EOKaYB7T6JME:[DEFAULT]'))
 
     /*     controller_Cart_Instance.quantity_In_Cart(controller_Cart_Instance.model.returnCopyLocalStorage())
      */
     const handler_Init_Page = new Control_View_Information_At_DOM()
     const favorites = new Controller_Favorites()
+    const products_Instance = new TemplateCardsHome()
+    const individualProduct = new ControlIndividualProduct()
     const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
     products_Instance.create_Card(returnAllProducts)
     products_Instance.insertAllProducts(),
-        handler_Init_Page.homeInit()
-    await handler_Init_Page.control_View_Categories()
-    controller_Cart_Instance.add_Cart_Listener(),
+        handler_Init_Page.homeInit(),
+        await handler_Init_Page.control_View_Categories(),
+        controller_Cart_Instance.add_Cart_Listener(),
         controller_Cart_Instance.assign_Events_Products(),
         handler_Init_Page.controllerViewIndividualProduct()
     handler_Init_Page.listener_Category(),
         controller_Cart_Instance.assign_Event_Btn_Pay(),
         /* controller_Cart_Instance.quantity_In_Cart(storage.getItem(keysLocalStorage.CART)) */
-    favorites.handler_Favorites(),
-/*         favorites.instance_View.display_FavoritesHeart(storage.getItem(keysLocalStorage.FAVORITES)),
- */
-        individualProduct.listenerAddCart()
-    individualProduct.listenerFavorite()
-    favorites.sendFavoriteToView()
+        favorites.handler_Favorites(),
+        console.log(storage.getItem(keysLocalStorage.FAVORITES)),
+        storage.getItem(keysLocalStorage.FAVORITES).length !== 0 ? console.log('lleno') : console.log('vacio'),
+        favorites.instance_View.display_FavoritesHeart(storage.getItem(keysLocalStorage.FAVORITES)),
+        individualProduct.listenerAddCart(),
+        individualProduct.listenerFavorite(),
+        favorites.sendFavoriteToView()
 }
 //----------------------------------------------------------------	
 

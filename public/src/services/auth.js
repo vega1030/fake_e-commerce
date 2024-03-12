@@ -21,6 +21,20 @@ class Auth {
     }
 
 
+
+    persistanceOfDataUserPictureAtSessionStorage(){
+
+        const newUid = new StorageService()
+        const uid = newUid.getItem(keysLocalStorage.UID)
+        const picture = newUid.getItem(keysLocalStorage.PICTURE)
+        const name = newUid.getItem(keysLocalStorage.NAME)
+        const email = newUid.getItem(keysLocalStorage.EMAIL)
+        const user = {uid, picture, name, email}
+        return user
+
+    }
+
+
     async loginWithGmail() {
         try {
             const firebaseApp = initializeApp(firebaseConfig);
@@ -35,7 +49,6 @@ class Auth {
                 const provider = new GoogleAuthProvider();
                 const result = await signInWithPopup(auth, provider);
                 const user = result.user;
-                const userToken = await result.user.getIdToken();
                 return user;
             }
         } catch (error) {

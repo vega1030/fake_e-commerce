@@ -14,11 +14,10 @@ export class ControlIndividualProduct {
     }
 
     async handlerSingleProduct(id) {
+        
         //check why this is doesn't res
-        console.log('click')
         loadSpinner(false)
         try {
-            console.log('click')
             const data_Id = Number(id)
             const res = await get_Single_Product(data_Id)
             return res
