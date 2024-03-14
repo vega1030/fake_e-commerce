@@ -12,7 +12,6 @@ export class Drive_Data_Favorites {
 
     async save_And_Update_Favorites(favoriteProduct) {
         this.favorites = this.storageService.getItem(keysLocalStorage.FAVORITES) || []
-        console.log(this.favorites)
         const index = this.favorites.findIndex(i => i.id === favoriteProduct.id);
 
         if (index !== -1) {

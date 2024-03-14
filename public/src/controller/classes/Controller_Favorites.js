@@ -7,7 +7,7 @@ import { RealTimeDB } from "../../services/realtimedatabase.js"
 import { Auth } from "../../services/auth.js"
 import { loadSpinner } from "../controller.js"
 import { Drive_Data_Favorites } from "../../model/classes/Favorites/Drive_Data_Favorites.js"
-import {get_Single_Product} from '../../api.js'
+import { get_Single_Product } from '../../api.js'
 
 export class Controller_Favorites {
     constructor() {
@@ -59,19 +59,7 @@ export class Controller_Favorites {
     /* --------------------------------------- */
 
 
-    /* The above code is adding a click event listener to all elements with the class "favorite". When an	
-    element with this class is clicked, it checks if the clicked element has a class "pathHeart". If it	
-    does, it gets the ID of the parent element's parent element (two levels up) and assigns it to the	
-    "id" variable. If it doesn't have the "pathHeart" class, it gets the ID of the clicked element and	
-    assigns it to the "id" variable. Then, it calls a function "send_Favorite_Product_To_LocalStorage()"	
-    with the "id" */
-    assignUid(uid) {
-        this.uid = uid
-    }
 
-    getUid() {
-        return this.uid
-    }
 
 
     /*
@@ -93,10 +81,11 @@ export class Controller_Favorites {
 
     async handlerResponseApi() {
         const res = await this.callingApi()
-        console.log()
+        console.log(res)
         loadSpinner(false)
         if (res === undefined) {
-            return
+            return loadSpinner(true)
+
         }
         //create try catch an finally catch the error
         try {

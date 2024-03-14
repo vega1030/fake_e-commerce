@@ -178,7 +178,7 @@ class Control_View_Information_At_DOM {
         const view_Element = document.querySelectorAll('.individual_product')
         view_Element.forEach((element) => {
             element.addEventListener('click', async (e) => {
-                const targetHeart = e.target.parentElement.parentElement.firstElementChild
+                const targetHeart = e.target.parentElement.parentElement.firstElementChild.firstElementChild
                 // search element father of element clicked
 
                 /* The above code is written in JavaScript and it appears to be creating a new instance of a class
