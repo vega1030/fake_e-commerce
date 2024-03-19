@@ -1,4 +1,4 @@
-import { instance_Control_Routes } from './controller/controller.js';
+import { Control_Routes } from './controller/controller.js';
 
 class Create_Routes {
 
@@ -18,6 +18,7 @@ const new_Routes = new Create_Routes
 
 
 window.addEventListener('hashchange', (e) => {
+    const instance_Control_Routes = new Control_Routes()
     console.log(e.oldURL)
     instance_Control_Routes.reception_Hash(location.hash);
     console.log(location.hash)

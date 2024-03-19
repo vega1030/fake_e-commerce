@@ -25,9 +25,13 @@ import {
     TemplateCards
 } from "../view/view.js";
 
+import { controllerActivityUser } from './classes/controllerActivityUser.js';
+
 import {
     RealTimeDB
 } from '../services/realtimedatabase.js'
+
+import { controllerLoginGmail } from './classes/controllerLoginGmail.js';
 
 import { Drive_Data_Favorites } from '../model/classes/Favorites/Drive_Data_Favorites.js'
 
@@ -38,7 +42,6 @@ const local_Storage = new StorageService()
 const handler_View = new Handler_Displays_Ui()
 const categories_UI = new Category_ui()
 const cart_Ui = new View_cart()
-const authInstance = new Auth()
 //----------------------------------------------------------------	
 
 
@@ -603,16 +606,12 @@ class Control_cart {
 class Firebase_Auth {
 
     constructor(auth) {
-        this.user = {}
         this.uid = ''
-        this.auth = auth
+        this.auth = new controllerLoginGmail()
         this.viewUser = new Display_Data_Firebase_User()
     }
 
     async loginUser() {
-
-        const buttonLogin = document.querySelector('#google-sign-in-btn')
-
 
         /**	
          * The function `insertLogoUser` checks if the user's photoURL is undefined and if so, assigns a	
@@ -620,135 +619,109 @@ class Firebase_Auth {
          * @returns the result of calling the `displayProfilePhoto` method with the `user.photoURL` as an	
          * argument.	
          */
-        const insertLogoUser = () => {
-            if (this.user.photoURL === undefined) {
-                this.user.photoURL = './icon/user.png'
-                console.log(this.user.photoURL)
-                return this.viewUser.displayProfilePhoto(this.user.photoURL)
+
+        //------------------------------------------------------------------------------	
+
+        const insertLogoUser = (photoProfile = './icon/user.png') => {
+            this.viewUser.displayProfilePhoto(photoProfile)
+            console.log(photoProfile)
+            console.log(this.user)
+            if (this.auth.user) {
+                return this.viewUser.displayProfilePhoto(photoProfile)
             }
         }
 
+
         insertLogoUser()
+
         //------------------------------------------------------------------------------	
-
-        this.viewUser.displayProfilePhoto(this.user.photoURL)
-
+        const buttonLogin = document.querySelector('#google-sign-in-btn')
         buttonLogin.addEventListener('click', async (e) => {
             buttonLogin.disabled = true
+            e.preventDefault()
             try {
 
-                /* ----Login---- */
-
-                const favorites = new Controller_Favorites()
-                const cart = new Control_cart()
-                const driveCart = new Drive_Data_Cart()
-                const modelHandlerFavorite = new Drive_Data_Favorites()
-
-                //------------------------------------------------------------------------------	
-                const response = await authInstance.loginWithGmail()
-                this.user = response
-                this.viewUser.displayProfilePhoto(this.user.photoURL)
-
-                //------------------------------------------------------------------------------	
-                const handlerStateStorageConnected = async () => {
-                    const realTime = new RealTimeDB()
-                    const storage = new StorageService()
-                    console.log('connected')
-                    const dataSetState = 'connect'
-                    e.target.dataset.userState = dataSetState
-                    storage.setItem(keysLocalStorage.UID, this.user.uid)
-
-                    /* ------------------------------ */
-                    const resFavorites = await realTime.returnFavoritesRealTimeDb()
-                    const res_Purchase = await realTime.returnPurchaseRealTimeDb(this.user.uid)
-                    const resCart = await realTime.returnCartRealTimeDb()
-                    /* ------------------------------ */
-
-                    const mergedCarts = driveCart.mergeCart(resCart, storage.getItem(keysLocalStorage.CART))
-                    const mergedFavorites = modelHandlerFavorite.mergeFavorites(resFavorites, storage.getItem(keysLocalStorage.FAVORITES))
-
-                    cart.quantity_In_Cart(mergedCarts)
-
-                    storage.setItem(keysLocalStorage.FAVORITES, mergedFavorites)
-                    storage.setItem(keysLocalStorage.CART, mergedCarts)
+                if (this.auth.user != null) {
+                    e.target.dataset.userState = 'disconnect'
+                    this.auth.handlerStateStorageDisconnected()
+                    this.auth.user = null
+                    insertLogoUser()
+                    return this.auth.user
                 }
 
-                const handlerStateStorageDisconnected = async () => {
-
-                    /* The above code is creating instances of various classes and services in
-                    JavaScript. */
-                    const realTime = new RealTimeDB()
-                    const storage = new StorageService();
-                    const handler_Init_Page = new Control_View_Information_At_DOM();
-                    const cart = new Control_cart();
-                    const modelCart = new Drive_Data_Cart()
-                    const favorites = new Controller_Favorites();
-                    const products_Instance = new TemplateCardsHome()
-                    /*  ------------------------------------- */
-
-                    console.log('disconnected')
-
-                    instance_Control_Routes.reception_Hash('#home');
-                    e.target.textContent = 'Logout';
-
-                    realTime.saveCart(storage.getItem(keysLocalStorage.CART))
-                    realTime.saveFavoritesRealTimeDb(storage.getItem(keysLocalStorage.FAVORITES))
-
-                    const returnAllProducts = await handler_Init_Page.controller_get_All_Products();
-                    products_Instance.create_Card(returnAllProducts);
-                    products_Instance.insertAllProducts();
-
-                    storage.removeItem(keysLocalStorage.FAVORITES);
-                    storage.removeItem(keysLocalStorage.CART);
-                    favorites.handler_Favorites();
-
-/*                     handler_Init_Page.handlerSingleProduct();
- */                    cart.add_Cart_Listener();
-
-                    cart.quantity_In_Cart(storage.getItem(keysLocalStorage.CART))
-                    modelCart.modelCart = storage.getItem(keysLocalStorage.CART)
-                    console.log(modelCart.modelCart)
-                    //-----------------------------------//	
-
-                }
+                console.log('connected')
+                await this.auth.handlerStateStorageConnected()
+                insertLogoUser(this.auth.user.photoURL)
                 //------------------------------------------------------------------------------	
-                return !this.user ? handlerStateStorageDisconnected() : handlerStateStorageConnected()
+                //------------------------------------------------------------------------------	
+            }
 
-            } catch (error) {
+            catch (error) {
                 console.log('error', error)
             }
             finally {
-                const storage = new StorageService();
-                const realTime = new RealTimeDB();
-                this.uid = storage.getSessionStorageUid(keySessionStorage.UID) || '';
-                !this.user ? e.target.textContent = 'Login' : e.target.textContent = 'Logout'
                 buttonLogin.disabled = false
-                return this.user
-            }
-        })
+                const storage = new StorageService()
+                this.uid = storage.getSessionStorageUid(keySessionStorage.UID) || '';
+                !this.auth.user ? e.target.textContent = 'Login' : e.target.textContent = 'Logout'
 
-        insertLogoUser()
+            }
+
+        })
 
     }
 }
 
-const instanceFirebaseAuth = new Firebase_Auth()
-instanceFirebaseAuth.loginUser()
 
 
-//--------------------------------------------------------------	
+//method to the persistence of data user picture at sessionStorage.session
+/* function insertLogoUser() {
+    const storage = new StorageService();
+    const realTime = new RealTimeDB();
+    const modelCart = new Model_cart()
+    const controller_Cart_Instance = new Control_cart()
+    const keySessionStorage = new KeySessionStorage()
+    const userPicture = storage.getSessionStorageUserPicture(keySessionStorage.USER_PICTURE)
+    const userName = storage.getSessionStorageUserName(keySessionStorage.USER_NAME)
+    const userEmail = storage.getSessionStorageUserEmail(keySessionStorage.USER_EMAIL)
+    const userUid = storage.getSessionStorageUid(keySessionStorage.UID)
+    if (userPicture) {
+        const img = document.createElement('img')
+        img.src = userPicture
+        img.alt = userName
+        img.classList.add('img-fluid', 'rounded-circle', 'mr-1')
+        const div = document.createElement('div')
+        div.classList.add('media-body')
+        const h5 = document.createElement('h5')
+        h5.classList.add('mt-0')
+        h5.textContent = userName
+        const p = document.createElement('p')
+        p.textContent = userEmail
+        div.appendChild(h5)
+        div.appendChild(p)
+        const media = document.createElement('div')
+        media.classList.add('media')
+        media.appendChild(img)
+        media.appendChild(div)
+        document.getElementById('user-info').appendChild(media)
+
+
+    }
+} */
+
 if (typeof localStorage !== 'undefined') {
+    const instanceFirebaseAuth = new Firebase_Auth()
+    instanceFirebaseAuth.loginUser()
+    /* -------------------------------------------------------------- */
     const controller_Cart_Instance = new Control_cart()
     const storage = new StorageService()
     const auth = new Firebase_Auth()
-    const data = JSON.parse(sessionStorage.getItem('firebase:authUser:AIzaSyB6C0ZD9j_WGUd0Wwrygb0EOKaYB7T6JME:[DEFAULT]'))
-
-    /*     controller_Cart_Instance.quantity_In_Cart(controller_Cart_Instance.model.returnCopyLocalStorage())
-     */
     const handler_Init_Page = new Control_View_Information_At_DOM()
     const favorites = new Controller_Favorites()
     const products_Instance = new TemplateCardsHome()
     const individualProduct = new ControlIndividualProduct()
+    /* -------------------------------------------------------------- */
+
     const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
     products_Instance.create_Card(returnAllProducts)
     products_Instance.insertAllProducts(),
@@ -759,11 +732,8 @@ if (typeof localStorage !== 'undefined') {
         handler_Init_Page.controllerViewIndividualProduct()
     handler_Init_Page.listener_Category(),
         controller_Cart_Instance.assign_Event_Btn_Pay(),
-        /* controller_Cart_Instance.quantity_In_Cart(storage.getItem(keysLocalStorage.CART)) */
         favorites.handler_Favorites(),
-        console.log(storage.getItem(keysLocalStorage.FAVORITES)),
         storage.getItem(keysLocalStorage.FAVORITES).length !== 0 ? console.log('lleno') : console.log('vacio'),
-        favorites.instance_View.display_FavoritesHeart(storage.getItem(keysLocalStorage.FAVORITES)),
         individualProduct.listenerAddCart(),
         individualProduct.listenerFavorite(),
         favorites.sendFavoriteToView()
@@ -787,9 +757,8 @@ class Control_Routes {
     }
 }
 
-
-
-const instance_Control_Routes = new Control_Routes()
+const testControllerUser = new controllerActivityUser()
+testControllerUser.closeSession()
 
 //----------------------------------------------------------------	
 
@@ -797,7 +766,7 @@ const instance_Control_Routes = new Control_Routes()
 
 
 export {
-    instance_Control_Routes,
+    Control_Routes,
     Control_View_Information_At_DOM,
     Control_cart,
     loadSpinner,

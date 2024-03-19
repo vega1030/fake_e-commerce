@@ -1,5 +1,6 @@
 "use strict";
 import { TemplateCardsHome } from "./classes/TemplateCardsHome.js";
+
 class TemplateCards {
 
 
@@ -209,10 +210,11 @@ class Display_Data_Firebase_User {
         this.dataUser = dataUser
     }
 
-    displayProfilePhoto(userImg) {
+    displayProfilePhoto(userAvatar) {
+        console.log(userAvatar)
         const contentImageProfile = document.querySelector('#content-img-profile');
         contentImageProfile.innerHTML = '';
-        const userAvatar = userImg === undefined ? './icon/user.png' : userImg
+
         const imgProfile = document.createElement('IMG');
         const listenerMenu = document.createElement('A')
 
@@ -221,7 +223,6 @@ class Display_Data_Firebase_User {
         imgProfile.className = 'img-user';
         listenerMenu.className = 'link-to-user-menu'
 
-        console.log(listenerMenu)
         listenerMenu.appendChild(imgProfile)
         contentImageProfile.appendChild(listenerMenu);
     }
