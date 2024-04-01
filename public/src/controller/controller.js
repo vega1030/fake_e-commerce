@@ -36,6 +36,12 @@ import { controllerLoginGmail } from './classes/controllerLoginGmail.js';
 import { Drive_Data_Favorites } from '../model/classes/Favorites/Drive_Data_Favorites.js'
 
 import { TemplateCardsHome } from '../view/classes/TemplateCardsHome.js';
+import { TemplateCardCart } from '../view/classes/TemplateCardCart.js';
+import { AddProducts } from './classes/Cart/AddProducts.js';
+import { ModifyQuantity_Add } from './classes/Cart/ModifyQuantity_Add.js';
+import { ModifyQuantity_Subtract } from './classes/Cart/ModifyQuantity_Subtract.js';
+
+
 
 
 const local_Storage = new StorageService()
@@ -230,10 +236,15 @@ class Favorites_To_View {
 class Control_cart {
 
     constructor(total = 0, elementDom) {
-        this.cart = ''
         this.model = new Drive_Data_Cart()
         this.RealTimeDB = new RealTimeDB()
+        this.renderCards = new TemplateCardCart()
         this.auth = new Auth()
+        this.subtract = new ModifyQuantity_Subtract()
+        this.add = new ModifyQuantity_Add()
+        this.storage = new StorageService()
+        this.addProductsInCart = new AddProducts()
+        this.cart = ''
         this.elementDom = elementDom
         this.single_Product = null
         this.id = null;
@@ -248,29 +259,17 @@ class Control_cart {
     }
 
     controller_Cart() {
-        /*         if (typeof localStorage !== 'undefined') {
-        } */
-        // create total and quantity
-        const total_And_Quantity = this.model.modelCart.reduce((previous, current) => {
+        const total_And_Quantity = this.model.returnCopyLocalStorage().reduce((previous, current) => {
             previous.quantity = current.quantity + previous.quantity;
             previous.total += current.quantity * current.price;
             return previous
         }, { total: 0, quantity: 0 })
-        //---------	
+
         this.total = Number(total_And_Quantity.total.toFixed(2))
 
-        cart_Ui.model_UiCart_List(this.model.modelCart)
-        this.quantity_In_Cart(this.model.modelCart)
+        this.quantity_In_Cart(this.model.returnCopyLocalStorage())
+
         render_Total_And_Pay(total_And_Quantity)
-
-        const storage = new StorageService()
-        storage.setItem(keysLocalStorage.CART, this.model.modelCart)
-
-
-
-        return this.cart
-
-
     };
 
     async send_Id_To_Api(id) {
@@ -285,8 +284,7 @@ class Control_cart {
                     quantity: 1,
                     ...this.single_Product
                 }
-                this.addProductsInCart(product)
-
+                return product
             } catch (error) {
                 console.log(error);
             }
@@ -296,69 +294,13 @@ class Control_cart {
         };
     };
 
-    /**
-     * The function `addProductsInCart` adds products to a shopping cart, updates quantities if the product
-     * already exists, and clears the cart if necessary.
-     * @param paramProduct - The `paramProduct` parameter is an object that represents a product. It should
-     * have the following properties:
-     * @returns an object with two properties: "result" and "cart". The "result" property indicates whether
-     * a product was added or updated in the cart or if all quantities are zero. The "cart" property
-     * contains the updated cart after adding or updating the product.
-     */
-    addProductsInCart(paramProduct) {
-        const storage = new StorageService()
-        if (this.shouldClearCart) {
-            this.model.modelCart = []
-            this.shouldClearCart = false
-        }
-        this.model.modelCart = storage.getItem(keysLocalStorage.CART) || []
-        const updatedCart = [ ...this.model.modelCart, paramProduct ];
-        const updatedCartReduced = updatedCart.reduce((acc, e) => {
-            const existingIndex = acc.findIndex((x) => e.id === x.id);
-
-            if (existingIndex !== -1) {
-                acc[ existingIndex ].quantity += e.quantity;
-            } else {
-                acc.push(e);
-            }
-            return acc;
-        }, []);
-
-        const isProductAddedOrUpdated = updatedCartReduced.some((product) => {
-
-            const existingProduct = this.model.modelCart.find((p) => p.id === product.id);
-
-            if (!existingProduct) {
-                return true;
-            }
-            if (existingProduct.quantity !== product.quantity) {
-                return true;
-            }
-
-            return false;
-        });
-
-        const allQuantitiesAreZero = updatedCartReduced.every((product) => product.quantity === 0);
-
-        if (isProductAddedOrUpdated || allQuantitiesAreZero) {
-            this.model.modelCart = updatedCartReduced;
-        };
-
-        this.model.modelCart = updatedCartReduced;
-
-        if (typeof localStorage !== 'undefined') {
-            this.controller_Cart();
-        };
-        console.log(this.model.modelCart)
-        return { result: isProductAddedOrUpdated || allQuantitiesAreZero, cart: this.model.modelCart };
-    }
-
     add_Cart_Listener() {
         const btns_Cart = document.querySelectorAll('.btn_add_to_cart')
-        btns_Cart.forEach(item => item.addEventListener('click', (e) => {
+        btns_Cart.forEach(item => item.addEventListener('click', async (e) => {
             const id = Number(e.target.id);
-            this.send_Id_To_Api(id);
-            return
+            const product = await this.send_Id_To_Api(id);
+            return (this.model.setCartLocalStorage(this.addProductsInCart.addProductsInCart(product).cart)
+                , this.controller_Cart())
         }))
     }
 
@@ -373,36 +315,38 @@ class Control_cart {
     assign_Events_Products() {
 
         const sectionCart = document.querySelector('#section_cart')
-
         const cart = document.querySelector('#ui_Cart');
-
         const listenerTarget = () => cart.addEventListener('click', (event) => {
             const target = event.target
-
             const cartHandler = {
-
                 subtract: (target) => {
-                    this.modify_Quantity();
-                    console.log('subtract: ', target);
                     const id = target.getAttribute('data-id');
                     const input = target.nextElementSibling;
-                    const count = parseInt(input.value, 10);
-                    const newCount = Math.max(count - 1, 0);
-                    input.value = newCount;
+                    this.subtract.id = Number(id)
+                    this.subtract.subtractProduct()
+                    const quantity = this.model.returnCopyLocalStorage().find(i => i.id === Number(id)).quantity
+                    input.value = Number(quantity);
+                    quantity === 1 ? replace_Minus_Symbol_For_Trash_Basket(target, true) : null
+                    this.controller_Cart();
                 },
-
+                
                 add: (target) => {
-                    this.modify_Quantity();
                     const id = target.getAttribute('data-id');
                     const input = target.previousElementSibling;
-                    const count = parseInt(input.value, 10);
-                    const newCount = Math.min(count + 1, 10);
-                    input.value = newCount;
+                    this.add.id = Number(id)
+                    this.add.addProduct()
+                    const quantity = this.model.returnCopyLocalStorage().find(i => i.id === Number(id)).quantity
+                    input.value = quantity;
+                    quantity === 2 ? replace_Minus_Symbol_For_Trash_Basket(target.previousElementSibling.previousElementSibling, false) : null
+                    this.controller_Cart();
                 },
-
+                
                 trash_count: (target) => {
-                    this.modify_Quantity();
                     const id = target.getAttribute('data-id');
+                    this.subtract.id = Number(id)
+                    this.subtract.subtractProduct()
+                    this.controller_Cart();
+                    cart_Ui.handle_Delete_Element_In_DOM(event.target.parentElement.parentElement.parentElement);
                 },
 
             };
@@ -449,7 +393,14 @@ class Control_cart {
 
     }
 
+    sendListCartToView() {
+        const sectionCart = document.querySelector('#section_cart')
+        sectionCart.addEventListener('click', (e) => {
+            this.renderCards.model_UiCart_List()
+            this.controller_Cart()
 
+        })
+    }
     assign_Event_Btn_Pay() {
         const payEvent = document.querySelector('#view_section_cart');
         payEvent.addEventListener('click', async (event) => {
@@ -488,9 +439,7 @@ class Control_cart {
      */
 
     quantity_In_Cart(data) {
-        if (data === 0) {
-            return cart_Ui.createCartCont(0)
-        }
+
         const acu = data === undefined ? 0 : data.reduce((previous, current) => {
             return current.quantity === undefined ? previous : previous + current.quantity
 
@@ -518,38 +467,35 @@ class Control_cart {
     cart with the new quantity value using the `update_Quantity_Cart` method. If the quantity value is	
     1, it replaces the trash basket icon with a minus symbol */
     //------------------------------------------------------------------------------------------------------------------	
-    modify_Quantity() {
+    dynamic_Change_Symbols() {
+
         const btn_Add_Quantity = document.querySelectorAll('.add')
         const btns_Subtract = document.querySelectorAll('.subtract')
+
+        /* ---------------------------------- */
+
         btns_Subtract.forEach(elements => {
+
             elements.addEventListener('click', (e) => {
                 if (e.target.nextElementSibling === null) {
                     const element_Delete_In_DOM = e.target.parentElement.parentElement.parentElement
                     const id_Delete_Product_In_Cart = Number(e.target.dataset.id)
-                    //Update quantity	
-
-                    this.update_Quantity_Cart(id_Delete_Product_In_Cart, true)
-                    this.controller_Cart(this.model.responseCart)
-                    const controller = this.controller_Cart(this.model.responseCart)
+                    console.log(this.acu)
                     return cart_Ui.handle_Delete_Element_In_DOM(element_Delete_In_DOM)
-
                 }
-
-                const id = Number(e.target.nextElementSibling.dataset.id)
-                this.acu = Number(e.target.nextElementSibling.value) - 1
-                console.log(this.acu);
+                this.subtract.id = Number(e.target.nextElementSibling.dataset.id)
+                this.acu = Number(e.target.nextElementSibling.value)
                 if (this.acu === 1) {
+                    console.log(this.acu)
                     this.elementDom = elements
                     replace_Minus_Symbol_For_Trash_Basket(this.elementDom, true)
+
                 }
-
+                console.log(this.acu)
                 e.target.nextElementSibling.value = String(this.acu)
-
-                return (this.update_Quantity_Cart(id, true),
-                    this.controller_Cart(this.model.responseCart)
-                )
             })
         })
+
 
         //------------------------------------------------------------------------------------------------------------------	
 
@@ -562,18 +508,23 @@ class Control_cart {
         function. Finally, it returns the updated cart data. */
 
         btn_Add_Quantity.forEach(elements => {
+
             elements.addEventListener('click', (e) => {
+
                 const id = Number(e.target.previousElementSibling.dataset.id)
-                this.acu = Number(e.target.previousElementSibling.value) + 1
+
                 if (this.acu === 2) {
                     this.elementDom = e.target.previousElementSibling.previousElementSibling
+                    console.log(this.acu)
                     replace_Minus_Symbol_For_Trash_Basket(this.elementDom, false)
                 }
-                this.update_Quantity_Cart(id, false),
-                    this.controller_Cart(this.model.responseCart),
-                    e.target.previousElementSibling.value = String(this.acu)
-                return
+                console.log(this.acu)
 
+                if (this.acu === 10) {
+                    console.log(this.acu)
+                    e.target.previousElementSibling.disabled = true
+                }
+                e.target.previousElementSibling.value = String(this.acu)
             })
 
         })
@@ -588,13 +539,11 @@ class Control_cart {
             const updateCart_Minus = this.model.modelCart.map
                 (i => i.id === id ? { ...i, quantity: i.quantity - 1 } : i).filter(i => i.quantity > 0);
             this.model.modelCart = updateCart_Minus
-            this.model.modelCart.setAndCopyLocalStorage(this.model.modelCart)
             return this.cart
         }
         const updateCart_Add = this.model.modelCart.map
             (i => i.id === id ? { ...i, quantity: i.quantity + 1 } : i).filter(i => i.quantity > 0);
         this.model.modelCart = updateCart_Add
-        this.model.modelCart.setAndCopyLocalStorage(this.modelCartl)
         return this.cart
     }
 
@@ -607,8 +556,10 @@ class Firebase_Auth {
 
     constructor(auth) {
         this.uid = ''
+        this.favoritesController = new Controller_Favorites()
         this.auth = new controllerLoginGmail()
         this.viewUser = new Display_Data_Firebase_User()
+        this.cart = new Control_cart()
     }
 
     async loginUser() {
@@ -624,8 +575,6 @@ class Firebase_Auth {
 
         const insertLogoUser = (photoProfile = './icon/user.png') => {
             this.viewUser.displayProfilePhoto(photoProfile)
-            console.log(photoProfile)
-            console.log(this.user)
             if (this.auth.user) {
                 return this.viewUser.displayProfilePhoto(photoProfile)
             }
@@ -637,21 +586,30 @@ class Firebase_Auth {
         //------------------------------------------------------------------------------	
         const buttonLogin = document.querySelector('#google-sign-in-btn')
         buttonLogin.addEventListener('click', async (e) => {
-            buttonLogin.disabled = true
+            const storage = new StorageService()
+
             e.preventDefault()
             try {
 
                 if (this.auth.user != null) {
-                    e.target.dataset.userState = 'disconnect'
+                    console.log(e.target.dataset.userState)
+
                     this.auth.handlerStateStorageDisconnected()
                     this.auth.user = null
                     insertLogoUser()
+                    const instance_Control_Routes = new Control_Routes()
+                    instance_Control_Routes.reception_Hash('#home');
                     return this.auth.user
                 }
+                const viewFavorites = new View_Favorites()
 
-                console.log('connected')
                 await this.auth.handlerStateStorageConnected()
                 insertLogoUser(this.auth.user.photoURL)
+                const storageCart = storage.getItem(keysLocalStorage.CART)
+                const storageFavorite = storage.getItem(keysLocalStorage.FAVORITES)
+                viewFavorites.display_FavoritesHeart(storageFavorite)
+                this.cart.quantity_In_Cart(storageCart)
+
                 //------------------------------------------------------------------------------	
                 //------------------------------------------------------------------------------	
             }
@@ -660,11 +618,10 @@ class Firebase_Auth {
                 console.log('error', error)
             }
             finally {
-                buttonLogin.disabled = false
-                const storage = new StorageService()
+                console.log(storage.getItem(keysLocalStorage.FAVORITES))
                 this.uid = storage.getSessionStorageUid(keySessionStorage.UID) || '';
                 !this.auth.user ? e.target.textContent = 'Login' : e.target.textContent = 'Logout'
-
+                e.target.dataset.userState = !this.auth.user ? 'disconnect' : 'connect'
             }
 
         })
@@ -673,43 +630,8 @@ class Firebase_Auth {
 }
 
 
-
-//method to the persistence of data user picture at sessionStorage.session
-/* function insertLogoUser() {
-    const storage = new StorageService();
-    const realTime = new RealTimeDB();
-    const modelCart = new Model_cart()
-    const controller_Cart_Instance = new Control_cart()
-    const keySessionStorage = new KeySessionStorage()
-    const userPicture = storage.getSessionStorageUserPicture(keySessionStorage.USER_PICTURE)
-    const userName = storage.getSessionStorageUserName(keySessionStorage.USER_NAME)
-    const userEmail = storage.getSessionStorageUserEmail(keySessionStorage.USER_EMAIL)
-    const userUid = storage.getSessionStorageUid(keySessionStorage.UID)
-    if (userPicture) {
-        const img = document.createElement('img')
-        img.src = userPicture
-        img.alt = userName
-        img.classList.add('img-fluid', 'rounded-circle', 'mr-1')
-        const div = document.createElement('div')
-        div.classList.add('media-body')
-        const h5 = document.createElement('h5')
-        h5.classList.add('mt-0')
-        h5.textContent = userName
-        const p = document.createElement('p')
-        p.textContent = userEmail
-        div.appendChild(h5)
-        div.appendChild(p)
-        const media = document.createElement('div')
-        media.classList.add('media')
-        media.appendChild(img)
-        media.appendChild(div)
-        document.getElementById('user-info').appendChild(media)
-
-
-    }
-} */
-
 if (typeof localStorage !== 'undefined') {
+
     const instanceFirebaseAuth = new Firebase_Auth()
     instanceFirebaseAuth.loginUser()
     /* -------------------------------------------------------------- */
@@ -721,7 +643,7 @@ if (typeof localStorage !== 'undefined') {
     const products_Instance = new TemplateCardsHome()
     const individualProduct = new ControlIndividualProduct()
     /* -------------------------------------------------------------- */
-
+    controller_Cart_Instance.sendListCartToView()
     const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
     products_Instance.create_Card(returnAllProducts)
     products_Instance.insertAllProducts(),

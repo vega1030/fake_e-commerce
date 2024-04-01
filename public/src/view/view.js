@@ -268,21 +268,15 @@ class View_cart {
 
         section_Content_Data.innerHTML = ''
 
-        //create a new container
-        const container = document.createElement('div');
-
         //create dynamic elements
 
         const newCart = cart.map(item => {
+
             const contentTrash = document.createElement('img')
             contentTrash.src = '../../public/icon/trash_basket.svg'
             contentTrash.alt = 'trash basket'
             contentTrash.classList.add('trash_count')
             contentTrash.setAttribute('data-id', item.id);
-
-
-
-
             const content_Data = document.createElement('div');
             content_Data.classList.add('content_card____cart');
             content_Data.setAttribute('data-id', item.id);
@@ -343,7 +337,7 @@ class View_cart {
             content_Data.appendChild(price);
             content_Data.appendChild(content_Select);
 
-            section_Content_Data.appendChild(content_Data);
+            section_Content_Data.appendChild(newCart);
             item.quantity === 1 ? subtractBtn.appendChild(contentTrash) : subtractBtn.textContent = '-';
 
             return { ...item, content_Data };
@@ -442,9 +436,12 @@ class Handler_Displays_Ui {
  */
 const replace_Minus_Symbol_For_Trash_Basket = (content_trash, flag = false) => {
 
-    const inputValue = content_trash.value
+    const inputValue = content_trash
+    console.log(inputValue)
+    console.log(content_trash)
 
     if (flag === true) {
+
         const dataSetId = content_trash.dataset.id;
         const model_Trash_Basket =
             `<img src="./icon/trash_basket.svg" alt="trash" class='trash_count' data-id=${ dataSetId }>`;
