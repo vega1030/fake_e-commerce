@@ -1,14 +1,14 @@
 'use strict'
 
-import { loadSpinner } from '../../view/functions/spinner.js';
+import { loadSpinner } from '../../../view/functions/spinner.js';
 
 import {
     get_Single_Product
-} from '../../api.js'
+} from '../../../api.js'
 
-import { Controller_Favorites } from '../classes/Controller_Favorites.js'
-import { Drive_Data_Favorites } from '../../model/classes/Favorites/Drive_Data_Favorites.js'
-import { Control_cart } from '../controller.js'
+import { Controller_Favorites } from '../Favorites/Controller_Favorites.js'
+import { Drive_Data_Favorites } from '../../../model/classes/Favorites/Drive_Data_Favorites.js'
+import { Control_cart } from '../../controller.js'
 
 export class ControlIndividualProduct {
 

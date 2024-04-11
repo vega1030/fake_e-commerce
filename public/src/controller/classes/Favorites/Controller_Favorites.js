@@ -1,13 +1,15 @@
 'use strict'
 
-import { StorageService } from "../../model/classes/storage/StorageService.js"
-import { keysLocalStorage } from "../../constants.js"
-import { View_Favorites } from "../../view/view.js"
-import { RealTimeDB } from "../../services/realtimedatabase.js"
-import { Auth } from "../../services/auth.js"
-import { loadSpinner } from "../controller.js"
-import { Drive_Data_Favorites } from "../../model/classes/Favorites/Drive_Data_Favorites.js"
-import { get_Single_Product } from '../../api.js'
+import { View_Favorites } from "../../../view/view.js"
+import { RealTimeDB } from "../../../services/realtimedatabase.js"
+import { Auth } from "../../../services/auth.js"
+import { Control_cart, loadSpinner } from "../../controller.js"
+import { Drive_Data_Favorites } from "../../../model/classes/Favorites/Drive_Data_Favorites.js"
+import { get_Single_Product } from '../../../api.js'
+import { EventManager } from "../../../Event Manager/EventManager.js"
+import { TemplateCardsFavorites } from "../../../view/classes/TemplateCardsFavorites.js"
+
+
 
 export class Controller_Favorites {
     constructor() {
@@ -16,6 +18,8 @@ export class Controller_Favorites {
         this.id = ''
         this.realTimeDb = new RealTimeDB()
         this.authFirebase = new Auth()
+        this.favorites = new Drive_Data_Favorites()
+
     }
 
 
@@ -38,7 +42,6 @@ export class Controller_Favorites {
 
     async handlerResponseApi() {
         const res = await this.callingApi()
-        console.log(res)
         loadSpinner(false)
         if (res === undefined) {
             return loadSpinner(true)
@@ -47,7 +50,6 @@ export class Controller_Favorites {
         //create try catch an finally catch the error
         try {
             const instanceModelFavorites = new Drive_Data_Favorites()
-            console.log(res)
             this.favorites = await instanceModelFavorites.save_And_Update_Favorites(res)
             this.handlerViewFavorites()
         }
@@ -95,41 +97,38 @@ export class Controller_Favorites {
 
 
     sendFavoriteToView() {
-        document.querySelector('#favorites').addEventListener('click', async () => {
-            this.returnFavoriteRealTimeAuth()
-            //-----------validation of the create this.favorites-------------------//	
-            this.favorites.length > 0 ?
-                this.objectFav = {
-                    list: this.favorites,
-                    validation: true
-                } :
-                this.objectFav = {
-                    list: null,
-                    validation: false
-                }
 
-            //------------------------------//	
-
-            if (this.objectFav.validation === true) {
-                const handler_Init_Page = new Control_View_Information_At_DOM()
-                this.instance_View.createFavoriteListUI(this.objectFav.list)
-                this.instance_View.display_FavoritesHeart(this.objectFav.list)
-                this.handler_Favorites()
-                this.instance_View.deleteCardFavorite()
-                controller_Cart_Instance.add_Cart_Listener()
-                handler_Init_Page.handlerSingleProduct()
-                return this.objectFav
-            }
-
-            //------------------------------//	
-
+        console.log(this.favorites.favorites)
+        /* This code snippet is a ternary operator that checks if the length of `this.favorites` is greater
+        than 0. If the condition is true, it assigns an object to `this.objectFav` with properties `list`
+        set to `this.favorites` and `validation` set to `true`. If the condition is false (i.e.,
+        `this.favorites` length is not greater than 0), it assigns an object to `this.objectFav` with `list`
+        set to `null` and `validation` set to `false`. 
+        */
+        this.favorites.favorites.length > 0 ?
+            this.objectFav = {
+                list: this.favorites.favorites,
+                validation: true
+            } :
             this.objectFav = {
                 list: null,
                 validation: false
             }
+        //------------------------------//	
+        if (this.objectFav.validation === true) {
+            const listFavorites = new TemplateCardsFavorites()
+            listFavorites.create_Card(this.objectFav.list)
+            listFavorites.insertFavorites()
+            this.instance_View.display_FavoritesHeart(this.objectFav.list)
+            this.instance_View.deleteCardFavorite()
             return this.objectFav
-        })
+        }
+        //------------------------------//	
+
+        this.objectFav = {
+            list: null,
+            validation: false
+        }
+        return this.objectFav
     }
-
-
 }

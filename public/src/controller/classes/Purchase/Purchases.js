@@ -1,5 +1,5 @@
-import { Auth } from '../../services/auth.js';
-import { RealTimeDB } from '../../services/realtimedatabase.js';
+import { Auth } from '../../../services/auth.js';
+import { RealTimeDB } from '../../../services/realtimedatabase.js';
 
 export class Purchases {
     constructor() {

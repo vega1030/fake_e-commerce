@@ -1,47 +1,34 @@
 'use strict'
-import { loadSpinner } from '../view/functions/spinner.js';
 
+import { loadSpinner } from '../view/functions/spinner.js';
 import {
     get_All_Products,
     get_Categories,
     get_View_Products_For_Category,
     get_Single_Product
 } from '../api.js'
-
 import { keySessionStorage, keysLocalStorage } from '../constants.js'
-
 import { Drive_Data_Cart } from '../model/classes/Cart/Drive_Data_Cart.js'
 import { StorageService } from '../model/classes/storage/StorageService.js'
-import { Controller_Favorites } from './classes/Controller_Favorites.js'
-
-import { ControlIndividualProduct } from './classes/ControlIndividualProduct.js'
-
+import { Controller_Favorites } from './classes/Favorites/Controller_Favorites.js'
+import { ControlIndividualProduct } from './classes/Individual Product/ControlIndividualProduct.js'
 import { Auth } from '../services/auth.js';
-
 import {
     Category_ui, Handler_Displays_Ui,
-    View_Favorites, View_cart, replace_Minus_Symbol_For_Trash_Basket,
+    View_Favorites, View_cart,
+    replace_Minus_Symbol_For_Trash_Basket,
     render_Total_And_Pay, Display_Data_Firebase_User,
     TemplateCards
 } from "../view/view.js";
-
-import { controllerActivityUser } from './classes/controllerActivityUser.js';
-
-import {
-    RealTimeDB
-} from '../services/realtimedatabase.js'
-
-import { controllerLoginGmail } from './classes/controllerLoginGmail.js';
-
-import { Drive_Data_Favorites } from '../model/classes/Favorites/Drive_Data_Favorites.js'
-
+import { controllerActivityUser } from './classes/Controller Auth/controllerActivityUser.js';
+import { RealTimeDB } from '../services/realtimedatabase.js'
+import { controllerLoginGmail } from './classes/Controller Auth/controllerLoginGmail.js';
 import { TemplateCardsHome } from '../view/classes/TemplateCardsHome.js';
 import { TemplateCardCart } from '../view/classes/TemplateCardCart.js';
 import { AddProducts } from './classes/Cart/AddProducts.js';
 import { ModifyQuantity_Add } from './classes/Cart/ModifyQuantity_Add.js';
 import { ModifyQuantity_Subtract } from './classes/Cart/ModifyQuantity_Subtract.js';
-
-
+import { EventManager } from '../Event Manager/EventManager.js';
 
 
 const local_Storage = new StorageService()
@@ -50,7 +37,31 @@ const categories_UI = new Category_ui()
 const cart_Ui = new View_cart()
 //----------------------------------------------------------------	
 
+class HandlerClickFavorites {
+    constructor() {
+        this.eventListeners = new EventManager()
+        this.instanceFavorites = new Controller_Favorites()
+        
 
+    }
+
+    addFavoriteListener() {
+        this.eventListeners.addListener('click', '#favorites', (e) => {
+            console.log('Favorite clicked:', this.instanceFavorites.sendFavoriteToView())
+            
+
+        })
+    }
+
+    trigger() {
+        console.log('triggered:', this.eventListeners)
+        this.addFavoriteListener()
+        this.eventListeners.triggerEvent('click', this.eventListeners)
+    }
+
+}
+const handlerFavorites = new HandlerClickFavorites()
+handlerFavorites.trigger()
 
 class Control_View_Information_At_DOM {
 
@@ -215,24 +226,6 @@ class Control_View_Information_At_DOM {
     }
 }
 
-
-
-//------------------------------------------------------------------------------------------------------------------	
-class Favorites_To_View {
-
-    constructor() {
-        this.favorites = new StorageService()
-        this.instance_View = new View_Favorites()
-    }
-
-    handlerViewFavorites() {
-        this.instance_View.display_FavoritesHeart(this.favorites)
-    }
-}
-
-
-
-//------------------------------------------------------------------------------------------------------------------	
 class Control_cart {
 
     constructor(total = 0, elementDom) {
@@ -329,7 +322,7 @@ class Control_cart {
                     quantity === 1 ? replace_Minus_Symbol_For_Trash_Basket(target, true) : null
                     this.controller_Cart();
                 },
-                
+
                 add: (target) => {
                     const id = target.getAttribute('data-id');
                     const input = target.previousElementSibling;
@@ -340,20 +333,21 @@ class Control_cart {
                     quantity === 2 ? replace_Minus_Symbol_For_Trash_Basket(target.previousElementSibling.previousElementSibling, false) : null
                     this.controller_Cart();
                 },
-                
+
                 trash_count: (target) => {
                     const id = target.getAttribute('data-id');
                     this.subtract.id = Number(id)
                     this.subtract.subtractProduct()
                     this.controller_Cart();
                     cart_Ui.handle_Delete_Element_In_DOM(event.target.parentElement.parentElement.parentElement);
+                    const instance_Control_Routes = new Control_Routes()
+                    instance_Control_Routes.reception_Hash('#home');
                 },
 
             };
-            //recibe el classlist de target	
+
             for (const className of target.classList) {
                 if (className in cartHandler) {
-                    //pasa la class a cartHandler()	
                     cartHandler[ className ](target);
                     break;
                 }
@@ -549,9 +543,6 @@ class Control_cart {
 
 }
 
-
-
-
 class Firebase_Auth {
 
     constructor(auth) {
@@ -628,9 +619,26 @@ class Firebase_Auth {
 
     }
 }
+class Control_Routes {
+    //reception hash to routers	
+    reception_Hash = (hash = '') => {
+        const name_Hash = {
+            "#individual_product": 'individual_product',
+            "#home": 'home',
+            "#view_section_cart": 'cart',
+            "#_categories": 'categories',
+            "#favorites_section": 'favorites'
+
+        }
+        //send hash to controller	
+        return handler_View.handler_Display_(name_Hash[ hash ]);
+    }
+}
 
 
 if (typeof localStorage !== 'undefined') {
+    const instance_Control_Routes = new Control_Routes()
+    instance_Control_Routes.reception_Hash('#home');
 
     const instanceFirebaseAuth = new Firebase_Auth()
     instanceFirebaseAuth.loginUser()
@@ -663,27 +671,11 @@ if (typeof localStorage !== 'undefined') {
 //----------------------------------------------------------------	
 
 
-class Control_Routes {
-    //reception hash to routers	
-    reception_Hash = (hash = '') => {
-        const name_Hash = {
-            "#individual_product": 'individual_product',
-            "#home": 'home',
-            "#view_section_cart": 'cart',
-            "#_categories": 'categories',
-            "#favorites_section": 'favorites'
-
-        }
-        //send hash to controller	
-        return handler_View.handler_Display_(name_Hash[ hash ]);
-    }
-}
 
 const testControllerUser = new controllerActivityUser()
 testControllerUser.closeSession()
 
 //----------------------------------------------------------------	
-
 
 
 

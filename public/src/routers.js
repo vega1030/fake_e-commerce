@@ -14,10 +14,11 @@ class Create_Routes {
 
 }
 
-const new_Routes = new Create_Routes
+
 
 
 window.addEventListener('hashchange', (e) => {
+    console.log(e)
     const instance_Control_Routes = new Control_Routes()
     console.log(e.oldURL)
     instance_Control_Routes.reception_Hash(location.hash);

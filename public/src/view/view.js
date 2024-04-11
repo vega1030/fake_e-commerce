@@ -356,7 +356,6 @@ class View_cart {
 class Handler_Displays_Ui {
 
     handler_Display_(hash) {
-        console.log(hash)
         if (hash === 'categories') {
             return (
                 document.querySelector('#home').style.display = 'none',
@@ -369,6 +368,7 @@ class Handler_Displays_Ui {
         }
         if (hash === 'home') {
             return (
+                console.log('llego'),
                 document.querySelector('#home').style.display = 'grid',
                 document.querySelector('.cart_style').style.display = 'none',
                 document.querySelector('#content_card').style.display = 'grid',

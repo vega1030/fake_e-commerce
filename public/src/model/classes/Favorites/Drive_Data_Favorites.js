@@ -8,10 +8,10 @@ export class Drive_Data_Favorites {
     constructor() {
         this.favorites = []
         this.storageService = new StorageService()
+        this.favorites = this.storageService.getItem(keysLocalStorage.FAVORITES)|| []
     }
 
     async save_And_Update_Favorites(favoriteProduct) {
-        this.favorites = this.storageService.getItem(keysLocalStorage.FAVORITES) || []
         const index = this.favorites.findIndex(i => i.id === favoriteProduct.id);
 
         if (index !== -1) {
