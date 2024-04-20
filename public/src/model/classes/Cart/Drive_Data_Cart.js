@@ -29,29 +29,24 @@ export class Drive_Data_Cart {
  * @returns The function `mergeCart` returns the merged array containing items from both `cartFromDB`
  * and `cartFromLocalStorage`, with quantities updated if the same item exists in both arrays.
  */
-mergeCart(cartFromDB, cartFromLocalStorage) {
-    // Filtrar elementos indefinidos en cartFromDB y cartFromLocalStorage
-    const filteredCartFromDB = cartFromDB.filter(element => element !== undefined);
-    const filteredCartFromLocalStorage = cartFromLocalStorage.filter(element => element !== undefined);
+    mergeCart(cartFromDB, cartFromLocalStorage) {
+        const mergedArray = cartFromDB.concat(cartFromLocalStorage.filter(item2 =>
+            !cartFromDB.some(item1 => item1.id === item2.id)
+        ));
 
-    // Concatenar los arrays filtrados y filtrar elementos duplicados
-    const mergedArray = filteredCartFromDB.concat(filteredCartFromLocalStorage.filter(item2 =>
-        !filteredCartFromDB.some(item1 => item1.id === item2.id)
-    ));
+        mergedArray.forEach(element => {element!==undefined
+            const matchingArray = cartFromLocalStorage.find(item => item.id === element.id);
+            if (matchingArray) {
+                const newQuantity = element.quantity + matchingArray.quantity
+                element.quantity = newQuantity <= 10 ? newQuantity : 10;
+            }
+        });
+        const cleanedArray = mergedArray.filter(element => element !== undefined);
 
-    // Actualizar las cantidades de los elementos en mergedArray
-    mergedArray.forEach(element => {
-        const matchingArray = filteredCartFromLocalStorage.find(item => item.id === element.id);
-        if (matchingArray) {
-            // Actualizar la cantidad del elemento si existe en cartFromLocalStorage
-            const totalQuantity = element.quantity + matchingArray.quantity;
-            element.quantity = totalQuantity <= 10 ? totalQuantity : 10;
-        }
-    });
 
-    console.log('new merged ', mergedArray);
-    return mergedArray;
-}
+        console.log('new merged ', cleanedArray);
+        return mergedArray;
+    }
 
 
 }

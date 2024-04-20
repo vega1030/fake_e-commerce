@@ -225,7 +225,7 @@ describe('merge arrays Drive Data Cart', () => {
     // Assert
     expect(result).to.deep.equal(finalArray);
   });
-  it('merged the arrays. The array of localStorage and the array of RealTime with an undefined element', () => {
+  it('merged the arrays. The array of localStorage and the array of RealTime with an undefined and null element', () => {
     const cartFromDB = [
       { id: 1, quantity: 10 },
       { id: 6, quantity: 1 },
@@ -244,7 +244,7 @@ describe('merge arrays Drive Data Cart', () => {
       { id: 2, quantity: 2 },
       { id: 4, quantity: 10 },
       { id: 10, quantity: 3 },
-
+      null
     ];
 
     const finalArray = [
@@ -259,7 +259,7 @@ describe('merge arrays Drive Data Cart', () => {
     ]
 
   });
-  
+
 });
 
 
