@@ -1,17 +1,18 @@
 {
-  "name": "e-commerce",
+  "name": "fake-commerce",
   "version": "1.0.0",
-  "description": "",
+  "description": "E-commerce service of practical applications",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "mocha"
   },
-  "author": "",
+  "author": "Fernando Vega",
   "license": "ISC",
   "devDependencies": {
     "axios": "^1.6.2",
     "chai": "^4.3.7",
+    "express": "^4.19.2",
     "html2canvas": "^1.4.1",
     "jsdom": "^22.0.0",
     "mocha": "^10.2.0",
