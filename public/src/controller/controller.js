@@ -15,7 +15,7 @@ import { ControlIndividualProduct } from './classes/Individual Product/ControlIn
 import { Auth } from '../services/auth.js';
 import {
     Category_ui, Handler_Displays_Ui,
-    View_Favorites, View_cart,
+    View_Favorites,
     replace_Minus_Symbol_For_Trash_Basket,
     render_Total_And_Pay, Display_Data_Firebase_User,
     TemplateCards
@@ -34,35 +34,23 @@ import { EventManager } from '../Event Manager/EventManager.js';
 const local_Storage = new StorageService()
 const handler_View = new Handler_Displays_Ui()
 const categories_UI = new Category_ui()
-const cart_Ui = new View_cart()
 //----------------------------------------------------------------	
 
 class HandlerClickFavorites {
     constructor() {
         this.eventListeners = new EventManager()
         this.instanceFavorites = new Controller_Favorites()
-        
+
 
     }
 
     addFavoriteListener() {
         this.eventListeners.addListener('click', '#favorites', (e) => {
-            console.log('Favorite clicked:', this.instanceFavorites.sendFavoriteToView())
-            
-
+            console.log(e);
+            this.instanceFavorites.sendFavoriteToView()
         })
     }
-
-    trigger() {
-        console.log('triggered:', this.eventListeners)
-        this.addFavoriteListener()
-        this.eventListeners.triggerEvent('click', this.eventListeners)
-    }
-
 }
-const handlerFavorites = new HandlerClickFavorites()
-handlerFavorites.trigger()
-
 class Control_View_Information_At_DOM {
 
     constructor(products = [], categories, total) {
@@ -245,25 +233,14 @@ class Control_cart {
         this.acu = 0
         this.total = 0
         this.purchase = {}
+        this.eventListeners = new EventManager();
     }
 
     clearCart() {
         this.shouldClearCart = true;
     }
 
-    controller_Cart() {
-        const total_And_Quantity = this.model.returnCopyLocalStorage().reduce((previous, current) => {
-            previous.quantity = current.quantity + previous.quantity;
-            previous.total += current.quantity * current.price;
-            return previous
-        }, { total: 0, quantity: 0 })
 
-        this.total = Number(total_And_Quantity.total.toFixed(2))
-
-        this.quantity_In_Cart(this.model.returnCopyLocalStorage())
-
-        render_Total_And_Pay(total_And_Quantity)
-    };
 
     async send_Id_To_Api(id) {
         loadSpinner(false)
@@ -288,15 +265,14 @@ class Control_cart {
     };
 
     add_Cart_Listener() {
-        const btns_Cart = document.querySelectorAll('.btn_add_to_cart')
-        btns_Cart.forEach(item => item.addEventListener('click', async (e) => {
+        this.eventListeners.addListener('click', '.btn_add_to_cart', async (e) => {
             const id = Number(e.target.id);
             const product = await this.send_Id_To_Api(id);
-            return (this.model.setCartLocalStorage(this.addProductsInCart.addProductsInCart(product).cart)
-                , this.controller_Cart())
-        }))
+            const cartResponse = this.addProductsInCart.addProductsInCart(product)
+            this.model.setCartLocalStorage(cartResponse.cart);
+            this.addProductsInCart.controller_Cart();
+        })
     }
-
 
 
     /* The above code is defining an event listener for the click event on an element with the ID	
@@ -312,15 +288,17 @@ class Control_cart {
         const listenerTarget = () => cart.addEventListener('click', (event) => {
             const target = event.target
             const cartHandler = {
+
                 subtract: (target) => {
                     const id = target.getAttribute('data-id');
                     const input = target.nextElementSibling;
                     this.subtract.id = Number(id)
                     this.subtract.subtractProduct()
                     const quantity = this.model.returnCopyLocalStorage().find(i => i.id === Number(id)).quantity
-                    input.value = Number(quantity);
+                    console.log(this.model.returnCopyLocalStorage());
+                    input.value = String(quantity);
                     quantity === 1 ? replace_Minus_Symbol_For_Trash_Basket(target, true) : null
-                    this.controller_Cart();
+                    this.addProductsInCart.controller_Cart();
                 },
 
                 add: (target) => {
@@ -329,19 +307,21 @@ class Control_cart {
                     this.add.id = Number(id)
                     this.add.addProduct()
                     const quantity = this.model.returnCopyLocalStorage().find(i => i.id === Number(id)).quantity
-                    input.value = quantity;
+                    console.log(this.model.returnCopyLocalStorage());
+                    input.value = String(quantity);
                     quantity === 2 ? replace_Minus_Symbol_For_Trash_Basket(target.previousElementSibling.previousElementSibling, false) : null
-                    this.controller_Cart();
+                    quantity === 10 ? console.log('quantity no validate value') : console.log(true);
+                    this.addProductsInCart.controller_Cart();
                 },
 
                 trash_count: (target) => {
                     const id = target.getAttribute('data-id');
                     this.subtract.id = Number(id)
                     this.subtract.subtractProduct()
-                    this.controller_Cart();
-                    cart_Ui.handle_Delete_Element_In_DOM(event.target.parentElement.parentElement.parentElement);
+                    this.addProductsInCart.controller_Cart();
+                    this.renderCards.handle_Delete_Element_In_DOM(event.target.parentElement.parentElement.parentElement);
                     const instance_Control_Routes = new Control_Routes()
-                    instance_Control_Routes.reception_Hash('#home');
+                    this.model.returnCopyLocalStorage().length === 0 ? instance_Control_Routes.reception_Hash('#home') : null;
                 },
 
             };
@@ -388,13 +368,12 @@ class Control_cart {
     }
 
     sendListCartToView() {
-        const sectionCart = document.querySelector('#section_cart')
-        sectionCart.addEventListener('click', (e) => {
+        this.eventListeners.addListener('click', '#section_cart', () => {
             this.renderCards.model_UiCart_List()
-            this.controller_Cart()
-
+            this.addProductsInCart.controller_Cart()
         })
     }
+
     assign_Event_Btn_Pay() {
         const payEvent = document.querySelector('#view_section_cart');
         payEvent.addEventListener('click', async (event) => {
@@ -421,45 +400,6 @@ class Control_cart {
 
 
 
-    /**	
-     * This function calculates the total quantity of items in a shopping cart and returns a cart container	
-     * element with the updated quantity.	
-     * @param data - The `data` parameter is an array of objects, where each object represents a product in	
-     * a shopping cart. Each object has a `quantity` property that represents the quantity of that product	
-     * in the cart. The `control_Quantity` function calculates the total quantity of all products in the	
-     * cart by sum	
-     * @returns the result of calling the `createCartCont` function from the `cart_Ui` module, passing in	
-     * the accumulated quantity (`acu`) as an argument.	
-     */
-
-    quantity_In_Cart(data) {
-
-        const acu = data === undefined ? 0 : data.reduce((previous, current) => {
-            return current.quantity === undefined ? previous : previous + current.quantity
-
-        }, 0)
-        cart_Ui.createCartCont(acu)
-        return acu
-    }
-
-
-
-
-
-
-    //------------------------------------------------------------------------------------------------------------------	
-    /* This code block is selecting all elements with the class "subtract" and adding a click event	
-    listener to each of them. When one of these elements is clicked, it checks if the next element	
-    sibling is null. If it is null, it means that the clicked element is associated with the last	
-    product in the cart, and the function calls the `update_Quantity_Cart` method from the `model`	
-    object, passing in the `id_Delete_Product_In_Cart` and `true` as arguments. It then calls the	
-    `handle_Delete_Element_In_DOM` function from the `cart_Ui` module, passing in the	
-    `element_Delete_In_DOM` as an argument to remove the corresponding product from the cart UI. If the	
-    next element sibling is not null, it retrieves the `id` of the product associated with the clicked	
-    element from the `data-id` attribute of the next element sibling. It then decrements the quantity	
-    value of the input element that is the next element sibling of the clicked element, and updates the	
-    cart with the new quantity value using the `update_Quantity_Cart` method. If the quantity value is	
-    1, it replaces the trash basket icon with a minus symbol */
     //------------------------------------------------------------------------------------------------------------------	
     dynamic_Change_Symbols() {
 
@@ -475,7 +415,7 @@ class Control_cart {
                     const element_Delete_In_DOM = e.target.parentElement.parentElement.parentElement
                     const id_Delete_Product_In_Cart = Number(e.target.dataset.id)
                     console.log(this.acu)
-                    return cart_Ui.handle_Delete_Element_In_DOM(element_Delete_In_DOM)
+                    return this.renderCards.handle_Delete_Element_In_DOM(element_Delete_In_DOM)
                 }
                 this.subtract.id = Number(e.target.nextElementSibling.dataset.id)
                 this.acu = Number(e.target.nextElementSibling.value)
@@ -527,20 +467,6 @@ class Control_cart {
 
     //------------------------------------------------------------------------------------------------------------------	
 
-    update_Quantity_Cart(id = "", flag) {
-        if (flag === true) {
-            console.log('update: ', flag);
-            const updateCart_Minus = this.model.modelCart.map
-                (i => i.id === id ? { ...i, quantity: i.quantity - 1 } : i).filter(i => i.quantity > 0);
-            this.model.modelCart = updateCart_Minus
-            return this.cart
-        }
-        const updateCart_Add = this.model.modelCart.map
-            (i => i.id === id ? { ...i, quantity: i.quantity + 1 } : i).filter(i => i.quantity > 0);
-        this.model.modelCart = updateCart_Add
-        return this.cart
-    }
-
 }
 
 class Firebase_Auth {
@@ -550,7 +476,9 @@ class Firebase_Auth {
         this.favoritesController = new Controller_Favorites()
         this.auth = new controllerLoginGmail()
         this.viewUser = new Display_Data_Firebase_User()
-        this.cart = new Control_cart()
+        this.controlCart = new AddProducts()
+        this.addEventCartProduct = new Control_cart()
+
     }
 
     async loginUser() {
@@ -583,33 +511,29 @@ class Firebase_Auth {
             try {
 
                 if (this.auth.user != null) {
-                    console.log(e.target.dataset.userState)
-
                     this.auth.handlerStateStorageDisconnected()
                     this.auth.user = null
                     insertLogoUser()
                     const instance_Control_Routes = new Control_Routes()
                     instance_Control_Routes.reception_Hash('#home');
+                    console.log('disconnected');
                     return this.auth.user
                 }
                 const viewFavorites = new View_Favorites()
-
                 await this.auth.handlerStateStorageConnected()
                 insertLogoUser(this.auth.user.photoURL)
                 const storageCart = storage.getItem(keysLocalStorage.CART)
                 const storageFavorite = storage.getItem(keysLocalStorage.FAVORITES)
                 viewFavorites.display_FavoritesHeart(storageFavorite)
-                this.cart.quantity_In_Cart(storageCart)
-
+                this.controlCart.quantity_In_Cart(storageCart)
                 //------------------------------------------------------------------------------	
                 //------------------------------------------------------------------------------	
             }
-
+            
             catch (error) {
                 console.log('error', error)
             }
             finally {
-                console.log(storage.getItem(keysLocalStorage.FAVORITES))
                 this.uid = storage.getSessionStorageUid(keySessionStorage.UID) || '';
                 !this.auth.user ? e.target.textContent = 'Login' : e.target.textContent = 'Logout'
                 e.target.dataset.userState = !this.auth.user ? 'disconnect' : 'connect'

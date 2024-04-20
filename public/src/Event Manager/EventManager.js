@@ -8,11 +8,18 @@ export class EventManager {
     }
 
 
-    addListener(event, querySelector, callback) {
+    addListener(event, selector, callback) {
         if (!this.events[ event ]) {
             this.events[ event ] = []
         }
-        this.events[ event ].push({ querySelector, callback })
+        this.events[ event ].push({ selector, callback })
+
+        const elements = selector.startsWith('#') ? [document.getElementById(selector.slice(1))] : document.querySelectorAll(selector);
+        
+        if (elements.length===1 && elements[0]===null) return 
+        elements.forEach(element=>{
+            element.addEventListener(event,callback)
+        })
     }
 
     //create a new method to remove an event listener

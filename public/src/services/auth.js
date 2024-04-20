@@ -15,6 +15,9 @@ import { firebaseConfig } from './config.js';
 import { StorageService } from '../model/classes/storage/StorageService.js';
 import { keySessionStorage, keysLocalStorage } from '../constants.js';
 
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
+
 class Auth {
     constructor() {
         this.uid = ''
@@ -37,8 +40,6 @@ class Auth {
 
     async loginWithGmail() {
         try {
-            const firebaseApp = initializeApp(firebaseConfig);
-            const auth = getAuth(firebaseApp);
             await setPersistence(auth, browserSessionPersistence)
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
@@ -54,8 +55,6 @@ class Auth {
     async logoutWithGmail() {
         try {
 
-            const firebaseApp = initializeApp(firebaseConfig);
-            const auth = getAuth(firebaseApp);
             const signResponse = await signOut(auth)
             if (auth.currentUser) {
                 console.log('user disconnected: ', signResponse)

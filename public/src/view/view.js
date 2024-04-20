@@ -211,7 +211,6 @@ class Display_Data_Firebase_User {
     }
 
     displayProfilePhoto(userAvatar) {
-        console.log(userAvatar)
         const contentImageProfile = document.querySelector('#content-img-profile');
         contentImageProfile.innerHTML = '';
 
@@ -237,120 +236,7 @@ class Display_Data_Firebase_User {
 
 }
 //---------------------------------------------------------------------------------------------------------------------------------------
-class View_cart {
 
-    /**
-     * The function creates a cart container and updates the quantity of items in the cart.
-     * @param quantity - The quantity parameter is a number that represents the number of items in a
-     * shopping cart.
-     */
-    createCartCont(quantity) {
-
-        const counter = document.querySelector('#count_elements_at_cart')
-        const content_Counter = document.querySelector('#section_cart')
-        if (counter) {
-            quantity > 9 ? counter.innerText = '+9' : counter.innerText = JSON.stringify(quantity)
-            return content_Counter.appendChild(counter)
-        }
-
-    }
-
-    /* The above code defines a function `model_UiCart_List` that takes in a `cart` object as a parameter.
-    It then creates a new container and dynamically generates HTML elements for each item in the `cart`
-    object. The generated elements include an image of the product, its title, price, and a quantity
-    selector with add and subtract buttons. The function also adds a trash basket icon to the subtract
-    button if the quantity of the item is 1. Finally, the function appends the generated elements to the
-    `ui_Cart` section of the HTML document. */
-
-    model_UiCart_List = (cart) => {
-        if (cart === null) { return }
-        const section_Content_Data = document.querySelector('#ui_Cart')
-
-        section_Content_Data.innerHTML = ''
-
-        //create dynamic elements
-
-        const newCart = cart.map(item => {
-
-            const contentTrash = document.createElement('img')
-            contentTrash.src = '../../public/icon/trash_basket.svg'
-            contentTrash.alt = 'trash basket'
-            contentTrash.classList.add('trash_count')
-            contentTrash.setAttribute('data-id', item.id);
-            const content_Data = document.createElement('div');
-            content_Data.classList.add('content_card____cart');
-            content_Data.setAttribute('data-id', item.id);
-
-
-
-            const content_Image_Product = document.createElement('div');
-            content_Image_Product.classList.add('content_image_product_at_cart', 'content_photo');
-
-            const img_Product = document.createElement('img');
-            img_Product.classList.add('img-card____cart');
-            img_Product.src = item.image;
-            img_Product.alt = 'img';
-
-            content_Image_Product.appendChild(img_Product);
-
-            const content_Description = document.createElement('div');
-            content_Description.classList.add('content_description');
-
-            const h5 = document.createElement('h5');
-            h5.textContent = item.title.slice(0, 20);
-            content_Description.appendChild(h5);
-
-            const price = document.createElement('div');
-            price.classList.add('price');
-
-            const h4 = document.createElement('h4');
-            h4.textContent = `${ item.price }\u20AC`;
-            price.appendChild(h4);
-
-            const content_Select = document.createElement('div');
-            content_Select.classList.add('content_select');
-
-            const subtractBtn = document.createElement('a');
-            subtractBtn.classList.add('subtract');
-            subtractBtn.setAttribute('data-id', item.id);
-
-
-            const countInput = document.createElement('input');
-            countInput.classList.add('count', 'form-control');
-            countInput.setAttribute('type', 'number');
-            countInput.setAttribute('min', '0');
-            countInput.setAttribute('max', '10');
-            countInput.setAttribute('data-id', item.id);
-            countInput.value = item.quantity;
-
-            const addBtn = document.createElement('a');
-            addBtn.classList.add('add');
-            addBtn.setAttribute('data-id', item.id);
-            addBtn.textContent = '+';
-
-            content_Select.appendChild(subtractBtn);
-            content_Select.appendChild(countInput);
-            content_Select.appendChild(addBtn);
-
-            content_Data.appendChild(content_Image_Product);
-            content_Data.appendChild(content_Description);
-            content_Data.appendChild(price);
-            content_Data.appendChild(content_Select);
-
-            section_Content_Data.appendChild(newCart);
-            item.quantity === 1 ? subtractBtn.appendChild(contentTrash) : subtractBtn.textContent = '-';
-
-            return { ...item, content_Data };
-        });
-
-    }
-
-
-    handle_Delete_Element_In_DOM(element) {
-        return element.remove()
-    }
-
-}
 /* This class is responsible for displaying the correct section of the page based on the hash in the url */
 
 class Handler_Displays_Ui {
@@ -495,16 +381,16 @@ const render_Total_And_Pay = (total_And_Quantity) => {
     render_Function()
 }
 
-const filterProducts = () => {
+/* const filterProducts = () => {
     const btnSearch = document.querySelector('#btn-search')
     btnSearch.addEventListener('click', (e) => {
         const inputValue = e.target.form.firstElementChild.value
         // Here filter products
         return inputValue
     })
-}
-filterProducts()
-
+} */
+/* filterProducts()
+ */
 
 if (typeof localStorage !== 'undefined') {
     const colorHeartInstance = new TemplateCards()
@@ -516,8 +402,7 @@ export {
     TemplateCards,
     Handler_Displays_Ui,
     View_Favorites,
-    Display_Data_Firebase_User,
-    View_cart,
+    Display_Data_Firebase_User, 
     replace_Minus_Symbol_For_Trash_Basket,
     render_Total_And_Pay,
 }

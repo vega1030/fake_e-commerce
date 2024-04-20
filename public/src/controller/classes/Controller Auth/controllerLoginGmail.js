@@ -11,20 +11,22 @@ import { Drive_Data_Favorites } from "../../../model/classes/Favorites/Drive_Dat
 import { Control_View_Information_At_DOM } from '../../controller.js'
 import { TemplateCardsHome } from "../../../view/classes/TemplateCardsHome.js"
 import { Control_Routes } from '../../controller.js'
+import { AddProducts } from "../Cart/AddProducts.js"
 
 
 export class controllerLoginGmail {
     constructor() {
         this.auth = new Auth()
         this.user = undefined
+        this.controllerCart = new AddProducts()
+        this.driveCart = new Drive_Data_Cart()
     }
 
     async handlerStateStorageConnected() {
         /* --------__Login__--------- */
         const favorites = new Controller_Favorites()
-        const cart = new Control_cart()
-        const driveCart = new Drive_Data_Cart()
         const modelHandlerFavorite = new Drive_Data_Favorites()
+
         const realTime = new RealTimeDB()
         const storage = new StorageService()
         //------------------------------------------------------------------------------	
@@ -37,10 +39,12 @@ export class controllerLoginGmail {
         const resCart = await realTime.returnCartRealTimeDb()
         /* ------------------------------ */
 
-        const mergedCarts = driveCart.mergeCart(resCart, storage.getItem(keysLocalStorage.CART))
+        const mergedCarts = this.driveCart.mergeCart(resCart, this.driveCart.returnCopyLocalStorage())
+        console.log(mergedCarts);
+
         const mergedFavorites = modelHandlerFavorite.mergeFavorites(resFavorites, storage.getItem(keysLocalStorage.FAVORITES))
 
-        cart.quantity_In_Cart(mergedCarts)
+        this.controllerCart.quantity_In_Cart(mergedCarts)
         storage.setItem(keysLocalStorage.FAVORITES, mergedFavorites)
         storage.setItem(keysLocalStorage.CART, mergedCarts)
     }
@@ -51,11 +55,11 @@ export class controllerLoginGmail {
         const realTime = new RealTimeDB()
         const storage = new StorageService();
         const handler_Init_Page = new Control_View_Information_At_DOM();
-        const cart = new Control_cart();
         const modelCart = new Drive_Data_Cart()
         const favorites = new Controller_Favorites();
         const products_Instance = new TemplateCardsHome()
         const instance_Control_Routes = new Control_Routes()
+        const controllerCart = new Control_cart()
         /*  ------------------------------------- */
 
         const response = await this.auth.logoutWithGmail()
@@ -63,7 +67,6 @@ export class controllerLoginGmail {
         instance_Control_Routes.reception_Hash('#home');
         realTime.saveCart(storage.getItem(keysLocalStorage.CART))
         realTime.saveFavoritesRealTimeDb(storage.getItem(keysLocalStorage.FAVORITES))
-
         const returnAllProducts = await handler_Init_Page.controller_get_All_Products();
         products_Instance.create_Card(returnAllProducts);
         products_Instance.insertAllProducts();
@@ -71,8 +74,8 @@ export class controllerLoginGmail {
         storage.removeItem(keysLocalStorage.FAVORITES);
         storage.removeItem(keysLocalStorage.CART);
         favorites.handler_Favorites();
-        cart.add_Cart_Listener();
-        cart.quantity_In_Cart(storage.getItem(keysLocalStorage.CART))
+        controllerCart.add_Cart_Listener()
+        this.controllerCart.quantity_In_Cart(storage.getItem(keysLocalStorage.CART))
         modelCart.modelCart = storage.getItem(keysLocalStorage.CART)
         console.log('disconnected')
         //-----------------------------------//	
