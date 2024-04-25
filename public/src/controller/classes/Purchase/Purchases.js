@@ -1,3 +1,4 @@
+import { EventManager } from '../../../Event Manager/EventManager.js';
 import { Auth } from '../../../services/auth.js';
 import { RealTimeDB } from '../../../services/realtimedatabase.js';
 
@@ -6,7 +7,9 @@ export class Purchases {
         this.purchases = []
         this.auth = new Auth()
         this.realtimeDb = new RealTimeDB()
+        this.addListener = new EventManager()
     }
+
 
     returnPurchasesFirebase() {
         console.log(this.auth)
@@ -15,6 +18,6 @@ export class Purchases {
     //create a method to return purchase and displaying in view
     returnPurchases() {
         this.realtimeDb.returnPurchaseRealTimeDb(this.auth)
-
     }
+
 }

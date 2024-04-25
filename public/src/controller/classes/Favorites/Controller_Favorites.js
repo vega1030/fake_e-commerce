@@ -6,40 +6,47 @@ import { Auth } from "../../../services/auth.js"
 import { Control_cart, loadSpinner } from "../../controller.js"
 import { Drive_Data_Favorites } from "../../../model/classes/Favorites/Drive_Data_Favorites.js"
 import { get_Single_Product } from '../../../api.js'
-import { EventManager } from "../../../Event Manager/EventManager.js"
-import { TemplateCardsFavorites } from "../../../view/classes/TemplateCardsFavorites.js"
+import { TemplateCardsFavorites } from "../../../view/classes/favorites/TemplateCardsFavorites.js"
+import { ChangeColorHeart } from "../../../view/classes/favorites/ChangeColorHeart.js"
 
 
 
+/* The `Controller_Favorites` class in JavaScript handles user interactions related to favorites,
+including calling APIs, updating favorites, and managing view display. */
 export class Controller_Favorites {
+
     constructor() {
         this.objectFav
-        this.instance_View = new View_Favorites()
+        this.instance_View = new TemplateCardsFavorites()
         this.id = ''
         this.realTimeDb = new RealTimeDB()
         this.authFirebase = new Auth()
         this.favorites = new Drive_Data_Favorites()
+        this.changeStateHeart = new ChangeColorHeart()
 
     }
 
-
-    /*
-     * The function `handler_Favorites()` adds event listeners to elements with the class "favorite" and
-     * performs various actions when clicked */
-
-    handler_Favorites() {
-        const favoriteId = document.querySelectorAll('.favorite');
-        favoriteId.forEach(element => {
-            element.addEventListener('click', (e) => {
-                const class_List = e.target.classList.value;
-                this.id = class_List === 'pathHeart' ?
-                    Number(e.target.parentElement.parentElement.dataset.id) :
-                    Number(e.target.dataset.id);
-                this.handlerResponseApi()
-            });
-        });
+/**
+ * The handler_Favorites function determines the ID of the target element based on its class and then
+ * calls another function.
+ * @param e - The parameter `e` in the `handler_Favorites` function is typically an event object that
+ * represents the event that triggered the function. It contains information about the event, such as
+ * the target element that triggered the event, any data associated with the event, and other
+ * properties related to the event. In
+ */
+    handler_Favorites(e) {
+        const class_List = e.target.classList.value;
+        this.id = class_List === 'pathHeart' ?
+            Number(e.target.parentElement.parentElement.dataset.id) :
+            Number(e.target.dataset.id);
+        this.handlerResponseApi()
     }
 
+/**
+ * The `handlerResponseApi` function asynchronously handles API responses, updates favorites, and
+ * displays them in the view while managing a loading spinner.
+ * @returns loadSpinner(true)
+ */
     async handlerResponseApi() {
         const res = await this.callingApi()
         loadSpinner(false)
@@ -47,7 +54,6 @@ export class Controller_Favorites {
             return loadSpinner(true)
 
         }
-        //create try catch an finally catch the error
         try {
             const instanceModelFavorites = new Drive_Data_Favorites()
             this.favorites = await instanceModelFavorites.save_And_Update_Favorites(res)
@@ -61,17 +67,20 @@ export class Controller_Favorites {
 
         }
     }
+/**
+ * The `handlerViewFavorites` function creates a card for each item in the favorites array using the
+ * `create_Card` method of the `instance_View` object.
+ */
     handlerViewFavorites() {
-        this.instance_View.display_FavoritesHeart(this.favorites)
+        this.changeStateHeart.display_FavoritesHeart(this.favorites)
     }
-    /* The above code defines an asynchronous function called `send_Favorite_Product_To_LocalStorage`. When	
-    this function is called, it first selects an HTML element with the class "overlay" and sets its	
-    display property to "flex". Then, it tries to retrieve a single product using the	
-    `get_Single_Product` function with an ID that is passed to the function. If successful, it saves and	
-    updates the retrieved product in the favorites list using the	
-    `model_Favorites.save_And_Update_Favorites` function and returns the updated favorites list. If	
-    there is an error, it logs the error to the console. */
 
+/**
+ * The function callingApi asynchronously fetches a single product using an API, handling loading
+ * spinner display before and after the API call.
+ * @returns The `callingApi` function is returning the result of the API call if successful, or an
+ * error object if there was an error during the API call.
+ */
     async callingApi() {
         loadSpinner(false)
 
@@ -89,22 +98,30 @@ export class Controller_Favorites {
 
     }
 
+/**
+ * This async function returns the favorite real-time authentication for a given user ID.
+ * @param uid - The `uid` parameter in the `returnFavoriteRealTimeAuth` function likely stands for
+ * "user ID," which is used to identify a specific user in the system. It is passed to the function to
+ * retrieve the favorite items associated with that particular user from the real-time database.
+ * @returns The function `returnFavoriteRealTimeAuth` is returning the favorites data fetched from the
+ * real-time database for the specified user ID (uid).
+ */
     async returnFavoriteRealTimeAuth(uid) {
         const dbFavorites = await this.realTimeDb.returnFavoritesRealTimeDb(uid)
         this.favorites = dbFavorites
         return this.favorites
     }
 
-
+/**
+ * The function `sendFavoriteToView` checks if there are favorite items, creates a template for
+ * displaying them, and returns an object indicating whether there are favorites or not.
+ * @returns The `sendFavoriteToView()` method returns an object `this.objectFav` which contains a
+ * `list` property and a `validation` property. The `list` property will either be an array of
+ * favorites from `this.favorites.favorites` or `null`, depending on whether there are favorites
+ * present. The `validation` property will be `true` if there are favorites, and `
+ */
     sendFavoriteToView() {
 
-        console.log(this.favorites.favorites)
-        /* This code snippet is a ternary operator that checks if the length of `this.favorites` is greater
-        than 0. If the condition is true, it assigns an object to `this.objectFav` with properties `list`
-        set to `this.favorites` and `validation` set to `true`. If the condition is false (i.e.,
-        `this.favorites` length is not greater than 0), it assigns an object to `this.objectFav` with `list`
-        set to `null` and `validation` set to `false`. 
-        */
         this.favorites.favorites.length > 0 ?
             this.objectFav = {
                 list: this.favorites.favorites,
@@ -119,8 +136,8 @@ export class Controller_Favorites {
             const listFavorites = new TemplateCardsFavorites()
             listFavorites.create_Card(this.objectFav.list)
             listFavorites.insertFavorites()
-            this.instance_View.display_FavoritesHeart(this.objectFav.list)
-            this.instance_View.deleteCardFavorite()
+            listFavorites.display_FavoritesHeart(this.objectFav.list)
+            listFavorites.deleteCardFavorite()
             return this.objectFav
         }
         //------------------------------//	

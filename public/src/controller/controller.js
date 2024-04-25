@@ -14,7 +14,7 @@ import { Controller_Favorites } from './classes/Favorites/Controller_Favorites.j
 import { ControlIndividualProduct } from './classes/Individual Product/ControlIndividualProduct.js'
 import { Auth } from '../services/auth.js';
 import {
-    Category_ui, Handler_Displays_Ui,
+    Handler_Displays_Ui,
     View_Favorites,
     replace_Minus_Symbol_For_Trash_Basket,
     render_Total_And_Pay, Display_Data_Firebase_User,
@@ -23,34 +23,42 @@ import {
 import { controllerActivityUser } from './classes/Controller Auth/controllerActivityUser.js';
 import { RealTimeDB } from '../services/realtimedatabase.js'
 import { controllerLoginGmail } from './classes/Controller Auth/controllerLoginGmail.js';
-import { TemplateCardsHome } from '../view/classes/TemplateCardsHome.js';
-import { TemplateCardCart } from '../view/classes/TemplateCardCart.js';
+import { TemplateCardsHome } from '../view/classes/home/TemplateCardsHome.js';
+import { TemplateCardCart } from '../view/classes/cart/TemplateCardCart.js';
 import { AddProducts } from './classes/Cart/AddProducts.js';
 import { ModifyQuantity_Add } from './classes/Cart/ModifyQuantity_Add.js';
 import { ModifyQuantity_Subtract } from './classes/Cart/ModifyQuantity_Subtract.js';
 import { EventManager } from '../Event Manager/EventManager.js';
+import { DynamicCategories } from '../view/classes/home/DynamicCategories.js';
+import { Purchases } from './classes/Purchase/Purchases.js';
 
 
 const local_Storage = new StorageService()
 const handler_View = new Handler_Displays_Ui()
-const categories_UI = new Category_ui()
 //----------------------------------------------------------------	
 
-class HandlerClickFavorites {
+export class HandlerClickFavorites {
     constructor() {
         this.eventListeners = new EventManager()
         this.instanceFavorites = new Controller_Favorites()
-
-
     }
 
-    addFavoriteListener() {
+    addListenerHeartFavorites() {
+        this.eventListeners.addListener('click', '.favorite', (e) => {
+            this.instanceFavorites.handler_Favorites(e)
+        })
+    }
+
+
+    addFavoriteSectionListener() {
         this.eventListeners.addListener('click', '#favorites', (e) => {
             console.log(e);
             this.instanceFavorites.sendFavoriteToView()
         })
     }
 }
+
+
 class Control_View_Information_At_DOM {
 
     constructor(products = [], categories, total) {
@@ -58,6 +66,13 @@ class Control_View_Information_At_DOM {
         this.single_Product
         this.categories = categories
         this.total = total
+        this.HandlerClickFavorites = new HandlerClickFavorites()
+        this.controllerFavorites = new Controller_Favorites()
+        this.favoritesView = new View_Favorites()
+        this.dynamicCategories = new DynamicCategories()
+        this.eventListeners = new EventManager()
+
+
     }
 
     async controller_get_All_Products() {
@@ -85,9 +100,7 @@ class Control_View_Information_At_DOM {
 
 
     homeInit() {
-        const init = document.querySelector('#_home')
-        init.addEventListener('click', async () => {
-            const favorites = new Controller_Favorites()
+        this.eventListeners.addListener('click', '#_home', async (e) => {
             const individualProduct = new Control_View_Information_At_DOM()
             const handler_Init_Page = new Control_View_Information_At_DOM()
             const controller_Cart_Instance = new Control_cart()
@@ -97,19 +110,11 @@ class Control_View_Information_At_DOM {
             products_Instance.create_Card(returnAllProducts)
             products_Instance.insertAllProducts()
             //-----------------------------------//	
-
-            await favorites.returnFavoriteRealTimeAuth() //this method assign realtime db to this.favorites	
-
-
             const serviceStorage = new StorageService()
-
-            favorites.instance_View.display_FavoritesHeart(serviceStorage.getItem(keysLocalStorage.FAVORITES))
-            favorites.handler_Favorites()
+            this.favoritesView.display_FavoritesHeart(serviceStorage.getItem(keysLocalStorage.FAVORITES))
             individualProduct.controllerViewIndividualProduct() //create instance of controlindividualproduct
             controller_Cart_Instance.add_Cart_Listener()
-
-
-
+            this.HandlerClickFavorites.addListenerHeartFavorites()
         })
     }
 
@@ -119,7 +124,7 @@ class Control_View_Information_At_DOM {
         try {
 
             this.categories = await get_Categories()
-            return categories_UI.createDynamicCategoryNav(this.categories)
+            return this.dynamicCategories.createDynamicCategoryNav(this.categories)
 
         } catch (error) {
             console.log(error)
@@ -147,10 +152,9 @@ class Control_View_Information_At_DOM {
             const favorites = new Controller_Favorites()
             const result = await get_View_Products_For_Category(category)
             //Add Listeners	
-            categories_UI.displayProductsByCategory(result)
+            this.dynamicCategories.displayProductsByCategory(result)
             controller_Cart_Instance.add_Cart_Listener()
-            favorites.handler_Favorites()
-            /* The above code is defining a function called `searchCoincidentElements` that takes an array called	
+            this.HandlerClickFavorites.addListenerHeartFavorites()            /* The above code is defining a function called `searchCoincidentElements` that takes an array called	
             `result` as input. The function uses the `reduce` method to iterate over the `result` array and	
             compare each element's `category` property to the `category` property of each element in an array	
             returned by the `get_Favorites` method of a `favoritesStorage` object. If the	
@@ -232,7 +236,6 @@ class Control_cart {
         this.shouldClearCart = false;
         this.acu = 0
         this.total = 0
-        this.purchase = {}
         this.eventListeners = new EventManager();
     }
 
@@ -342,30 +345,9 @@ class Control_cart {
     confirm_Pay() {
     }
 
-    createdPurchase() {
 
-        const purchase = {
-            cart: this.cart,
-            total: this.total
-        }
-        this.purchase = purchase
-    }
 
-    async sendPurchaseToDB() {
-        try {
-            const snapshotRealTimeDb = await instanceRealTimeDb.saveDataPurchase(instanceFirebaseAuth.uid, this.purchase)
-            const lastPurchase = []
-            lastPurchase.push(await instanceRealTimeDb.returnPurchaseRealTimeDb())
-            lastPurchase.map((item, index) => {
-                console.log(instanceRealTimeDb.purchase)
-            })
 
-        } catch (error) {
-            console.log(error)
-        } finally {
-        }
-
-    }
 
     sendListCartToView() {
         this.eventListeners.addListener('click', '#section_cart', () => {
@@ -469,6 +451,19 @@ class Control_cart {
 
 }
 
+class HandlerClickPurchase {
+
+    constructor() {
+        this.listener = new Purchases()
+    }
+
+    control_Listener(){
+        console.log('listener control');
+        this.listener.addListener()
+    }
+
+}
+
 class Firebase_Auth {
 
     constructor(auth) {
@@ -529,7 +524,7 @@ class Firebase_Auth {
                 //------------------------------------------------------------------------------	
                 //------------------------------------------------------------------------------	
             }
-            
+
             catch (error) {
                 console.log('error', error)
             }
@@ -563,7 +558,7 @@ class Control_Routes {
 if (typeof localStorage !== 'undefined') {
     const instance_Control_Routes = new Control_Routes()
     instance_Control_Routes.reception_Hash('#home');
-
+    /* -------------------------------------------------------------- */
     const instanceFirebaseAuth = new Firebase_Auth()
     instanceFirebaseAuth.loginUser()
     /* -------------------------------------------------------------- */
@@ -574,11 +569,16 @@ if (typeof localStorage !== 'undefined') {
     const favorites = new Controller_Favorites()
     const products_Instance = new TemplateCardsHome()
     const individualProduct = new ControlIndividualProduct()
+    const clickFavorites = new HandlerClickFavorites()
+    const controlPurchase = new HandlerClickPurchase()
     /* -------------------------------------------------------------- */
+
+    /* -------------------------------------------------------------- */
+
     controller_Cart_Instance.sendListCartToView()
     const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
-    products_Instance.create_Card(returnAllProducts)
-    products_Instance.insertAllProducts(),
+    products_Instance.create_Card(returnAllProducts),
+        products_Instance.insertAllProducts(),
         handler_Init_Page.homeInit(),
         await handler_Init_Page.control_View_Categories(),
         controller_Cart_Instance.add_Cart_Listener(),
@@ -586,11 +586,13 @@ if (typeof localStorage !== 'undefined') {
         handler_Init_Page.controllerViewIndividualProduct()
     handler_Init_Page.listener_Category(),
         controller_Cart_Instance.assign_Event_Btn_Pay(),
-        favorites.handler_Favorites(),
         storage.getItem(keysLocalStorage.FAVORITES).length !== 0 ? console.log('lleno') : console.log('vacio'),
         individualProduct.listenerAddCart(),
         individualProduct.listenerFavorite(),
-        favorites.sendFavoriteToView()
+        favorites.sendFavoriteToView(),
+        clickFavorites.addListenerHeartFavorites(),
+        clickFavorites.addFavoriteSectionListener(),
+        controlPurchase.control_Listener()
 }
 //----------------------------------------------------------------	
 

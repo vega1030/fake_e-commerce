@@ -1,5 +1,5 @@
 "use strict";
-import { TemplateCardsHome } from "./classes/TemplateCardsHome.js";
+import { TemplateCardsHome } from "./classes/home/TemplateCardsHome.js";
 
 class TemplateCards {
 
@@ -83,8 +83,10 @@ class TemplateCards {
                 const heart = e.currentTarget.querySelector('.individual-favorite > svg');
                 const currentColor = heart.getAttribute('fill');
                 if (currentColor === 'black') {
+                    console.log('black');
                     heart.setAttribute('fill', 'red');
                 } else {
+                    console.log('red');
                     heart.setAttribute('fill', 'black');
                 }
             }
@@ -110,38 +112,8 @@ class TemplateCards {
 
 
 }
-//---------------------------------------------------------------------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------------------------------------------------------------------
-
-
-//---------------------------------------------------------------------------------------------------------------------------------------
-
-class Category_ui {
-    createDynamicCategoryNav(categories) {
-        const content_Li_In_Header = document.querySelector('#list_classification')
-        let modelNavHeader = "";
-        categories.forEach(elements => {
-            modelNavHeader +=
-                `
-                    <li class="dropdown-item_ul">
-                        <a class="dropdown-item listener_category route" href="#_categories" data-category="${ elements }"> ${ elements } </a>
-                    </li>
-                    `;
-            if (content_Li_In_Header) {
-                return content_Li_In_Header.innerHTML = modelNavHeader;
-            };
-        });
-    };
-
-    displayProductsByCategory = (data) => {
-        const contentCards = document.querySelector('#content_card')
-        const products_Instance = new TemplateCardsHome()
-        products_Instance.create_Card(data)
-        contentCards.innerHTML = products_Instance.modelCard
-    }
-}
-
 //---------------------------------------------------------------------------------------------------------------------------------------
 
 class View_Favorites {
@@ -160,16 +132,6 @@ class View_Favorites {
         contentCardFavorite.innerHTML = products_Instance.modelCard
         this.favorites = data
         return this.favorites
-    }
-
-    deleteCardFavorite() {
-        const contentFavorite = document.querySelector('#favorites_section')
-        contentFavorite.addEventListener('click', (e) => {
-            if (e.target.nodeName === 'path') {
-                e.target.parentElement.parentElement.parentElement.remove()
-            }
-
-        })
     }
 
     display_FavoritesHeart(product) {
@@ -254,7 +216,6 @@ class Handler_Displays_Ui {
         }
         if (hash === 'home') {
             return (
-                console.log('llego'),
                 document.querySelector('#home').style.display = 'grid',
                 document.querySelector('.cart_style').style.display = 'none',
                 document.querySelector('#content_card').style.display = 'grid',
@@ -398,7 +359,6 @@ if (typeof localStorage !== 'undefined') {
 }
 
 export {
-    Category_ui,
     TemplateCards,
     Handler_Displays_Ui,
     View_Favorites,

@@ -9,7 +9,7 @@ import { Control_cart } from '../../controller.js'
 import { Drive_Data_Cart } from "../../../model/classes/Cart/Drive_Data_Cart.js"
 import { Drive_Data_Favorites } from "../../../model/classes/Favorites/Drive_Data_Favorites.js"
 import { Control_View_Information_At_DOM } from '../../controller.js'
-import { TemplateCardsHome } from "../../../view/classes/TemplateCardsHome.js"
+import { TemplateCardsHome } from "../../../view/classes/home/TemplateCardsHome.js"
 import { Control_Routes } from '../../controller.js'
 import { AddProducts } from "../Cart/AddProducts.js"
 
