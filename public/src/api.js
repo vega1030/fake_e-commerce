@@ -8,7 +8,7 @@ import { URL_API } from "./constants.js"
  * representing all the products from the fakestoreapi.com.
  */
 
-const get_All_Products = async () => {
+export const get_All_Products = async () => {
     try {
         const result = await fetch(URL_API.ALL_PRODUCTS,)
         const res = await result.json()
@@ -25,7 +25,7 @@ const get_All_Products = async () => {
  * @returns The function `get_Categories` is returning a promise that resolves to an array of strings
  * representing the categories of products available on the fakestoreapi.com website.
  */
-const get_Categories = async () => {
+export const get_Categories = async () => {
     try {
         const result = await fetch(URL_API.GET_CATEGORIES)
         const res = await result.json()
@@ -45,7 +45,7 @@ const get_Categories = async () => {
  * to the specified category.
  */
 
-const get_View_Products_For_Category = async (category) => {
+export const get_View_Products_For_Category = async (category) => {
 
     try {
         const result = await fetch(URL_API.GET_PRODUCTS_BY_CATEGORY(category))
@@ -69,7 +69,7 @@ const get_View_Products_For_Category = async (category) => {
  * the console and does not return anything.
  */
 
-const get_Single_Product = async (id) => {
+export const get_Single_Product = async (id) => {
     try {
         if (id == '') {
             console.log('error');
@@ -87,4 +87,3 @@ const get_Single_Product = async (id) => {
 
 
 
-export { get_All_Products, get_Categories, get_View_Products_For_Category, get_Single_Product }

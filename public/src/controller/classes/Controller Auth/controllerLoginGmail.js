@@ -12,6 +12,7 @@ import { Control_View_Information_At_DOM } from '../../controller.js'
 import { TemplateCardsHome } from "../../../view/classes/home/TemplateCardsHome.js"
 import { Control_Routes } from '../../controller.js'
 import { AddProducts } from "../Cart/AddProducts.js"
+import { HandlerQuantityAndTotal } from "../Cart/HandlerQuantityAndTotal.js"
 
 
 export class controllerLoginGmail {
@@ -19,6 +20,7 @@ export class controllerLoginGmail {
         this.auth = new Auth()
         this.user = undefined
         this.controllerCart = new AddProducts()
+        this.quantityInCart_And_Total = new HandlerQuantityAndTotal()
         this.driveCart = new Drive_Data_Cart()
     }
 
@@ -43,10 +45,10 @@ export class controllerLoginGmail {
         console.log(mergedCarts);
 
         const mergedFavorites = modelHandlerFavorite.mergeFavorites(resFavorites, storage.getItem(keysLocalStorage.FAVORITES))
-
-        this.controllerCart.quantity_In_Cart(mergedCarts)
         storage.setItem(keysLocalStorage.FAVORITES, mergedFavorites)
         storage.setItem(keysLocalStorage.CART, mergedCarts)
+
+        this.quantityInCart_And_Total.quantity_In_Cart()
     }
 
     async handlerStateStorageDisconnected() {
@@ -60,6 +62,7 @@ export class controllerLoginGmail {
         const products_Instance = new TemplateCardsHome()
         const instance_Control_Routes = new Control_Routes()
         const controllerCart = new Control_cart()
+
         /*  ------------------------------------- */
 
         const response = await this.auth.logoutWithGmail()
@@ -75,7 +78,7 @@ export class controllerLoginGmail {
         storage.removeItem(keysLocalStorage.CART);
         favorites.handler_Favorites();
         controllerCart.add_Cart_Listener()
-        this.controllerCart.quantity_In_Cart(storage.getItem(keysLocalStorage.CART))
+        this.quantityInCart_And_Total.quantity_In_Cart(storage.getItem(keysLocalStorage.CART))
         modelCart.modelCart = storage.getItem(keysLocalStorage.CART)
         console.log('disconnected')
         //-----------------------------------//	

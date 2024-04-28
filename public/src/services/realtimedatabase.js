@@ -19,11 +19,10 @@ class RealTimeDB {
 
     /* -------Purchase------- */
 
-    async saveDataPurchase(uid, purchase) {
+    async saveDataPurchase( purchase) {
 
         try {
-            const sessionStorageUid = await this.newUid.getItem(keysLocalStorage.UID)
-
+            const sessionStorageUid = await this.newUid.getItem(keySessionStorage.UID)
             const db = getDatabase();
             const newPurchaseRef = push(ref(db, `user/ ${ sessionStorageUid }/PURCHASES/`));
             const idPurchase = newPurchaseRef.key;
@@ -37,7 +36,7 @@ class RealTimeDB {
 
             this.idPurchase = idPurchase
             this.purchase = savedData
-            this.uid = uid
+            this.uid = sessionStorageUid
 
             const snapShotDb = [ {
                 id: this.uid,

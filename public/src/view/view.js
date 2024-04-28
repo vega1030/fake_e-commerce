@@ -1,5 +1,25 @@
 "use strict";
-import { TemplateCardsHome } from "./classes/home/TemplateCardsHome.js";
+
+import { MainProduct } from "./classes/home/MainProduct.js";
+
+
+
+class InsertTemplate {
+    constructor() {
+        this.templateMainProduct = new MainProduct()
+    }
+
+    async insertTemplateLanding() {
+        const contentMainProduct = document.createElement("home")
+        contentMainProduct.innerHTML = await this.templateMainProduct.templateMainProduct()
+        return contentMainProduct;
+    }
+
+}
+const insertTemplate = new InsertTemplate()
+insertTemplate.insertTemplateLanding()
+console.log(insertTemplate.insertTemplateLanding());
+
 
 class TemplateCards {
 
@@ -362,7 +382,7 @@ export {
     TemplateCards,
     Handler_Displays_Ui,
     View_Favorites,
-    Display_Data_Firebase_User, 
+    Display_Data_Firebase_User,
     replace_Minus_Symbol_For_Trash_Basket,
     render_Total_And_Pay,
 }

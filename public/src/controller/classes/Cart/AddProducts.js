@@ -3,7 +3,6 @@
 import { Drive_Data_Cart } from "../../../model/classes/Cart/Drive_Data_Cart.js";
 import { StorageService } from "../../../model/classes/storage/StorageService.js";
 import { ViewCountCart } from "../../../view/classes/cart/ViewCountCart.js";
-import { render_Total_And_Pay } from "../../../view/view.js";
 
 
 
@@ -15,6 +14,8 @@ export class AddProducts {
         this.storage = new StorageService()
         this.model = new Drive_Data_Cart()
         this.countCartNavBar = new ViewCountCart()
+        this.total = 0
+
     }
 
     addProductsInCart(paramProduct) {
@@ -66,27 +67,7 @@ export class AddProducts {
         return { result: isProductAddedOrUpdated || allQuantitiesAreZero, cart: this.model.modelCart };
     }
 
-    quantity_In_Cart(data) {
 
-        const acu = data === undefined || 0 ? 0 : data.reduce((previous, current) => {
-            return current.quantity === undefined ? previous : previous + current.quantity
 
-        }, 0)
-        this.countCartNavBar.createCartCont(acu)
-        return acu
-    }
 
-    controller_Cart() {
-        const total_And_Quantity = this.model.returnCopyLocalStorage().reduce((previous, current) => {
-            previous.quantity = current.quantity + previous.quantity;
-            previous.total += current.quantity * current.price;
-            return previous
-        }, { total: 0, quantity: 0 })
-
-        this.total = Number(total_And_Quantity.total.toFixed(2))
-
-        this.quantity_In_Cart(this.model.returnCopyLocalStorage())
-
-        render_Total_And_Pay(total_And_Quantity)
-    };
 }

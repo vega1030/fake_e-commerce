@@ -30,7 +30,11 @@ import { ModifyQuantity_Add } from './classes/Cart/ModifyQuantity_Add.js';
 import { ModifyQuantity_Subtract } from './classes/Cart/ModifyQuantity_Subtract.js';
 import { EventManager } from '../Event Manager/EventManager.js';
 import { DynamicCategories } from '../view/classes/home/DynamicCategories.js';
-import { Purchases } from './classes/Purchase/Purchases.js';
+import { ControlPurchases } from './classes/Purchase/ControlPurchases.js';
+import { ModelPurchases } from '../model/classes/Purchases/modelPurchases.js';
+import { HandlerQuantityAndTotal } from './classes/Cart/HandlerQuantityAndTotal.js';
+import { ControllerLanding } from './classes/Landing Page/ControllerLanding.js';
+import { MainProduct } from '../view/classes/home/MainProduct.js';
 
 
 const local_Storage = new StorageService()
@@ -58,6 +62,23 @@ export class HandlerClickFavorites {
     }
 }
 
+export class HandlerClickPurchase {
+
+    constructor() {
+        this.eventListeners = new EventManager()
+        this.modelPurchases = new ModelPurchases();
+        this.saveRealtime = new RealTimeDB()
+    }
+
+    addEventListenerPurchase() {
+        this.eventListeners.addListener('click', '#pay_confirm', (e) => {
+            console.log(e);
+            this.saveRealtime.saveDataPurchase(this.modelPurchases.createdPurchase())
+
+        })
+    }
+
+}
 
 class Control_View_Information_At_DOM {
 
@@ -71,6 +92,8 @@ class Control_View_Information_At_DOM {
         this.favoritesView = new View_Favorites()
         this.dynamicCategories = new DynamicCategories()
         this.eventListeners = new EventManager()
+        this.mainProduct = new MainProduct()
+        this.controllerLanding = new ControllerLanding()
 
 
     }
@@ -185,6 +208,10 @@ class Control_View_Information_At_DOM {
 
     }
 
+    landingPage() {
+
+        this.mainProduct.templateMainProduct(this.controllerLanding.singleProduct())
+    }
 
     controllerViewIndividualProduct() {
         const view_Element = document.querySelectorAll('.individual_product')
@@ -218,9 +245,9 @@ class Control_View_Information_At_DOM {
     }
 }
 
-class Control_cart {
+export class Control_cart {
 
-    constructor(total = 0, elementDom) {
+    constructor(elementDom) {
         this.model = new Drive_Data_Cart()
         this.RealTimeDB = new RealTimeDB()
         this.renderCards = new TemplateCardCart()
@@ -237,6 +264,8 @@ class Control_cart {
         this.acu = 0
         this.total = 0
         this.eventListeners = new EventManager();
+        this.totalAndQuantity = new HandlerQuantityAndTotal()
+
     }
 
     clearCart() {
@@ -273,7 +302,7 @@ class Control_cart {
             const product = await this.send_Id_To_Api(id);
             const cartResponse = this.addProductsInCart.addProductsInCart(product)
             this.model.setCartLocalStorage(cartResponse.cart);
-            this.addProductsInCart.controller_Cart();
+            this.totalAndQuantity.quantity_In_Cart();
         })
     }
 
@@ -298,10 +327,10 @@ class Control_cart {
                     this.subtract.id = Number(id)
                     this.subtract.subtractProduct()
                     const quantity = this.model.returnCopyLocalStorage().find(i => i.id === Number(id)).quantity
-                    console.log(this.model.returnCopyLocalStorage());
                     input.value = String(quantity);
                     quantity === 1 ? replace_Minus_Symbol_For_Trash_Basket(target, true) : null
-                    this.addProductsInCart.controller_Cart();
+                    this.totalAndQuantity.quantity_In_Cart();
+                    this.totalAndQuantity.controllerCart_Total_Quantity()
                 },
 
                 add: (target) => {
@@ -314,16 +343,18 @@ class Control_cart {
                     input.value = String(quantity);
                     quantity === 2 ? replace_Minus_Symbol_For_Trash_Basket(target.previousElementSibling.previousElementSibling, false) : null
                     quantity === 10 ? console.log('quantity no validate value') : console.log(true);
-                    this.addProductsInCart.controller_Cart();
+                    this.totalAndQuantity.quantity_In_Cart();
+                    this.totalAndQuantity.controllerCart_Total_Quantity()
                 },
 
                 trash_count: (target) => {
                     const id = target.getAttribute('data-id');
                     this.subtract.id = Number(id)
                     this.subtract.subtractProduct()
-                    this.addProductsInCart.controller_Cart();
                     this.renderCards.handle_Delete_Element_In_DOM(event.target.parentElement.parentElement.parentElement);
                     const instance_Control_Routes = new Control_Routes()
+                    this.totalAndQuantity.quantity_In_Cart();
+                    this.totalAndQuantity.controllerCart_Total_Quantity()
                     this.model.returnCopyLocalStorage().length === 0 ? instance_Control_Routes.reception_Hash('#home') : null;
                 },
 
@@ -342,44 +373,18 @@ class Control_cart {
         sectionCart.addEventListener('click', listenerTarget())
     }
 
-    confirm_Pay() {
-    }
-
-
-
-
 
     sendListCartToView() {
+
         this.eventListeners.addListener('click', '#section_cart', () => {
             this.renderCards.model_UiCart_List()
-            this.addProductsInCart.controller_Cart()
+            this.totalAndQuantity.controllerCart_Total_Quantity()
+            const controlPurchase = new HandlerClickPurchase()
+            //assign listener button of finally purchase
+            controlPurchase.addEventListenerPurchase()
+
         })
     }
-
-    assign_Event_Btn_Pay() {
-        const payEvent = document.querySelector('#view_section_cart');
-        payEvent.addEventListener('click', async (event) => {
-            const target = event.target;
-            if (target.classList.contains('btn_confirm_buy')) {
-                try {
-
-                    const test = document.querySelector('#view_section_cart');
-
-                } catch (error) {
-
-                    console.error('Error:', error);
-
-                } finally {
-                    this.createdPurchase();
-                    this.sendPurchaseToDB()
-                    const handler_Init_Page = new Control_View_Information_At_DOM()
-                    handler_Init_Page.controller_get_All_Products()
-
-                }
-            }
-        });
-    }
-
 
 
     //------------------------------------------------------------------------------------------------------------------	
@@ -451,18 +456,7 @@ class Control_cart {
 
 }
 
-class HandlerClickPurchase {
 
-    constructor() {
-        this.listener = new Purchases()
-    }
-
-    control_Listener(){
-        console.log('listener control');
-        this.listener.addListener()
-    }
-
-}
 
 class Firebase_Auth {
 
@@ -471,7 +465,7 @@ class Firebase_Auth {
         this.favoritesController = new Controller_Favorites()
         this.auth = new controllerLoginGmail()
         this.viewUser = new Display_Data_Firebase_User()
-        this.controlCart = new AddProducts()
+        this.total_quantity = new HandlerQuantityAndTotal()
         this.addEventCartProduct = new Control_cart()
 
     }
@@ -520,7 +514,7 @@ class Firebase_Auth {
                 const storageCart = storage.getItem(keysLocalStorage.CART)
                 const storageFavorite = storage.getItem(keysLocalStorage.FAVORITES)
                 viewFavorites.display_FavoritesHeart(storageFavorite)
-                this.controlCart.quantity_In_Cart(storageCart)
+                this.total_quantity.quantity_In_Cart(storageCart)
                 //------------------------------------------------------------------------------	
                 //------------------------------------------------------------------------------	
             }
@@ -566,15 +560,15 @@ if (typeof localStorage !== 'undefined') {
     const storage = new StorageService()
     const auth = new Firebase_Auth()
     const handler_Init_Page = new Control_View_Information_At_DOM()
+
     const favorites = new Controller_Favorites()
     const products_Instance = new TemplateCardsHome()
     const individualProduct = new ControlIndividualProduct()
     const clickFavorites = new HandlerClickFavorites()
-    const controlPurchase = new HandlerClickPurchase()
     /* -------------------------------------------------------------- */
 
     /* -------------------------------------------------------------- */
-
+    handler_Init_Page.landingPage()
     controller_Cart_Instance.sendListCartToView()
     const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
     products_Instance.create_Card(returnAllProducts),
@@ -585,14 +579,12 @@ if (typeof localStorage !== 'undefined') {
         controller_Cart_Instance.assign_Events_Products(),
         handler_Init_Page.controllerViewIndividualProduct()
     handler_Init_Page.listener_Category(),
-        controller_Cart_Instance.assign_Event_Btn_Pay(),
         storage.getItem(keysLocalStorage.FAVORITES).length !== 0 ? console.log('lleno') : console.log('vacio'),
         individualProduct.listenerAddCart(),
         individualProduct.listenerFavorite(),
         favorites.sendFavoriteToView(),
         clickFavorites.addListenerHeartFavorites(),
-        clickFavorites.addFavoriteSectionListener(),
-        controlPurchase.control_Listener()
+        clickFavorites.addFavoriteSectionListener()
 }
 //----------------------------------------------------------------	
 
@@ -608,7 +600,6 @@ testControllerUser.closeSession()
 export {
     Control_Routes,
     Control_View_Information_At_DOM,
-    Control_cart,
     loadSpinner,
     Firebase_Auth,
 }	
