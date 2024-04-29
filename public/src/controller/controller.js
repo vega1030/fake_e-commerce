@@ -33,8 +33,8 @@ import { DynamicCategories } from '../view/classes/home/DynamicCategories.js';
 import { ControlPurchases } from './classes/Purchase/ControlPurchases.js';
 import { ModelPurchases } from '../model/classes/Purchases/modelPurchases.js';
 import { HandlerQuantityAndTotal } from './classes/Cart/HandlerQuantityAndTotal.js';
-import { ControllerLanding } from './classes/Landing Page/ControllerLanding.js';
-import { MainProduct } from '../view/classes/home/MainProduct.js';
+import { ControllerMainProduct } from './classes/Landing Page/ControllerMainProduct.js';
+import { MainProductView } from '../view/classes/home/MainProductView.js';
 
 
 const local_Storage = new StorageService()
@@ -92,8 +92,8 @@ class Control_View_Information_At_DOM {
         this.favoritesView = new View_Favorites()
         this.dynamicCategories = new DynamicCategories()
         this.eventListeners = new EventManager()
-        this.mainProduct = new MainProduct()
-        this.controllerLanding = new ControllerLanding()
+        this.mainProductView = new MainProductView()
+        this.controllerMainProduct = new ControllerMainProduct()
 
 
     }
@@ -208,10 +208,6 @@ class Control_View_Information_At_DOM {
 
     }
 
-    landingPage() {
-
-        this.mainProduct.templateMainProduct(this.controllerLanding.singleProduct())
-    }
 
     controllerViewIndividualProduct() {
         const view_Element = document.querySelectorAll('.individual_product')
@@ -559,16 +555,16 @@ if (typeof localStorage !== 'undefined') {
     const controller_Cart_Instance = new Control_cart()
     const storage = new StorageService()
     const auth = new Firebase_Auth()
-    const handler_Init_Page = new Control_View_Information_At_DOM()
-
+    
     const favorites = new Controller_Favorites()
     const products_Instance = new TemplateCardsHome()
     const individualProduct = new ControlIndividualProduct()
     const clickFavorites = new HandlerClickFavorites()
+    const handler_Init_Page = new Control_View_Information_At_DOM()
     /* -------------------------------------------------------------- */
 
     /* -------------------------------------------------------------- */
-    handler_Init_Page.landingPage()
+
     controller_Cart_Instance.sendListCartToView()
     const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
     products_Instance.create_Card(returnAllProducts),

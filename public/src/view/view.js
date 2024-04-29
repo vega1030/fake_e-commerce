@@ -1,24 +1,17 @@
 "use strict";
 
-import { MainProduct } from "./classes/home/MainProduct.js";
 
 
 
-class InsertTemplate {
-    constructor() {
-        this.templateMainProduct = new MainProduct()
-    }
+export class InsertTemplate {
 
-    async insertTemplateLanding() {
-        const contentMainProduct = document.createElement("home")
-        contentMainProduct.innerHTML = await this.templateMainProduct.templateMainProduct()
+    async insertTemplate(template) {
+        const contentMainProduct = document.querySelector("#home")
+        contentMainProduct.innerHTML = template
+        console.log(contentMainProduct);
         return contentMainProduct;
     }
-
 }
-const insertTemplate = new InsertTemplate()
-insertTemplate.insertTemplateLanding()
-console.log(insertTemplate.insertTemplateLanding());
 
 
 class TemplateCards {

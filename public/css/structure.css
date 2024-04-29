@@ -90,7 +90,7 @@ body {
    height: 100%;
    justify-items: center;
    align-items: center;
-   padding: 2%;
+   padding: 3%;
 }
 
 .container-video-banner {
@@ -923,6 +923,40 @@ h1 {
 
    .section_home_page {
       align-items: flex-start;
+      place-items: center;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(4rem, 1fr));
+      grid-template-rows: repeat(10, 13ch);
+      grid-column: 1/-1;
+      grid-row: 2/4;
+      width: 100vw;
+      height: 48%;
+      justify-items: center;
+      align-items: center;
+      padding: 3%;
+   }
+
+   .container-main-banner img {
+      width: 66%;
+      height: auto;
+      box-shadow: 0 6px 4px rgb(0 0 0 / 10%);
+      border-radius: 42px;
+   }
+
+   .vertical-container {
+      display: flex;
+      flex-direction: column;
+      writing-mode: horizontal-tb;
+      text-align: center;
+      line-height: 1.5;
+      grid-column: 5/5;
+      grid-row: 3/3;
+
+   }
+
+   .font_banner {
+      font-size: 2rem;
+      font-weight: bold;
    }
 
    .font-video-legend {
@@ -945,6 +979,12 @@ h1 {
       border: 0.2ch solid black;
       flex-direction: column;
       gap: 27%;
+   }
+
+   .container-main-banner div {
+      display: flex;
+      justify-content: center;
+
    }
 
    .ui_Cart .content_card____cart {
@@ -1107,13 +1147,13 @@ h1 {
       width: 100vw;
       height: 100%;
       grid-template-columns: repeat(auto-fill, minmax(24ch, 0.5ch));
-      grid-template-rows: repeat(auto-fill, minmax(18ch, 0.5ch));
+      grid-template-rows: repeat(auto-fill, minmax(14ch, 0.5ch));
    }
 
    .header {
       display: grid;
       grid-template-rows: 9ch;
-      height: 78%;
+      height: 100%;
       gap: 1%;
       grid-row: 1/2;
    }
@@ -1313,6 +1353,7 @@ h1 {
 }
 
 /* ------------------HOME-------------------------- */
+
 
 
 

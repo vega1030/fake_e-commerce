@@ -31,12 +31,12 @@
 
 @font-face {
    font-family: 'bannerFont';
-   src: url('./../fonts/brifa/Brifa-Personal.otf');
+   src: url('./../fonts/Lato/Lato-Thin.ttf');
 }
 
-.font-video-legend {
+.font_banner {
    font-family: 'bannerFont' !important;
-   font-size: 5.5em;
+   font-size: 3.5rem;
 }
 
 *:not(.pathHeart, .bi) {
@@ -297,9 +297,11 @@ h2 {
       background-color: rgba(232, 219, 219, 0.3);
       color: black;
    }
+
+
 }
 
-@media screen and (min-device-width:18.75rem) and (max-device-width: 30rem) and (orientation: portrait) {
+@media only screen and (max-width:31.25rem) and (orientation: portrait) {
 
 
    .header {
@@ -311,4 +313,33 @@ h2 {
       background-color: rgba(232, 219, 219, 0.3);
       color: black;
    }
+
+   /* Main product Ini Page */
+
+   .container-main-banner {
+      width: 18.75rem;
+      grid-column: 1/4;
+      grid-row: 1/6;
+      display: flex;
+      align-items: center;
+      height: 31.25rem;
+      border-radius: 12.5rem;
+      background-color: #4C696F;
+      box-shadow: 0 13px 18px rgb(0 0 0 / 10%);
+      place-items: center;
+   }
+
+   .container-main-banner img {
+
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+   }
+
+   .section_home_page .container-main-banner {}
+
+   .section_home_page {
+      background-color: #CCCEC5;
+
+   }
+
 }
