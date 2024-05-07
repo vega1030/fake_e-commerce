@@ -29,13 +29,12 @@ import { AddProducts } from './classes/Cart/AddProducts.js';
 import { ModifyQuantity_Add } from './classes/Cart/ModifyQuantity_Add.js';
 import { ModifyQuantity_Subtract } from './classes/Cart/ModifyQuantity_Subtract.js';
 import { EventManager } from '../Event Manager/EventManager.js';
-import { DynamicCategories } from '../view/classes/home/DynamicCategories.js';
-import { ControlPurchases } from './classes/Purchase/ControlPurchases.js';
-import { ModelPurchases } from '../model/classes/Purchases/modelPurchases.js';
+import { DynamicCategories } from '../view/classes/category/DynamicCategories.js';
 import { HandlerQuantityAndTotal } from './classes/Cart/HandlerQuantityAndTotal.js';
 import { ControllerMainProduct } from './classes/Landing Page/ControllerMainProduct.js';
 import { MainProductView } from '../view/classes/home/MainProductView.js';
-
+/* import { ModelPurchases } from '../model/classes/Purchases/ModelPurchases.js';
+ */
 
 const local_Storage = new StorageService()
 const handler_View = new Handler_Displays_Ui()
@@ -66,17 +65,17 @@ export class HandlerClickPurchase {
 
     constructor() {
         this.eventListeners = new EventManager()
-        this.modelPurchases = new ModelPurchases();
-        this.saveRealtime = new RealTimeDB()
+/*         this.modelPurchases = new ModelPurchases();
+ */        this.saveRealtime = new RealTimeDB()
     }
-
+/* 
     addEventListenerPurchase() {
         this.eventListeners.addListener('click', '#pay_confirm', (e) => {
             console.log(e);
             this.saveRealtime.saveDataPurchase(this.modelPurchases.createdPurchase())
 
         })
-    }
+    } */
 
 }
 
