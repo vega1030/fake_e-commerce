@@ -2,10 +2,14 @@
   "name": "fake-commerce",
   "version": "1.0.0",
   "description": "E-commerce service of practical applications",
-  "main": "index.js",
+  "main": "server.mjs",
   "type": "module",
   "scripts": {
-    "test": "mocha"
+    "start": "node server.mjs",
+    "test": "mocha",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
   },
   "author": "Fernando Vega",
   "license": "ISC",
@@ -17,9 +21,22 @@
     "jsdom": "^22.0.0",
     "mocha": "^10.2.0",
     "mock-local-storage": "^1.1.24",
-    "sinon": "^15.0.4"
+    "sinon": "^15.0.4",
+    "vite": "^4.5.3"
   },
   "dependencies": {
     "node-localstorage": "^2.2.1"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vega1030/fake_e-commerce.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/vega1030/fake_e-commerce/issues"
+  },
+  "homepage": "https://github.com/vega1030/fake_e-commerce#readme"
 }
