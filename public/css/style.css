@@ -34,11 +34,6 @@
    src: url('./../fonts/Lato/Lato-Thin.ttf');
 }
 
-.font_banner {
-   font-family: 'bannerFont' !important;
-   font-size: 3.5rem;
-}
-
 *:not(.pathHeart, .bi) {
    color: var(--color_font);
    font-family: 'mainFont', sans-serif;
@@ -46,6 +41,18 @@
 
 * {
    font-size: 1rem;
+}
+
+.vertical-container h3 {
+   font-family: 'bannerFont' !important;
+   font-size: 2rem;
+   font-weight: 800;
+}
+
+.container-main-banner p {
+   font-family: 'bannerFont', sans-serif;
+   font-size: 1.3rem;
+   font-weight: 800;
 }
 
 /* header style */
@@ -287,6 +294,14 @@ h2 {
    background-color: var(--color_2);
 }
 
+@media only screen and (width <=31.25rem) {
+   .container-main-banner p {
+      color: var(--color_2);
+   }
+
+
+}
+
 @media screen and (min-device-width:18.75rem) and (max-device-width: 30rem) and (orientation: landscape) {
    .header {
       background-color: var(--color_2);
@@ -335,7 +350,6 @@ h2 {
 
    }
 
-   .section_home_page .container-main-banner {}
 
    .section_home_page {
       background-color: #CCCEC5;
