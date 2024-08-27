@@ -7,6 +7,7 @@ import {
     GoogleAuthProvider,
     signOut,
     browserLocalPersistence,
+    onAuthStateChanged,
     browserSessionPersistence,
     signInWithRedirect,
     inMemoryPersistence
@@ -18,9 +19,10 @@ import { keySessionStorage, keysLocalStorage } from '../constants.js';
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 
-class Auth {
+export class Auth {
     constructor() {
         this.uid = ''
+        this.user = ''
     }
 
 
@@ -34,9 +36,35 @@ class Auth {
         const email = newUid.getItem(keysLocalStorage.EMAIL)
         const user = { uid, picture, name, email }
         return user
-
     }
 
+    async checkUserConnection() {
+        try {
+            const user = await new Promise((resolve, reject) => {
+                const unsubscribe = onAuthStateChanged(auth, (user) => {
+                    unsubscribe();
+                    resolve(user);
+                }, (error) => {
+                    reject(error);
+                });
+            });
+
+            if (user) {
+                this.user = user;
+                console.log('check User is connected:', user);
+                return {
+                    user:this.user,
+                    state: true
+                };
+            } else {
+                console.log(' check User is disconnected');
+                return false;
+            }
+        } catch (error) {
+            console.error('Error checking user connection:', error);
+            return false;
+        }
+    }
 
     async loginWithGmail() {
         try {
@@ -44,6 +72,8 @@ class Auth {
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
+            this.uid = user.uid
+            this.checkUserConnection()
             return user;
         } catch (error) {
             const errorCode = error.code;
@@ -69,7 +99,4 @@ class Auth {
             console.error('Error al cerrar sesión', errorCode, errorMessage);
         }
     }
-}
-export {
-    Auth
 }

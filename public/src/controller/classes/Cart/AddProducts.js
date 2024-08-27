@@ -5,9 +5,6 @@ import { StorageService } from "../../../model/classes/storage/StorageService.js
 import { ViewCountCart } from "../../../view/classes/cart/ViewCountCart.js";
 
 
-
-
-
 export class AddProducts {
 
     constructor() {
@@ -40,7 +37,6 @@ export class AddProducts {
                     console.log('quantity invalid');
                     return this.model.modelCart;
                 }
-
             } else {
                 acc.push(e);
             }
@@ -63,7 +59,7 @@ export class AddProducts {
         if (isProductAddedOrUpdated || allQuantitiesAreZero) {
             this.model.modelCart = updatedCartReduced;
         }
-
+        console.log(this.model.modelCart);
         return { result: isProductAddedOrUpdated || allQuantitiesAreZero, cart: this.model.modelCart };
     }
 

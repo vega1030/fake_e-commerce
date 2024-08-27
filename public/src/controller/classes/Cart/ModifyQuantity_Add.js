@@ -8,7 +8,4 @@ export class ModifyQuantity_Add extends ModifyQuantity_Subtract {
         this.updateQuantity.update_Quantity_Cart(this.id, false)
         return
     }
-
-
-    
 }

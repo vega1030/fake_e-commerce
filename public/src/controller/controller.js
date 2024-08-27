@@ -11,8 +11,7 @@ import { keySessionStorage, keysLocalStorage } from '../constants.js'
 import { Drive_Data_Cart } from '../model/classes/Cart/Drive_Data_Cart.js'
 import { StorageService } from '../model/classes/storage/StorageService.js'
 import { Controller_Favorites } from './classes/Favorites/Controller_Favorites.js'
-import { ControlIndividualProduct } from './classes/Individual Product/ControlIndividualProduct.js'
-import { Auth } from '../services/auth.js';
+import { ControlIndividualProduct } from './classes/Individual_Product/ControlIndividualProduct.js'
 import {
     Handler_Displays_Ui,
     View_Favorites,
@@ -22,7 +21,7 @@ import {
 } from "../view/view.js";
 import { controllerActivityUser } from './classes/Controller Auth/controllerActivityUser.js';
 import { RealTimeDB } from '../services/realtimedatabase.js'
-import { controllerLoginGmail } from './classes/Controller Auth/controllerLoginGmail.js';
+import { ControllerLoginGmail } from './classes/Controller Auth/controllerLoginGmail.js';
 import { TemplateCardsHome } from '../view/classes/home/TemplateCardsHome.js';
 import { TemplateCardCart } from '../view/classes/cart/TemplateCardCart.js';
 import { AddProducts } from './classes/Cart/AddProducts.js';
@@ -31,10 +30,10 @@ import { ModifyQuantity_Subtract } from './classes/Cart/ModifyQuantity_Subtract.
 import { EventManager } from '../Event Manager/EventManager.js';
 import { DynamicCategories } from '../view/classes/category/DynamicCategories.js';
 import { HandlerQuantityAndTotal } from './classes/Cart/HandlerQuantityAndTotal.js';
-import { ControllerMainProduct } from './classes/Landing Page/ControllerMainProduct.js';
+import { ControllerMainProduct } from './classes/Landing_Page/ControllerMainProduct.js';
 import { MainProductView } from '../view/classes/home/MainProductView.js';
-/* import { ModelPurchases } from '../model/classes/Purchases/ModelPurchases.js';
- */
+import { IndividualProduct } from '../view/classes/individual_product/individualProduct.js';
+import { ModalLogin } from '../view/classes/Modal_Login/ModalLogin.js';
 
 const local_Storage = new StorageService()
 const handler_View = new Handler_Displays_Ui()
@@ -44,18 +43,19 @@ export class HandlerClickFavorites {
     constructor() {
         this.eventListeners = new EventManager()
         this.instanceFavorites = new Controller_Favorites()
+        this.stateUser = new ControllerLoginGmail()
     }
 
-    addListenerHeartFavorites() {
+    async addListenerHeartFavorites() {
         this.eventListeners.addListener('click', '.favorite', (e) => {
             this.instanceFavorites.handler_Favorites(e)
+            console.log(this.stateUser.stateUser());
         })
     }
 
 
     addFavoriteSectionListener() {
         this.eventListeners.addListener('click', '#favorites', (e) => {
-            console.log(e);
             this.instanceFavorites.sendFavoriteToView()
         })
     }
@@ -68,18 +68,18 @@ export class HandlerClickPurchase {
 /*         this.modelPurchases = new ModelPurchases();
  */        this.saveRealtime = new RealTimeDB()
     }
-/* 
-    addEventListenerPurchase() {
-        this.eventListeners.addListener('click', '#pay_confirm', (e) => {
-            console.log(e);
-            this.saveRealtime.saveDataPurchase(this.modelPurchases.createdPurchase())
-
-        })
-    } */
+    /* 
+        addEventListenerPurchase() {
+            this.eventListeners.addListener('click', '#pay_confirm', (e) => {
+                console.log(e);
+                this.saveRealtime.saveDataPurchase(this.modelPurchases.createdPurchase())
+    
+            })
+        } */
 
 }
 
-class Control_View_Information_At_DOM {
+export class Control_View_Information_At_DOM {
 
     constructor(products = [], categories, total) {
         this.products = products
@@ -127,6 +127,8 @@ class Control_View_Information_At_DOM {
             const handler_Init_Page = new Control_View_Information_At_DOM()
             const controller_Cart_Instance = new Control_cart()
             const products_Instance = new TemplateCardsHome()
+            const listenerFavorites = new HandlerClickFavorites()
+            listenerFavorites.addListenerHeartFavorites()
             //-----------------------------------//	
             const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
             products_Instance.create_Card(returnAllProducts)
@@ -136,7 +138,6 @@ class Control_View_Information_At_DOM {
             this.favoritesView.display_FavoritesHeart(serviceStorage.getItem(keysLocalStorage.FAVORITES))
             individualProduct.controllerViewIndividualProduct() //create instance of controlindividualproduct
             controller_Cart_Instance.add_Cart_Listener()
-            this.HandlerClickFavorites.addListenerHeartFavorites()
         })
     }
 
@@ -221,7 +222,8 @@ class Control_View_Information_At_DOM {
                 asynchronously using `await`. */
                 const instanceIndividualProduct = new ControlIndividualProduct()
                 const product = await instanceIndividualProduct.handlerSingleProduct(e.target.dataset.id)
-                const products_Instance = new TemplateCards()
+                const products_Instance = new IndividualProduct()
+
 
                 /* ---------------------- */
 
@@ -232,6 +234,9 @@ class Control_View_Information_At_DOM {
                 products_Instance.heartsDom = targetHeart
                 products_Instance.uI_Individual_Card(product)
                 products_Instance.insertIndividualCard()
+                instanceIndividualProduct.listenerAddCart()
+
+
 
                 /* ---------------------- */
 
@@ -246,7 +251,6 @@ export class Control_cart {
         this.model = new Drive_Data_Cart()
         this.RealTimeDB = new RealTimeDB()
         this.renderCards = new TemplateCardCart()
-        this.auth = new Auth()
         this.subtract = new ModifyQuantity_Subtract()
         this.add = new ModifyQuantity_Add()
         this.storage = new StorageService()
@@ -276,7 +280,6 @@ export class Control_cart {
             try {
                 const result = await get_Single_Product(id);
                 this.single_Product = result;
-
                 const product = {
                     quantity: 1,
                     ...this.single_Product
@@ -300,7 +303,6 @@ export class Control_cart {
             this.totalAndQuantity.quantity_In_Cart();
         })
     }
-
 
     /* The above code is defining an event listener for the click event on an element with the ID	
     "ui_Cart". When a click event occurs, the code checks the class name of the clicked element and	
@@ -453,12 +455,12 @@ export class Control_cart {
 
 
 
-class Firebase_Auth {
+export class Firebase_Auth {
 
-    constructor(auth) {
+    constructor() {
         this.uid = ''
         this.favoritesController = new Controller_Favorites()
-        this.auth = new controllerLoginGmail()
+        this.auth = new ControllerLoginGmail()
         this.viewUser = new Display_Data_Firebase_User()
         this.total_quantity = new HandlerQuantityAndTotal()
         this.addEventCartProduct = new Control_cart()
@@ -476,11 +478,12 @@ class Firebase_Auth {
 
         //------------------------------------------------------------------------------	
 
-        const insertLogoUser = (photoProfile = './icon/user.png') => {
-            this.viewUser.displayProfilePhoto(photoProfile)
+        const insertLogoUser = (photoProfile) => {
+            console.log(this.auth.user);
             if (this.auth.user) {
                 return this.viewUser.displayProfilePhoto(photoProfile)
             }
+            this.viewUser.displayProfilePhoto()
         }
 
 
@@ -490,10 +493,9 @@ class Firebase_Auth {
         const buttonLogin = document.querySelector('#google-sign-in-btn')
         buttonLogin.addEventListener('click', async (e) => {
             const storage = new StorageService()
-
             e.preventDefault()
             try {
-
+                //user disconnected
                 if (this.auth.user != null) {
                     this.auth.handlerStateStorageDisconnected()
                     this.auth.user = null
@@ -503,6 +505,8 @@ class Firebase_Auth {
                     console.log('disconnected');
                     return this.auth.user
                 }
+
+                //user connected
                 const viewFavorites = new View_Favorites()
                 await this.auth.handlerStateStorageConnected()
                 insertLogoUser(this.auth.user.photoURL)
@@ -554,16 +558,20 @@ if (typeof localStorage !== 'undefined') {
     const controller_Cart_Instance = new Control_cart()
     const storage = new StorageService()
     const auth = new Firebase_Auth()
-    
     const favorites = new Controller_Favorites()
     const products_Instance = new TemplateCardsHome()
     const individualProduct = new ControlIndividualProduct()
     const clickFavorites = new HandlerClickFavorites()
     const handler_Init_Page = new Control_View_Information_At_DOM()
-    /* -------------------------------------------------------------- */
-
-    /* -------------------------------------------------------------- */
-
+    const userData = async () => {
+        const control_LoginGmail = new ControllerLoginGmail()
+        const user = await control_LoginGmail.stateUser()
+        console.log(user);
+        userView.displayProfilePhoto(user.photoURL);
+        /* -------------------------------------------------------------- */
+    }
+    userData()
+    const userView = new Display_Data_Firebase_User()
     controller_Cart_Instance.sendListCartToView()
     const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
     products_Instance.create_Card(returnAllProducts),
@@ -572,29 +580,22 @@ if (typeof localStorage !== 'undefined') {
         await handler_Init_Page.control_View_Categories(),
         controller_Cart_Instance.add_Cart_Listener(),
         controller_Cart_Instance.assign_Events_Products(),
-        handler_Init_Page.controllerViewIndividualProduct()
-    handler_Init_Page.listener_Category(),
+        handler_Init_Page.controllerViewIndividualProduct(),
+        handler_Init_Page.listener_Category(),
         storage.getItem(keysLocalStorage.FAVORITES).length !== 0 ? console.log('lleno') : console.log('vacio'),
-        individualProduct.listenerAddCart(),
         individualProduct.listenerFavorite(),
         favorites.sendFavoriteToView(),
         clickFavorites.addListenerHeartFavorites(),
         clickFavorites.addFavoriteSectionListener()
+
 }
+
 //----------------------------------------------------------------	
-
-
-
 const testControllerUser = new controllerActivityUser()
 testControllerUser.closeSession()
-
 //----------------------------------------------------------------	
-
-
 
 export {
     Control_Routes,
-    Control_View_Information_At_DOM,
     loadSpinner,
-    Firebase_Auth,
 }	
