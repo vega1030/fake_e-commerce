@@ -1,8 +1,4 @@
 /*Variables*/
-@font-face {
-   font-family: 'mainFont';
-   src: url('./../fonts/Exo_2/Exo2-VariableFont_wght.ttf') format('truetype');
-}
 
 :root {
    --color_2: rgb(245, 242, 237);
@@ -14,51 +10,57 @@
    --color_font_dark_mode: rgb(238, 238, 238);
    --color_background_card_dark_mode: rgb(58, 71, 80);
    --color_font: #242424;
-   --color-background: #e9ecef;
-   --color-background_count_cart: rgb(235, 186, 52, .98 );
+   --color-background: rgba(255, 255, 255, 0.9);
+   --color-decoration: rgb(235, 186, 52, .98);
 }
 
-/* header style */
+@font-face {
+   font-family: 'mainFont';
+   src: url('./../fonts/Exo_2/Exo2-VariableFont_wght.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'titleFont';
+   src: url('./../fonts/Electrolize/Electrolize-Regular.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'auxFont';
+   src: url('./../fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'bannerFont';
+   src: url('./../fonts/brifa/Brifa-Personal.otf');
+}
+
+.font-video-legend {
+   font-family: 'bannerFont' !important;
+   font-size: 5.5em;
+}
+
 *:not(.pathHeart, .bi) {
    color: var(--color_font);
    font-family: 'mainFont', sans-serif;
 }
-.count_elements_at_cart {
-   background-color: var(--color-background_count_cart)
-};
 
-@media screen and (min-width: 360px) and (max-width: 428px) {
-*{
-   font-size: .75rem;
+* {
+   font-size: 1rem;
 }
-   .count_elements_at_cart {
-      background-color: var(--color-background_count_cart);
-      position: absolute;
-      top: 1.85rem;
-      /* bottom: -0.1rem; */
-      right: 0.6rem;
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      text-align: center;
-   }
+
+/* header style */
+
+.btn-primary {
+   font-family: 'mainFont', sans-serif !important;
+   background-color: var(--color-background);
+   border-color: black;
 
 }
 
 body {
    background-color: var(--color-background);
-
 }
 
-.header {
-   background-color: var(--color_2);
-   box-shadow: var(--shadow_box);
-}
-
-.nav>.nav-links>a:hover {
-   background-color: rgba(232, 219, 219, 0.3);
-   color: black;
-}
 
 .content-sale__child {
    background-color: #ffffff;
@@ -92,9 +94,7 @@ input[type=number]::-webkit-outer-spin-button {
    margin: 0;
 }
 
-input[type=number] {
-   -moz-appearance: textfield;
-}
+
 
 
 .content_card____cart {
@@ -125,10 +125,6 @@ ul {
    list-style: none;
 }
 
-.nav {
-   align-content: center;
-}
-
 .header,
 .navbar {
    background: var(--color_2) !important;
@@ -150,26 +146,22 @@ ul {
 
 
 
-.title {
+.content-title {
    width: 100%;
    display: grid;
    justify-content: center;
    align-items: center;
 }
 
+.content-title h1 {
+   font-family: 'auxFont', sans-serif;
+
+   font-weight: 500;
+}
+
 h1,
 h3 {
    display: block;
-}
-
-.form-control {
-   width: 100%;
-}
-
-
-
-.form-init {
-   text-align: center;
 }
 
 .content-spinner {
@@ -180,7 +172,6 @@ h3 {
    bottom: 0;
    z-index: 9999;
    background-color: rgba(0, 0, 0, 0.5);
-   backdrop-filter: blur(10px);
    pointer-events: none;
    transition: opacity 0.3s ease-in-out;
    opacity: 0;
@@ -287,56 +278,37 @@ h2 {
    padding: .5%;
 }
 
-.content-text__footer {
-   width: 50%;
-   height: 30%;
-}
-
-.content_icons {
-   width: 27%;
-   display: flex;
-}
-
-.icon {
-   width: 35%;
-}
 
 .content_total {
    background-color: var(--color-background);
 }
 
-@media (max-width:600px) {
-   .nav>.nav-links {
+.nav>#nav-check:checked~.nav-links {
+   background-color: var(--color_2);
+}
+
+@media screen and (min-device-width:18.75rem) and (max-device-width: 30rem) and (orientation: landscape) {
+   .header {
       background-color: var(--color_2);
-
+      box-shadow: var(--shadow_box);
    }
 
-
-
-}
-
-@media (min-width: 375px) and (max-width: 600px) {
-
-   .trash_count {
-      width: 65%;
+   .nav>.nav-links>a:hover {
+      background-color: rgba(232, 219, 219, 0.3);
+      color: black;
    }
 }
 
-@media (prefers-color-scheme: dark) {
-   img {
-      filter: brightness(.8) contrast(1.2);
+@media screen and (min-device-width:18.75rem) and (max-device-width: 30rem) and (orientation: portrait) {
+
+
+   .header {
+      background-color: var(--color_2);
+      box-shadow: var(--shadow_box);
    }
 
-   body {
-      color: var(--color_font_dark_mode)
+   .nav>.nav-links>a:hover {
+      background-color: rgba(232, 219, 219, 0.3);
+      color: black;
    }
-
-   .favorite {}
-
-   .content-sale__child {
-      background-color: #ffffff;
-      /*     background-color: var(--color_background_card_dark_mode);
- */
-   }
-
 }

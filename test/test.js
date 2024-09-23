@@ -4,10 +4,13 @@ import { createRequire } from 'module';
 import { JSDOM } from 'jsdom';
 import sinon from 'sinon';
 import { it, describe } from 'mocha';
-import { Control_cart } from '../public/js/controller.js';
-import { Control_Favorites } from "../public/js/controller.js";
-import { keysLocalStorage } from '../public/js/constants.js';
 import { storageMock } from './storageMock.js';
+import { Drive_Data_Cart } from '../public/src/model/classes/Cart/Drive_Data_Cart.js';
+import { AddProducts } from '../public/src/controller/classes/Cart/AddProducts.js';
+import { keysLocalStorage } from '../public/src/constants.js';
+import { Drive_Data_Favorites } from '../public/src/model/classes/Favorites/Drive_Data_Favorites.js';
+
+
 const require = createRequire(import.meta.url)
 
 const testLocalStorage = new LocalStorage('./scratch');
@@ -26,7 +29,7 @@ describe('----Method quantity_In_Cart----', () => {
 
 
   it('should return 0 if data is not provided', () => {
-    const testCart = new Control_cart()
+    const testCart = new AddProducts()
 
     //Arrange
     const data = undefined
@@ -37,7 +40,7 @@ describe('----Method quantity_In_Cart----', () => {
     expect(result).to.equal(0)
   })
   it('should calculate the total quantity and update localStorage', () => {
-    const testCart = new Control_cart()
+    const testCart = new AddProducts()
 
     // Arrange
     const data = [
@@ -58,7 +61,7 @@ describe('----Method quantity_In_Cart----', () => {
     // Add any additional assertions based on your implementation
   })
   it('should calculate the total quantity with one quantity is undefined and update localStorage', () => {
-    const testCart = new Control_cart()
+    const testCart = new AddProducts()
 
     // Arrange
     const data = [
@@ -92,7 +95,7 @@ describe('----Method addProductsInCart----', () => {
   })
 
   it('should add a product to the cart', () => {
-    const testCart = new Control_cart()
+    const testCart = new AddProducts()
 
     testLocalStorage.clear()
     storage.removeItem(keysLocalStorage.CART)
@@ -111,13 +114,12 @@ describe('----Method addProductsInCart----', () => {
     /* Clean storage */
     testLocalStorage.clear()
     /* ----------- */
-    testCart.clearCart()
 
   });
 
 
   it('should update cart with a different id', () => {
-    const testCart = new Control_cart()
+    const testCart = new AddProducts()
 
     /* Clean storage */
     storage.removeItem(keysLocalStorage.CART)
@@ -147,7 +149,7 @@ describe('----Method addProductsInCart----', () => {
 
 
   it('should update the quantity of an existing product in the cart', () => {
-    const testCart = new Control_cart()
+    const testCart = new AddProducts()
     const existingProduct = { id: 6, quantity: 1 };
     const paramProduct = { id: 6, quantity: 2 };
     const paramProduct2 = { id: 6, quantity: 3 };
@@ -160,14 +162,13 @@ describe('----Method addProductsInCart----', () => {
 
     //new id into the cart
     expect(res1.result).to.be.false;
-    testCart.clearCart()
 
   });
 
 
 
   it('should not update the cart if product quantity is 0', () => {
-    const testCart = new Control_cart()
+    const testCart = new AddProducts()
     const existingProduct = { id: 1, quantity: 1 };
     const paramProduct = { id: 1, quantity: 0 };
 
@@ -184,12 +185,90 @@ describe('----Method addProductsInCart----', () => {
 
 })
 
+describe('merge arrays Drive Data Cart', () => {
+  it('merged the arrays. The array of localStorage and the array of RealTime ', () => {
+    const testDataCart = new Drive_Data_Cart();
+
+    // Definir los datos de prueba
+    const cartFromDB = [
+      { id: 1, quantity: 10 },
+      { id: 6, quantity: 1 },
+      { id: 4, quantity: 2 },
+      { id: 8, quantity: 1 },
+      { id: 10, quantity: 1 },
+      { id: 2, quantity: 2 },
+      { id: 5, quantity: 3 },
+      { id: 9, quantity: 3 }
+    ];
+
+    const cartFromLocalStorage = [
+      { id: 9, quantity: 3 },
+      { id: 1, quantity: 5 },
+      { id: 2, quantity: 2 },
+      { id: 4, quantity: 10 },
+      { id: 10, quantity: 3 },
+
+    ];
+
+    const finalArray = [
+      { id: 1, quantity: 10 },
+      { id: 6, quantity: 1 },
+      { id: 4, quantity: 10 },
+      { id: 8, quantity: 1 },
+      { id: 10, quantity: 4 },
+      { id: 2, quantity: 4 },
+      { id: 5, quantity: 3 },
+      { id: 9, quantity: 6 }
+    ]
+    const result = testDataCart.mergeCart(cartFromDB, cartFromLocalStorage);
+    console.log('result ', result);
+    // Assert
+    expect(result).to.deep.equal(finalArray);
+  });
+  it('merged the arrays. The array of localStorage and the array of RealTime with an undefined and null element', () => {
+    const cartFromDB = [
+      { id: 1, quantity: 10 },
+      { id: 6, quantity: 1 },
+      { id: 4, quantity: 2 },
+      { id: 8, quantity: 1 },
+      { id: 10, quantity: 1 },
+      { id: 2, quantity: 2 },
+      { id: 5, quantity: 3 },
+      { id: 9, quantity: 3 },
+      undefined
+    ];
+
+    const cartFromLocalStorage = [
+      { id: 9, quantity: 3 },
+      { id: 1, quantity: 5 },
+      { id: 2, quantity: 2 },
+      { id: 4, quantity: 10 },
+      { id: 10, quantity: 3 },
+      null
+    ];
+
+    const finalArray = [
+      { id: 1, quantity: 10 },
+      { id: 6, quantity: 1 },
+      { id: 4, quantity: 10 },
+      { id: 8, quantity: 1 },
+      { id: 10, quantity: 4 },
+      { id: 2, quantity: 4 },
+      { id: 5, quantity: 3 },
+      { id: 9, quantity: 6 }
+    ]
+
+  });
+
+});
+
+
 describe('----Method save_And_Update_Favorites----', () => {
 
   it('should create favorite list', () => {
 
 
-    const testFavorites = new Control_Favorites()
+    const testFavorites = new Drive_Data_Favorites()
 
     const product1 = {
       id: 4,
@@ -250,7 +329,6 @@ describe('----Method save_And_Update_Favorites----', () => {
     const result = testFavorites.save_And_Update_Favorites(product1)
     const result2 = testFavorites.save_And_Update_Favorites(product2)
     const result3 = testFavorites.save_And_Update_Favorites(product3)
-
     testLocalStorage.setItem(keysLocalStorage.FAVORITES, JSON.stringify(result3))
     expect(testLocalStorage.getItem(keysLocalStorage.FAVORITES)).to.deep.equal(JSON.stringify(resFavorites));
 
@@ -262,7 +340,7 @@ describe('----Method save_And_Update_Favorites----', () => {
 
   it('should dislike one favorite product', () => {
 
-    const testFavorites = new Control_Favorites()
+    const testFavorites = new Drive_Data_Favorites()
 
     const product1 = {
       id: 4,
@@ -317,8 +395,6 @@ describe('----Method save_And_Update_Favorites----', () => {
     const result = testFavorites.save_And_Update_Favorites(product1)
     const final_result = testFavorites.save_And_Update_Favorites(product1)
 
-    console.table(final_result);
-
     testLocalStorage.setItem(keysLocalStorage.FAVORITES, JSON.stringify(final_result))
     expect(testLocalStorage.getItem(keysLocalStorage.FAVORITES)).to.deep.equal(JSON.stringify(newResFavorites));
 
@@ -327,5 +403,5 @@ describe('----Method save_And_Update_Favorites----', () => {
 
   });
 })
-  //-------------------------//
+//-------------------------//
 

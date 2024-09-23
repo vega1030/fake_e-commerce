@@ -8,12 +8,15 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
     <script src="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.js"></script>
+    <script>src = './js/initPage.js'</script>
     <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.css" />
-    <!--     <meta name="color-scheme" content="dark light">
- -->
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.2/firebase-ui-auth.js"></script>
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/structure.css">
     <link rel="shortcut icon" href="./icon/iconmonstr-shop-13.svg" type="image/x-icon">
+    <meta property="og:image" content="https://fakecommerce-2022.web.app/public/icon/e-commerce(1).png">
+    <meta property="og:title" content="fake-commerce">
+    <meta property="og:description" content="This is a project for my portfolio">
     <title>E-Commerce</title>
 </head>
 
@@ -32,206 +35,175 @@
     </section>
     <!------------------------->
 
-    <header class="header sticky-top">
-        <nav class="nav">
-
-            <form class="d-flex">
-                <input class="form-control me-2 form_input" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
-            <input type="checkbox" id="nav-check">
-            <div class="nav-btn">
-                <label for="nav-check">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </label>
-            </div>
-            <div class="nav-header" id="init">
-                <div class="nav-title" id="init">
-                    E-Commerce
+    <!---------Header---------------->
+    <div id="app" class="app">
+        <header class="header sticky-top">
+            <nav class="nav">
+                <form class="d-flex form-nav">
+                    <input class="form-control me-2 form_input display-optional-input" type="search"
+                        placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success search-button" type="submit">Search</button>
+                </form>
+                <input type="checkbox" id="nav-check">
+                <div class="content-img-profile" id="content-img-profile">
                 </div>
-            </div>
-
-            <div class="nav-links">
-                <a class="nav-link active" href="#home" aria-current="page" id="_home">Home</a>
-                <a class="nav-link active" href="#favorites_section" aria-current="page" id="favorites">Favorites</a>
-
-
-
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id="ul_List">
-
-                </ul>
-            </div>
-            <a class="nav-link___cart" href="#view_section_cart" id="section_cart">
-                <span id="content_count_cart">
-                    <img src="./icon/cart_icon.svg" alt="icon_cart" class="navbar_cart" id="cart">
-                </span>
-                <span id="count_elements_at_cart" class="count_elements_at_cart">
-                </span>
-            </a>
-        </nav>
-
-        <ul class="list_classification" id="list_classification">
-
-        </ul>
-
-    </header>
-    <section class="section_home_page" id="home">
-        <div id="carouselIndicators" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-indicators">
-                <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="0" class="active"
-                    aria-current="true" aria-label="Slide 1"></button>
-                <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="1"
-                    aria-label="Slide 2"></button>
-                <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="2"
-                    aria-label="Slide 3"></button>
-            </div>
-
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselIndicators"
-                data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselIndicators"
-                data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-        </div>
-        <main class="content_section">
-            <div class="title-content">
-                <div class="title">
-                    <h1>Empieza tu compra</h1>
+                <div class="nav-btn">
+                    <label for="nav-check">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </label>
                 </div>
-                <div class="mb-3 form-init">
-                    <label for="exampleFormControlInput1" class="form-label"></label>
-
-                    <button type="button" id="google-sign-in-btn" class="btn btn-primary">Sign with
-                        Google</button>
-                </div>
-            </div>
-            <div class="content-card">
-                <div class="legend">
-                    <h2>Compra desde tu casa</h2>
-
-                    <p> Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-                        possimus commodi.
-                    </p>
-                </div>
-                <div class="img-content">
-                    <img src="./img/img-super.jpeg" class="img-card" alt="">
+                <div class="nav-header" id="init">
+                    <h1 class="nav-title">
+                        E-Commerce
+                    </h1>
                 </div>
 
-            </div>
-            <div class="content-card__reverse">
-                <div class="legend">
-                    <h2>Compra desde tu casa</h2>
-                    <p> Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+                <div class="nav-links">
+                    <div class="mb-3 form-init">
+                        <label for="exampleFormControlInput1" class="form-label"></label>
+                        <button type="button" id="google-sign-in-btn" class="btn btn-primary"
+                            data-user-state="disconnect">Login</button>
+                    </div>
+                    <a class="nav-link active home-link" href="#home" aria-current="page" id="_home">Home</a>
+                    <a href="" class="purchases-style" id="purchase">Purchases</a>
+                    <a class="nav-link active favorite-link" href="#favorites_section" aria-current="page"
+                        id="favorites">Favorites</a>
+                    <form class="d-flex form-nav-links">
+                        <input class="form-control me-2 form_input display-optional-input" type="search"
+                            id="search-input" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success search-button" id="btn-search"
+                            type="button">Search</button>
+                    </form>
+                    <div class="title-content">
+                    </div>
 
-                        possimus commodi. </p>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id="ul_List">
+
+                    </ul>
                 </div>
-                <div class="img-content">
-                    <img src="./img/delivery-CT7IWRM7G5k-unsplash.jpeg" class="img-card" alt="">
+                <aside class="content-link-cart">
+                    <a class="nav-link___cart" href="#view_section_cart" id="section_cart">
+                        <span id="content_count_cart">
+                            <img src="./icon/cart_icon.svg" alt="icon_cart" class="navbar_cart" id="cart">
+                        </span>
+                    </a>
+                    <span id="count_elements_at_cart" class="count_elements_at_cart">
+                    </span>
+                </aside>
+            </nav>
+
+            <ul class="list_classification" id="list_classification">
+
+            </ul>
+
+        </header>
+
+        <!--------End Header----------------->
+
+        <!---------App---------------->
+        <main class="section_home_page" id="home">
+            <aside class="container-video-banner">
+                <div class="content-legend-video">
+                    <h3 class="font-video-legend">
+                        BUY FROM OUR WEBSITE
+                    </h3>
                 </div>
 
+                <div class="content-video-home">
+                    <video class="video-home-page" autoplay loop muted>
+                        <source src="./videos/vertical-orange-video(720p).mp4">
+                    </video>
+                </div>
+
+            </aside>
+            <div class="content-banner">
+
+                <p class="title-season">
+                    Winter Season!
+                </p>
+
+                <img class="banner-gray" src="./img/young-japanese-woman-portrait-copy-space.jpg" alt="">
             </div>
         </main>
 
-
-
-        <!-- MODAL-SALES -->
-
-
-    </section>
-
-    <section id="content" class="content_style">
+        <section id="content" class="content_style">
 
 
 
 
-        <section class="content-sale" id="content_card">
+            <section class="main-grid" id="content_card">
 
-            <!-- Dynamic template view.js  -->
+                <!-- Dynamic template view.js  -->
+
+            </section>
+
+            <section class="main-grid favorites " id="favorites_section">
+                <h1>Your Favorites</h1>
+                <hr>
+
+                <!-- Dynamic template view.js -->
+
+            </section>
+        </section>
+        <section class="cart_style capture" id="view_section_cart">
+
+            <!-- Dynamic template view.js -->
+
+            <div id="ui_Cart" class="ui_Cart">
+
+            </div>
+
 
         </section>
 
-    </section>
-    <section class="cart_style" id="view_section_cart">
+        <section id="individual_product" class="style_content_card_individual_product">
 
-        <!-- Dynamic template view.js -->
+            <!-- Dynamic template view.js -->
 
-        <div id="ui_Cart" class="ui_Cart">
+        </section>
 
-        </div>
+        <section class="style_purchase" id="purchase">
+            <aside id="purchases">
+                <!-- Dynamic template purchase.js -->
+            </aside>
+        </section>
 
-
-    </section>
-
-    <section id="individual_product" class="style_content_card_individual_product">
-
-        <!-- Dynamic template view.js -->
-
-    </section>
-
-    <section class="favorites content-sale" id="favorites_section">
-        <h1>Your Favorites</h1>
-        <hr>
-
-        <!-- Dynamic template view.js -->
-
-    </section>
-
-    <footer class="style_footer">
-        <div class="content-text__footer">
-            <p>Seguinos en nuestras redes</p>
-        </div>
-        <div class="content_icons">
-            <div class="facebook">
-                <img src="./icon/facebook_icon.svg" class="icon" alt="">
+        <footer class="style_footer">
+            <div class="content-text__footer">
+                <p>Seguinos en nuestras redes</p>
             </div>
-            <div class="twitter">
-                <img src="./icon/twitersocialnetworkbrandlogo_78853.svg" class="icon" alt="">
+            <div class="content_icons">
+                <div class="facebook">
+                    <img src="./icon/facebook_icon.svg" class="icon" alt="">
+                </div>
+                <div class="twitter">
+                    <img src="./icon/twitersocialnetworkbrandlogo_78853.svg" class="icon" alt="">
+                </div>
+                <div class="instagram">
+                    <img src="./icon/instagram_108066.svg" class="icon" alt="">
+                </div>
             </div>
-            <div class="instagram">
-                <img src="./icon/instagram_108066.svg" class="icon" alt="">
-            </div>
-        </div>
-    </footer>
-    <!-- FOOTER -->
+        </footer>
+        <!-- FOOTER -->
 
+    </div>
 
     <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8"
         crossorigin="anonymous"></script>
 
-    <script type="module" src="./js/api.js"></script>
-    <script type="module" src="./js/model.js"></script>
-    <script type="module" src="./js/controller.js"></script>
-    <script type="module" src="./js/view.js"></script>
-    <script type="module" src="./js/routers.js"></script>
+    <script type="module" src="./src/api.js"></script>
+
+    <script type="module" src="./src/controller/controller.js"></script>
+    <script type="module" src="./src/view/view.js"></script>
+    <script type="module" src="./src/routers.js"></script>
+    <script type="module" src="./src/services/auth.js"></script>
+    <script type="module" src="./src/services/realtimedatabase.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.2.0/firebase-database.js"></script>
 
 
-
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
-        // TODO: Add SDKs for Firebase products that you want to use
-        // https://firebase.google.com/docs/web/setup#available-libraries
-
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyB6C0ZD9j_WGUd0Wwrygb0EOKaYB7T6JME",
-            authDomain: "fakecommerce-2022.firebaseapp.com",
-            projectId: "fakecommerce-2022",
-            storageBucket: "fakecommerce-2022.appspot.com",
-            messagingSenderId: "568390621800",
-            appId: "1:568390621800:web:061d04c4c3ca57fab579dd"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-    </script>
 </body>
 
 </html>
