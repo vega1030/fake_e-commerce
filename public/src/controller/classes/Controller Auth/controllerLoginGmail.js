@@ -40,18 +40,18 @@ export class ControllerLoginGmail {
         //------------------------------------------------------------------------------	
         const response = await this.auth.loginWithGmail()
         this.user = response;
-        console.log('user: ', this.user);
         storage.setItem(keySessionStorage.UID, this.user.uid);
         /* ------------------------------ */
         const resFavorites = await realTime.returnFavoritesRealTimeDb()
         const res_Purchase = await realTime.returnPurchaseRealTimeDb()
         const resCart = await realTime.returnCartRealTimeDb()
+        console.log(resCart);
         /* ------------------------------ */
-        const mergedCarts = this.driveCart.mergeCart(resCart, this.driveCart.returnCopyLocalStorage())
-        const mergedFavorites = modelHandlerFavorite.mergeFavorites(resFavorites, storage.getItem(keysLocalStorage.FAVORITES))
+/*         const mergedCarts = this.driveCart.mergeCart(resCart, this.driveCart.returnCopyLocalStorage())
+ */        const mergedFavorites = modelHandlerFavorite.mergeFavorites(resFavorites, storage.getItem(keysLocalStorage.FAVORITES))
         storage.setItem(keysLocalStorage.FAVORITES, mergedFavorites)
-        storage.setItem(keysLocalStorage.CART, mergedCarts)
-        this.quantityInCart_And_Total.quantity_In_Cart()
+/*         storage.setItem(keysLocalStorage.CART, mergedCarts)
+ */        this.quantityInCart_And_Total.quantity_In_Cart()
     }
 
     async handlerStateStorageDisconnected() {

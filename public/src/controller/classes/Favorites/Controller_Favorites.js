@@ -122,19 +122,19 @@ export class Controller_Favorites {
      * present. The `validation` property will be `true` if there are favorites, and `
      */
     sendFavoriteToView() {
-
-        this.favorites.favorites.length > 0 ?
-            this.objectFav = {
-                list: this.favorites.favorites,
-                validation: true
-            } :
-            this.objectFav = {
-                list: null,
-                validation: false
-            }
+        this.favorites.length > 0 ?
+        this.objectFav = {
+            list: this.favorites,
+            validation: true
+        } :
+        this.objectFav = {
+            list: null,
+            validation: false
+        }
         //------------------------------//	
         if (this.objectFav.validation === true) {
             const listFavorites = new TemplateCardsFavorites()
+            console.log(this.objectFav.list);
             listFavorites.create_Card(this.objectFav.list)
             listFavorites.insertFavorites()
             listFavorites.display_FavoritesHeart(this.objectFav.list)

@@ -8,21 +8,22 @@ export class Drive_Data_Favorites {
     constructor() {
         this.favorites = []
         this.storageService = new StorageService()
-        this.favorites = this.storageService.getItem(keysLocalStorage.FAVORITES)|| []
+        this.favorites = this.storageService.getItem(keysLocalStorage.FAVORITES) || []
     }
 
-     save_And_Update_Favorites(favoriteProduct) {
+    save_And_Update_Favorites(favoriteProduct) {
         const index = this.favorites.findIndex(i => i.id === favoriteProduct.id);
-
         if (index !== -1) {
             this.favorites.splice(index, 1);
             this.storageService.setItem(keysLocalStorage.FAVORITES, this.favorites)
+            console.log(this.favorites);
             return this.favorites
         }
 
         else {
             this.favorites.push(favoriteProduct);
             this.storageService.setItem(keysLocalStorage.FAVORITES, this.favorites)
+            console.log(this.favorites);
             return this.favorites
         }
     }

@@ -34,6 +34,7 @@ import { ControllerMainProduct } from './classes/Landing_Page/ControllerMainProd
 import { MainProductView } from '../view/classes/home/MainProductView.js';
 import { IndividualProduct } from '../view/classes/individual_product/individualProduct.js';
 import { ModalLogin } from '../view/classes/Modal_Login/ModalLogin.js';
+import { Auth } from '../services/auth.js';
 
 const local_Storage = new StorageService()
 const handler_View = new Handler_Displays_Ui()
@@ -48,14 +49,13 @@ export class HandlerClickFavorites {
 
     async addListenerHeartFavorites() {
         this.eventListeners.addListener('click', '.favorite', (e) => {
-            this.instanceFavorites.handler_Favorites(e)
-            console.log(this.stateUser.stateUser());
-        })
-    }
+            this.instanceFavorites.handler_Favorites(e);
+        });
+    };
 
 
     addFavoriteSectionListener() {
-        this.eventListeners.addListener('click', '#favorites', (e) => {
+        this.eventListeners.addListener('click', '#favorites', () => {
             this.instanceFavorites.sendFavoriteToView()
         })
     }
@@ -464,71 +464,54 @@ export class Firebase_Auth {
         this.viewUser = new Display_Data_Firebase_User()
         this.total_quantity = new HandlerQuantityAndTotal()
         this.addEventCartProduct = new Control_cart()
+        this.eventListeners = new EventManager()
+        this.profilePhoto = undefined
+
 
     }
 
-    async loginUser() {
-
-        /**	
-         * The function `insertLogoUser` checks if the user's photoURL is undefined and if so, assigns a	
-         * default photoURL and displays it on the user's profile.	
-         * @returns the result of calling the `displayProfilePhoto` method with the `user.photoURL` as an	
-         * argument.	
-         */
-
-        //------------------------------------------------------------------------------	
-
-        const insertLogoUser = (photoProfile) => {
-            console.log(this.auth.user);
-            if (this.auth.user) {
-                return this.viewUser.displayProfilePhoto(photoProfile)
-            }
-            this.viewUser.displayProfilePhoto()
-        }
+    async insertPhoto(img) {
+        return img ? this.viewUser.displayProfilePhoto(img) : this.viewUser.displayProfilePhoto()
+    }
+    //------------------------------------------------------------------------------	
 
 
-        insertLogoUser()
+    handlerClickLoginButtonGmail() {
 
-        //------------------------------------------------------------------------------	
-        const buttonLogin = document.querySelector('#google-sign-in-btn')
-        buttonLogin.addEventListener('click', async (e) => {
+        this.eventListeners.addListener('click', '#google-sign-in-btn', async (e) => {
             const storage = new StorageService()
             e.preventDefault()
             try {
                 //user disconnected
                 if (this.auth.user != null) {
+                    console.log('disconected');
                     this.auth.handlerStateStorageDisconnected()
                     this.auth.user = null
-                    insertLogoUser()
+                    this.insertPhoto()
                     const instance_Control_Routes = new Control_Routes()
                     instance_Control_Routes.reception_Hash('#home');
                     console.log('disconnected');
+                    storage.removeItem('USERPHOTO')
                     return this.auth.user
                 }
-
                 //user connected
                 const viewFavorites = new View_Favorites()
                 await this.auth.handlerStateStorageConnected()
-                insertLogoUser(this.auth.user.photoURL)
+                storage.setItem('USERPHOTO', this.auth.user.photoURL)
+                this.insertPhoto(storage.getItem('USERPHOTO'));
                 const storageCart = storage.getItem(keysLocalStorage.CART)
                 const storageFavorite = storage.getItem(keysLocalStorage.FAVORITES)
                 viewFavorites.display_FavoritesHeart(storageFavorite)
                 this.total_quantity.quantity_In_Cart(storageCart)
-                //------------------------------------------------------------------------------	
-                //------------------------------------------------------------------------------	
             }
-
             catch (error) {
                 console.log('error', error)
             }
             finally {
-                this.uid = storage.getSessionStorageUid(keySessionStorage.UID) || '';
                 !this.auth.user ? e.target.textContent = 'Login' : e.target.textContent = 'Logout'
                 e.target.dataset.userState = !this.auth.user ? 'disconnect' : 'connect'
             }
-
         })
-
     }
 }
 class Control_Routes {
@@ -553,24 +536,35 @@ if (typeof localStorage !== 'undefined') {
     instance_Control_Routes.reception_Hash('#home');
     /* -------------------------------------------------------------- */
     const instanceFirebaseAuth = new Firebase_Auth()
-    instanceFirebaseAuth.loginUser()
     /* -------------------------------------------------------------- */
     const controller_Cart_Instance = new Control_cart()
     const storage = new StorageService()
-    const auth = new Firebase_Auth()
     const favorites = new Controller_Favorites()
     const products_Instance = new TemplateCardsHome()
     const individualProduct = new ControlIndividualProduct()
     const clickFavorites = new HandlerClickFavorites()
     const handler_Init_Page = new Control_View_Information_At_DOM()
+    const disconnected = new Auth()
+    instanceFirebaseAuth.handlerClickLoginButtonGmail()
+    /* -------------------------------------------------------------- */
+    /**
+     * The function `userData` sets up Firebase authentication, storage, and Gmail login functionality,
+     * then retrieves the current user's state and displays their profile photo if available.
+     */
     const userData = async () => {
+        /* The above code snippet is written in JavaScript and appears to be setting up a Firebase
+        authentication instance, a storage service, and a controller for logging in with Gmail. It
+        then attempts to get the current user's state using the `stateUser()` method from the
+        `ControllerLoginGmail` class. */
+        const userView = new Display_Data_Firebase_User()
+        const storage = new StorageService()
         const control_LoginGmail = new ControllerLoginGmail()
-        const user = await control_LoginGmail.stateUser()
-        console.log(user);
-        userView.displayProfilePhoto(user.photoURL);
-        /* -------------------------------------------------------------- */
+/*         const user = await control_LoginGmail.stateUser()
+ */        storage.getItem('USERPHOTO') !== undefined ? userView.displayProfilePhoto() : userView.displayProfilePhoto(storage.getItem('USERPHOTO'))
+
     }
     userData()
+    /* -------------------------------------------------------------- */
     const userView = new Display_Data_Firebase_User()
     controller_Cart_Instance.sendListCartToView()
     const returnAllProducts = await handler_Init_Page.controller_get_All_Products()

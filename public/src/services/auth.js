@@ -51,9 +51,8 @@ export class Auth {
 
             if (user) {
                 this.user = user;
-                console.log('check User is connected:', user);
                 return {
-                    user:this.user,
+                    user: this.user,
                     state: true
                 };
             } else {
@@ -83,6 +82,7 @@ export class Auth {
     }
 
     async logoutWithGmail() {
+        console.log('disconnected from Google');
         try {
 
             const signResponse = await signOut(auth)

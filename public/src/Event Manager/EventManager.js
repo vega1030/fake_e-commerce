@@ -7,6 +7,20 @@ export class EventManager {
         this.events = {}
     }
 
+/**
+ * The `addListener` function adds event listeners to specified elements based on the event type and
+ * selector provided.
+ * @param event - The `event` parameter represents the type of event that the listener will be
+ * listening for, such as "click", "mouseover", "keydown", etc.
+ * @param selector - The `selector` parameter in the `addListener` method is a string that represents a
+ * CSS selector used to target one or more elements in the DOM to which the event listener will be
+ * attached. It can be an element ID (prefixed with `#`) or a class name, tag name, or
+ * @param callback - The `callback` parameter in the `addListener` method is a function that will be
+ * executed when the specified event occurs on the selected elements. It is the action or behavior that
+ * you want to associate with the event.
+ * @returns If the `elements` array contains only one element and that element is `null`, the function
+ * will return without adding an event listener.
+ */
 
     addListener(event, selector, callback) {
         if (!this.events[ event ]) {

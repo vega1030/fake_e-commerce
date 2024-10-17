@@ -19,16 +19,16 @@ export class Drive_Data_Cart {
     }
 
 
-/**
- * The function `mergeCart` merges two arrays of cart items, updating quantities if items with the same
- * ID are found.
- * @param cartFromDB - Cart items retrieved from the database. It contains an array of objects with
- * properties like id, name, price, and quantity.
- * @param cartFromLocalStorage - Cart items stored in the user's browser storage, which may include
- * items that are not yet saved to the database.
- * @returns The function `mergeCart` returns the merged array containing items from both `cartFromDB`
- * and `cartFromLocalStorage`, with quantities updated if the same item exists in both arrays.
- */
+    /**
+     * The function `mergeCart` merges two arrays of cart items, updating quantities if items with the same
+     * ID are found.
+     * @param cartFromDB - Cart items retrieved from the database. It contains an array of objects with
+     * properties like id, name, price, and quantity.
+     * @param cartFromLocalStorage - Cart items stored in the user's browser storage, which may include
+     * items that are not yet saved to the database.
+     * @returns The function `mergeCart` returns the merged array containing items from both `cartFromDB`
+     * and `cartFromLocalStorage`, with quantities updated if the same item exists in both arrays.
+     */
     mergeCart(cartFromDB, cartFromLocalStorage) {
         const mergedArray = cartFromDB.concat(cartFromLocalStorage.filter(item2 =>
             !cartFromDB.some(item1 => item1.id === item2.id)
@@ -47,7 +47,6 @@ export class Drive_Data_Cart {
         console.log('new merged ', cleanedArray);
         return mergedArray;
     }
-
 
 }
 
