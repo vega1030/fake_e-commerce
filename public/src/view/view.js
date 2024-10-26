@@ -1,5 +1,6 @@
 "use strict";
 
+import { EventManager } from '../Event Manager/EventManager.js';
 
 
 
@@ -132,9 +133,11 @@ class Display_Data_Firebase_User {
 
     constructor(dataUser) {
         this.dataUser = dataUser
+        this.eventListeners = new EventManager()
     }
 
-    displayProfilePhoto(userAvatar= '../../icon/user.png') {
+
+    displayProfilePhoto(userAvatar = '../../icon/user.png', callback) {
         const contentImageProfile = document.querySelector('#content-img-profile');
         contentImageProfile.innerHTML = '';
 
@@ -145,9 +148,10 @@ class Display_Data_Firebase_User {
         imgProfile.alt = 'avatar image';
         imgProfile.className = 'img-user';
         listenerMenu.className = 'link-to-user-menu'
-
+        listenerMenu.id = 'menuToggle';
         listenerMenu.appendChild(imgProfile)
         contentImageProfile.appendChild(listenerMenu);
+
     }
 
     displayUserName() {
@@ -156,6 +160,26 @@ class Display_Data_Firebase_User {
 
     displayUserEmail() {
         return this.dataUser.email
+    }
+
+    displayUserMenu() {
+        const sectionLogin = document.querySelector('.section_login')
+        let stateMenuInit = sectionLogin.style.display
+        const fade_in = () => {
+            sectionLogin.classList.add('fade_in')
+            return sectionLogin.style.display = 'flex'
+
+        }
+        const fade_out = () => {
+            sectionLogin.classList.remove('fade_out')
+            return sectionLogin.style.display = 'none'
+        }
+        const hideMenu = document.body.addEventListener('click', (e) => {
+            e.type === 'click' ? sectionLogin.style.display = 'none' : sectionLogin.style.display = ''
+        })
+        sectionLogin.style.display = (stateMenuInit === 'none' || stateMenuInit === '') ? fade_in() : fade_out() || hideMenu();
+        console.log(sectionLogin.style.display);
+        return sectionLogin.style.display;
     }
 
 }

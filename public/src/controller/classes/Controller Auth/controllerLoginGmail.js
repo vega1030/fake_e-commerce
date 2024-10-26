@@ -40,6 +40,7 @@ export class ControllerLoginGmail {
         //------------------------------------------------------------------------------	
         const response = await this.auth.loginWithGmail()
         this.user = response;
+        console.log(this.user);
         storage.setItem(keySessionStorage.UID, this.user.uid);
         /* ------------------------------ */
         const resFavorites = await realTime.returnFavoritesRealTimeDb()

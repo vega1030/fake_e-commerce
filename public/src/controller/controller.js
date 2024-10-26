@@ -40,6 +40,24 @@ const local_Storage = new StorageService()
 const handler_View = new Handler_Displays_Ui()
 //----------------------------------------------------------------	
 
+export class Control_User_Connected {
+    constructor() {
+        this.stateUser = new ControllerLoginGmail()
+    }
+
+    async checkUserState() {
+        await this.stateUser.handlerStateStorageDisconnected()
+        console.log(this.stateUser);
+        if (this.stateUser.user) {
+            this.handlerActivityUser()
+            this.handlerFavorites()
+            this.handlerCart()
+            console.log('User');
+        }
+    }
+
+}
+
 export class HandlerClickFavorites {
     constructor() {
         this.eventListeners = new EventManager()
@@ -49,6 +67,8 @@ export class HandlerClickFavorites {
 
     async addListenerHeartFavorites() {
         this.eventListeners.addListener('click', '.favorite', (e) => {
+            const controlUser = new Control_User_Connected()
+            controlUser.checkUserState()
             this.instanceFavorites.handler_Favorites(e);
         });
     };
@@ -470,11 +490,22 @@ export class Firebase_Auth {
 
     }
 
-    async insertPhoto(img) {
-        return img ? this.viewUser.displayProfilePhoto(img) : this.viewUser.displayProfilePhoto()
+    async insertPhoto(img = '../../icon/user.png') {
+        return this.viewUser.displayProfilePhoto(img)
     }
     //------------------------------------------------------------------------------	
 
+    handlerClickUserMenu() {
+        this.viewUser.displayProfilePhoto();
+
+        document.addEventListener('click', (e) => {
+            if (e.target && e.target.closest('#menuToggle')) {
+                console.log(e);
+                this.viewUser.displayUserMenu()
+            }
+        })
+
+    }
 
     handlerClickLoginButtonGmail() {
 
@@ -498,7 +529,7 @@ export class Firebase_Auth {
                 const viewFavorites = new View_Favorites()
                 await this.auth.handlerStateStorageConnected()
                 storage.setItem('USERPHOTO', this.auth.user.photoURL)
-                this.insertPhoto(storage.getItem('USERPHOTO'));
+                this.insertPhoto(this.auth.user.photoURL);
                 const storageCart = storage.getItem(keysLocalStorage.CART)
                 const storageFavorite = storage.getItem(keysLocalStorage.FAVORITES)
                 viewFavorites.display_FavoritesHeart(storageFavorite)
@@ -513,6 +544,8 @@ export class Firebase_Auth {
             }
         })
     }
+
+
 }
 class Control_Routes {
     //reception hash to routers	
@@ -536,6 +569,7 @@ if (typeof localStorage !== 'undefined') {
     instance_Control_Routes.reception_Hash('#home');
     /* -------------------------------------------------------------- */
     const instanceFirebaseAuth = new Firebase_Auth()
+    instanceFirebaseAuth.handlerClickUserMenu()
     /* -------------------------------------------------------------- */
     const controller_Cart_Instance = new Control_cart()
     const storage = new StorageService()
