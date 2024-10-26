@@ -164,21 +164,40 @@ class Display_Data_Firebase_User {
 
     displayUserMenu() {
         const sectionLogin = document.querySelector('.section_login')
-        let stateMenuInit = sectionLogin.style.display
+        let isHidden = sectionLogin.style.display === 'none' || sectionLogin.style.display === ''; // Verificar si está oculto
         const fade_in = () => {
-            sectionLogin.classList.add('fade_in')
-            return sectionLogin.style.display = 'flex'
+            sectionLogin.style.display = 'flex'; 
+            sectionLogin.classList.add('fade_in'); 
+    
+            const hideMenu = (event) => {
+                if (!sectionLogin.contains(event.target)) {
+                    sectionLogin.classList.remove('fade_in');
+                    sectionLogin.classList.add('fade_out'); 
+                    sectionLogin.style.display = 'none'; 
+                    document.body.removeEventListener('click', hideMenu); 
+                }
+            };
+    
+            // Agregar el listener al body
+            document.body.addEventListener('click', hideMenu);
+        };
 
-        }
+
+
         const fade_out = () => {
-            sectionLogin.classList.remove('fade_out')
-            return sectionLogin.style.display = 'none'
+            sectionLogin.classList.remove('fade_in'); // Remover fade_in
+            sectionLogin.classList.add('fade_out'); // Añadir fade_out
+            sectionLogin.style.display = 'none'; // Cambiar a display: none
+            document.body.removeEventListener('click', hideMenu); // Asegúrate de eliminar el listener
+        };
+
+        if (isHidden) {
+            fade_in();
+        } else {
+            fade_out();
         }
-        const hideMenu = document.body.addEventListener('click', (e) => {
-            e.type === 'click' ? sectionLogin.style.display = 'none' : sectionLogin.style.display = ''
-        })
-        sectionLogin.style.display = (stateMenuInit === 'none' || stateMenuInit === '') ? fade_in() : fade_out() || hideMenu();
-        console.log(sectionLogin.style.display);
+    
+        console.log(sectionLogin.style.display); 
         return sectionLogin.style.display;
     }
 
