@@ -63,8 +63,6 @@ export class ControlIndividualProduct {
             const targetElement = e.target.classList.contains('individual_btn_add_to_cart')
             this.id = Number(e.target.dataset.id)
             const result = targetElement === true ? await this.controllerCart.send_Id_To_Api(this.id) : undefined
-            console.log('result: ', result);
-
             this.addProductsInCart.addProductsInCart(result)
             this.totalAndQuantity.quantity_In_Cart()
             

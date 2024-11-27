@@ -33,7 +33,6 @@ import { HandlerQuantityAndTotal } from './classes/Cart/HandlerQuantityAndTotal.
 import { ControllerMainProduct } from './classes/Landing_Page/ControllerMainProduct.js';
 import { MainProductView } from '../view/classes/home/MainProductView.js';
 import { IndividualProduct } from '../view/classes/individual_product/individualProduct.js';
-import { ModalLogin } from '../view/classes/Modal_Login/ModalLogin.js';
 import { Auth } from '../services/auth.js';
 
 const local_Storage = new StorageService()
@@ -47,7 +46,6 @@ export class Control_User_Connected {
 
     async checkUserState() {
         await this.stateUser.handlerStateStorageDisconnected()
-        console.log(this.stateUser);
         if (this.stateUser.user) {
             this.handlerActivityUser()
             this.handlerFavorites()
@@ -63,16 +61,19 @@ export class HandlerClickFavorites {
         this.eventListeners = new EventManager()
         this.instanceFavorites = new Controller_Favorites()
         this.stateUser = new ControllerLoginGmail()
+        this.displayPanel_Login = new Display_Data_Firebase_User()
     }
-
-    async addListenerHeartFavorites() {
-        this.eventListeners.addListener('click', '.favorite', (e) => {
-            const controlUser = new Control_User_Connected()
-            controlUser.checkUserState()
-            this.instanceFavorites.handler_Favorites(e);
+    addListenerHeartFavorites() {
+        this.eventListeners.addListener('click', '.favorite', async (e) => {
+            const stateUser = await this.stateUser.stateUser();
+            console.log(stateUser);
+            if (stateUser === true) {
+                this.instanceFavorites.handler_Favorites(e);
+            } else {
+                this.displayPanel_Login.displayUserMenu(e)
+            }
         });
     };
-
 
     addFavoriteSectionListener() {
         this.eventListeners.addListener('click', '#favorites', () => {
@@ -486,29 +487,18 @@ export class Firebase_Auth {
         this.addEventCartProduct = new Control_cart()
         this.eventListeners = new EventManager()
         this.profilePhoto = undefined
-
-
     }
 
     async insertPhoto(img = '../../icon/user.png') {
         return this.viewUser.displayProfilePhoto(img)
-    }
+    };
     //------------------------------------------------------------------------------	
 
     handlerClickUserMenu() {
-        this.viewUser.displayProfilePhoto();
-
-        document.addEventListener('click', (e) => {
-            if (e.target && e.target.closest('#menuToggle')) {
-                console.log(e);
-                this.viewUser.displayUserMenu()
-            }
-        })
-
-    }
+        this.viewUser.displayProfilePhoto()
+    };
 
     handlerClickLoginButtonGmail() {
-
         this.eventListeners.addListener('click', '#google-sign-in-btn', async (e) => {
             const storage = new StorageService()
             e.preventDefault()
@@ -528,7 +518,7 @@ export class Firebase_Auth {
                 //user connected
                 const viewFavorites = new View_Favorites()
                 await this.auth.handlerStateStorageConnected()
-                storage.setItem('USERPHOTO', this.auth.user.photoURL)
+                this.auth.user
                 this.insertPhoto(this.auth.user.photoURL);
                 const storageCart = storage.getItem(keysLocalStorage.CART)
                 const storageFavorite = storage.getItem(keysLocalStorage.FAVORITES)
@@ -539,14 +529,14 @@ export class Firebase_Auth {
                 console.log('error', error)
             }
             finally {
+                this.viewUser.closeMenu()
                 !this.auth.user ? e.target.textContent = 'Login' : e.target.textContent = 'Logout'
                 e.target.dataset.userState = !this.auth.user ? 'disconnect' : 'connect'
-            }
+            };
         })
+
     }
-
-
-}
+};
 class Control_Routes {
     //reception hash to routers	
     reception_Hash = (hash = '') => {
@@ -563,13 +553,36 @@ class Control_Routes {
     }
 }
 
+class HandlerMenu {
+    constructor() {
+        this.eventManager = new EventManager();
+        this.viewUser = new Display_Data_Firebase_User()
+    }
+
+    eventMenu() {
+        document.addEventListener('click', (e) => {
+            if (e.target && e.target.closest('#menuToggle')) {
+                const handlerClickBtnGmail = new Firebase_Auth()
+                this.viewUser.displayUserMenu(e)
+                handlerClickBtnGmail.handlerClickLoginButtonGmail()
+                return
+            }
+            return false;
+        })
+    }
+
+}
 
 if (typeof localStorage !== 'undefined') {
     const instance_Control_Routes = new Control_Routes()
     instance_Control_Routes.reception_Hash('#home');
+    const handlerMenu = new HandlerMenu();
+    handlerMenu.eventMenu();
     /* -------------------------------------------------------------- */
     const instanceFirebaseAuth = new Firebase_Auth()
-    instanceFirebaseAuth.handlerClickUserMenu()
+    const user = await instanceFirebaseAuth.auth.stateUser();
+    const userPhoto = user.photoURL
+    console.log(userPhoto);
     /* -------------------------------------------------------------- */
     const controller_Cart_Instance = new Control_cart()
     const storage = new StorageService()
@@ -578,10 +591,10 @@ if (typeof localStorage !== 'undefined') {
     const individualProduct = new ControlIndividualProduct()
     const clickFavorites = new HandlerClickFavorites()
     const handler_Init_Page = new Control_View_Information_At_DOM()
-    const disconnected = new Auth()
     instanceFirebaseAuth.handlerClickLoginButtonGmail()
     /* -------------------------------------------------------------- */
     /**
+     * 
      * The function `userData` sets up Firebase authentication, storage, and Gmail login functionality,
      * then retrieves the current user's state and displays their profile photo if available.
      */
@@ -592,10 +605,7 @@ if (typeof localStorage !== 'undefined') {
         `ControllerLoginGmail` class. */
         const userView = new Display_Data_Firebase_User()
         const storage = new StorageService()
-        const control_LoginGmail = new ControllerLoginGmail()
-/*         const user = await control_LoginGmail.stateUser()
- */        storage.getItem('USERPHOTO') !== undefined ? userView.displayProfilePhoto() : userView.displayProfilePhoto(storage.getItem('USERPHOTO'))
-
+        user == !false ? userView.displayProfilePhoto() : userView.displayProfilePhoto(userPhoto)
     }
     userData()
     /* -------------------------------------------------------------- */

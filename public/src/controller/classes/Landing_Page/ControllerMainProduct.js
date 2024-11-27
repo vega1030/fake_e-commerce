@@ -13,4 +13,3 @@ export class ControllerMainProduct {
 }
 
 const singleProduct = new ControllerMainProduct()
-console.log(await singleProduct.mainProduct); 

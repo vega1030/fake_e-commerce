@@ -26,8 +26,7 @@ export class ControllerLoginGmail {
 
     async stateUser() {
         const userState = await this.auth.checkUserConnection()
-        this.user = userState.user
-        return this.user
+        return this.user === undefined ? false : this.user
     }
 
     async handlerStateStorageConnected() {
@@ -38,9 +37,9 @@ export class ControllerLoginGmail {
         const realTime = new RealTimeDB()
         const storage = new StorageService()
         //------------------------------------------------------------------------------	
+
         const response = await this.auth.loginWithGmail()
         this.user = response;
-        console.log(this.user);
         storage.setItem(keySessionStorage.UID, this.user.uid);
         /* ------------------------------ */
         const resFavorites = await realTime.returnFavoritesRealTimeDb()

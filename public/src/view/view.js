@@ -132,18 +132,18 @@ class View_Favorites {
 class Display_Data_Firebase_User {
 
     constructor(dataUser) {
-        this.dataUser = dataUser
-        this.eventListeners = new EventManager()
+        this.dataUser = dataUser;
+        this.eventListeners = new EventManager();
+        this.sectionLogin = document.querySelector('.section_login');
+        this.app = document.querySelector('.app');
     }
 
 
-    displayProfilePhoto(userAvatar = '../../icon/user.png', callback) {
+    displayProfilePhoto(userAvatar = '../../icon/user.png') {
         const contentImageProfile = document.querySelector('#content-img-profile');
         contentImageProfile.innerHTML = '';
-
         const imgProfile = document.createElement('IMG');
         const listenerMenu = document.createElement('A')
-
         imgProfile.src = userAvatar
         imgProfile.alt = 'avatar image';
         imgProfile.className = 'img-user';
@@ -162,46 +162,93 @@ class Display_Data_Firebase_User {
         return this.dataUser.email
     }
 
-    displayUserMenu() {
-        const sectionLogin = document.querySelector('.section_login')
-        let isHidden = sectionLogin.style.display === 'none' || sectionLogin.style.display === ''; // Verificar si está oculto
-        const fade_in = () => {
-            sectionLogin.style.display = 'flex'; 
-            sectionLogin.classList.add('fade_in'); 
-    
-            const hideMenu = (event) => {
-                if (!sectionLogin.contains(event.target)) {
-                    sectionLogin.classList.remove('fade_in');
-                    sectionLogin.classList.add('fade_out'); 
-                    sectionLogin.style.display = 'none'; 
-                    document.body.removeEventListener('click', hideMenu); 
-                }
-            };
-    
-            // Agregar el listener al body
-            document.body.addEventListener('click', hideMenu);
-        };
 
+    templateDisplayMenu() {
+        const sectionLogin = document.querySelector('.section_login');
+        const checkExistingAside = document.querySelector('.section_login___aside')
 
-
-        const fade_out = () => {
-            sectionLogin.classList.remove('fade_in'); // Remover fade_in
-            sectionLogin.classList.add('fade_out'); // Añadir fade_out
-            sectionLogin.style.display = 'none'; // Cambiar a display: none
-            document.body.removeEventListener('click', hideMenu); // Asegúrate de eliminar el listener
-        };
-
-        if (isHidden) {
-            fade_in();
-        } else {
-            fade_out();
+        if (checkExistingAside) {
+            checkExistingAside.remove()
         }
-    
-        console.log(sectionLogin.style.display); 
-        return sectionLogin.style.display;
+
+        const templateMenu =
+            `
+            <aside class="section_login___aside">
+            <a id='closed' class='closed_Menu_Login'>X</a>
+                <h2>Registrate</h2>
+                <p>Disfruta de los beneficios</p>
+                <div>
+                    <ul>
+                        <li>Descubre nuestras novedades</li>
+                        <li>Inscribite a nuestro Newsletter y te regalamos 3€ en tu proxima compra</li>
+                        <li>Conoce nuestras ofertas antes que nadie</li>
+                    </ul>
+                    <div class="mb-3 form-init">
+                        <label for="exampleFormControlInput1" class="form-label"></label>
+                        <button type="button" id="google-sign-in-btn" class="btn btn-primary"
+                            data-user-state="disconnect">Login</button>
+                    </div>
+                </div>
+            </aside>
+        `
+        sectionLogin.insertAdjacentHTML('beforeend', templateMenu)
+        return
     }
 
+    toggleMenu() {
+        sectionLogin.style.display = 'flex'
+        this.templateDisplayMenu();
+        this.app.classList.add('blur')
+        this.menuUserConnected()
+        return
+    };
+
+    closeMenu() {
+        this.app.classList.remove('blur')
+        const sectionLogin = document.querySelector('.section_login');
+        const aside_SectionLogin = document.querySelector('.section_login___aside');
+        aside_SectionLogin.remove();
+        sectionLogin.style.display = 'none'
+        return
+    };
+
+    displayUserMenu(buttonTarget = undefined) {
+        this.toggleMenu()
+        const closedMenu = document.querySelector('#closed');
+        closedMenu.addEventListener('click', () => this.closeMenu())
+        return
+    }
+
+    menuUserConnected() {
+
+        const templateUserConnected =
+            `
+                        <div class="nav-links">
+                    <a class="nav-link active home-link" href="#home" aria-current="page" id="_home">Home</a>
+                    <a href="" class="purchases-style" id="purchase">Purchases</a>
+                    <a class="nav-link active favorite-link" href="#favorites_section" aria-current="page"
+                        id="favorites">Favorites</a>
+                    <form class="d-flex form-nav-links">
+                        <input class="form-control me-2 form_input display-optional-input" type="search"
+                            id="search-input" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success search-button" id="btn-search"
+                            type="button">Search</button>
+                    </form>
+                    <div class="title-content">
+                    </div>
+
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id="ul_List">
+
+                    </ul>
+                </div>
+        `
+        const menuUser = document.querySelector('#menuUser')
+        console.log(templateUserConnected);
+/*         menuUser.insertAdjacentHTML('beforeend', menuUser)
+ */    }
 }
+
+
 //---------------------------------------------------------------------------------------------------------------------------------------
 
 /* This class is responsible for displaying the correct section of the page based on the hash in the url */

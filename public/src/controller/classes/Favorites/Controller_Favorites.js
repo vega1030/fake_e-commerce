@@ -36,11 +36,13 @@ export class Controller_Favorites {
      * properties related to the event. In
      */
     handler_Favorites(e) {
+
         const class_List = e !== undefined ? e.target.classList.value : undefined
         this.id = class_List === 'pathHeart' ?
             Number(e.target.parentElement.parentElement.dataset.id) :
             Number(e.target.dataset.id);
         this.handlerResponseApi()
+        
     }
 
     /**

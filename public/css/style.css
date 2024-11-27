@@ -154,10 +154,6 @@ ul {
    color: black;
 }
 
-
-
-
-
 .content-title {
    width: 100%;
    display: grid;
@@ -285,6 +281,20 @@ h2 {
 .red {
    color: red;
 }
+
+/* section Login */
+.blur > *:not(.section_login) {
+   filter: blur(5px); 
+   pointer-events: none; 
+}
+
+.closed_Menu_Login {
+   position: absolute;
+  top: 30px;
+  right: 20px;
+  cursor: pointer;
+}
+/* --------------- */
 
 /** footer **/
 

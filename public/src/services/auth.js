@@ -6,11 +6,8 @@ import {
     signInWithPopup,
     GoogleAuthProvider,
     signOut,
-    browserLocalPersistence,
-    onAuthStateChanged,
     browserSessionPersistence,
-    signInWithRedirect,
-    inMemoryPersistence
+    onAuthStateChanged
 } from 'https://www.gstatic.com/firebasejs/9.2.0/firebase-auth.js';
 import { firebaseConfig } from './config.js';
 import { StorageService } from '../model/classes/storage/StorageService.js';
@@ -38,6 +35,8 @@ export class Auth {
         return user
     }
 
+
+
     async checkUserConnection() {
         try {
             const user = await new Promise((resolve, reject) => {
@@ -56,8 +55,7 @@ export class Auth {
                     state: true
                 };
             } else {
-                console.log(' check User is disconnected');
-                return false;
+                return { state: false };
             }
         } catch (error) {
             console.error('Error checking user connection:', error);
@@ -72,6 +70,8 @@ export class Auth {
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
             this.uid = user.uid
+            const authUser = getAuth();
+            console.log(authUser.currentUser);
             this.checkUserConnection()
             return user;
         } catch (error) {
@@ -99,4 +99,6 @@ export class Auth {
             console.error('Error al cerrar sesión', errorCode, errorMessage);
         }
     }
+
+
 }
