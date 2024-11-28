@@ -15,8 +15,8 @@ import { ControlIndividualProduct } from './classes/Individual_Product/ControlIn
 import {
     Handler_Displays_Ui,
     View_Favorites,
-    replace_Minus_Symbol_For_Trash_Basket,
-    render_Total_And_Pay, Display_Data_Firebase_User,
+    replace_Minus_Symbol_For_Trash_Basket
+    , Display_Data_Firebase_User,
     TemplateCards
 } from "../view/view.js";
 import { controllerActivityUser } from './classes/Controller Auth/controllerActivityUser.js';
@@ -82,23 +82,6 @@ export class HandlerClickFavorites {
     }
 }
 
-export class HandlerClickPurchase {
-
-    constructor() {
-        this.eventListeners = new EventManager()
-/*         this.modelPurchases = new ModelPurchases();
- */        this.saveRealtime = new RealTimeDB()
-    }
-    /* 
-        addEventListenerPurchase() {
-            this.eventListeners.addListener('click', '#pay_confirm', (e) => {
-                console.log(e);
-                this.saveRealtime.saveDataPurchase(this.modelPurchases.createdPurchase())
-    
-            })
-        } */
-
-}
 
 export class Control_View_Information_At_DOM {
 
@@ -399,8 +382,8 @@ export class Control_cart {
             this.totalAndQuantity.controllerCart_Total_Quantity()
             const controlPurchase = new HandlerClickPurchase()
             //assign listener button of finally purchase
-            controlPurchase.addEventListenerPurchase()
-
+/*             controlPurchase.addEventListenerPurchase()
+ */
         })
     }
 

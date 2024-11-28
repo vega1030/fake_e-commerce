@@ -248,6 +248,14 @@ class Display_Data_Firebase_User {
  */    }
 }
 
+/* const render_Total_And_Pay = (total_And_Quantity) => {
+    if (cart === null) { return }
+    this.contentTotal = document.querySelector('#content_total')
+
+    render_Function()
+} */
+
+
 
 //---------------------------------------------------------------------------------------------------------------------------------------
 
@@ -364,35 +372,6 @@ const replace_Minus_Symbol_For_Trash_Basket = (content_trash, flag = false) => {
  * on the first line.
  */
 
-const render_Total_And_Pay = (total_And_Quantity) => {
-    if (cart === null) { return }
-    const content_Model_Total = document.querySelector('#content_total')
-
-    const render_Function = () => {
-        if (content_Model_Total) {
-            content_Model_Total.remove();
-        }
-        const $total = document.querySelector('#view_section_cart');
-        const model_Total = `
-        
-            <aside id="content_total" class="content_total">
-                <h3 class="total">Subtotal ${ parseFloat(total_And_Quantity.total.toFixed(2)) }\u20AC</h3>
-                <a href="#home" class="btn_confirm_buy quantity"  id="pay_confirm">
-                    Pagar pedido (${ total_And_Quantity.quantity } productos)
-                </a>
-            </aside>
-        
-        
-        `;
-        if ($total) {
-
-            return $total.insertAdjacentHTML('afterbegin', model_Total);
-        }
-
-    }
-
-    render_Function()
-}
 
 /* const filterProducts = () => {
     const btnSearch = document.querySelector('#btn-search')
@@ -416,5 +395,4 @@ export {
     View_Favorites,
     Display_Data_Firebase_User,
     replace_Minus_Symbol_For_Trash_Basket,
-    render_Total_And_Pay,
 }

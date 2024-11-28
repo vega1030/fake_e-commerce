@@ -283,17 +283,18 @@ h2 {
 }
 
 /* section Login */
-.blur > *:not(.section_login) {
-   filter: blur(5px); 
-   pointer-events: none; 
+.blur>*:not(.section_login) {
+   filter: blur(5px);
+   pointer-events: none;
 }
 
 .closed_Menu_Login {
    position: absolute;
-  top: 30px;
-  right: 20px;
-  cursor: pointer;
+   top: 30px;
+   right: 20px;
+   cursor: pointer;
 }
+
 /* --------------- */
 
 /** footer **/

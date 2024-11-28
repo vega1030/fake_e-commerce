@@ -991,7 +991,7 @@ h1 {
 }
 
 .section_login {
-   display: flex;
+   display: none;
    width: 100vw;
    height: 45rem;
    opacity: 1;

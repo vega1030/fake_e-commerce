@@ -1,7 +1,7 @@
 'use strict'
 import { Drive_Data_Cart } from "../../../model/classes/Cart/Drive_Data_Cart.js";
 import { ViewCountCart } from "../../../view/classes/cart/ViewCountCart.js";
-import { render_Total_And_Pay } from "../../../view/view.js";
+import { SectionCart } from "../../../view/classes/cart/SectionCart.js";
 
 export class HandlerQuantityAndTotal {
 
@@ -10,6 +10,8 @@ export class HandlerQuantityAndTotal {
         this.quantity;
         this.storage = new Drive_Data_Cart();
         this.countCartNavBar = new ViewCountCart();
+        this.cartView = new ViewCountCart();
+        this.sectionCartPay = new SectionCart();
     }
 
 
@@ -40,7 +42,7 @@ export class HandlerQuantityAndTotal {
 
         this.quantity_In_Cart(this.storage.returnCopyLocalStorage())
 
-        render_Total_And_Pay(total_And_Quantity)
+        this.sectionCartPay.patternViewTotalAndPay(total_And_Quantity)
         return this.total
     };
 }
