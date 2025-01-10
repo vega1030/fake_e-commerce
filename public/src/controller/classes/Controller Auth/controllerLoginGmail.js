@@ -26,7 +26,7 @@ export class ControllerLoginGmail {
 
     async stateUser() {
         const userState = await this.auth.checkUserConnection()
-        return this.user === undefined ? false : this.user
+        return this.user = undefined ? false : userState
     }
 
     async handlerStateStorageConnected() {

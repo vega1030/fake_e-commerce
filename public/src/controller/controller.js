@@ -16,8 +16,8 @@ import {
     Handler_Displays_Ui,
     View_Favorites,
     replace_Minus_Symbol_For_Trash_Basket
-    , Display_Data_Firebase_User,
-    TemplateCards
+    ,
+    UIUser
 } from "../view/view.js";
 import { controllerActivityUser } from './classes/Controller Auth/controllerActivityUser.js';
 import { RealTimeDB } from '../services/realtimedatabase.js'
@@ -61,17 +61,14 @@ export class HandlerClickFavorites {
         this.eventListeners = new EventManager()
         this.instanceFavorites = new Controller_Favorites()
         this.stateUser = new ControllerLoginGmail()
-        this.displayPanel_Login = new Display_Data_Firebase_User()
+        this.displayPanel_Login = new UIUser()
     }
     addListenerHeartFavorites() {
         this.eventListeners.addListener('click', '.favorite', async (e) => {
-            const stateUser = await this.stateUser.stateUser();
-            console.log(stateUser);
-            if (stateUser === true) {
-                this.instanceFavorites.handler_Favorites(e);
-            } else {
+            const state = await this.stateUser.stateUser()
+            state.state === true ?
+                this.instanceFavorites.handler_Favorites(e) :
                 this.displayPanel_Login.displayUserMenu(e)
-            }
         });
     };
 
@@ -382,8 +379,8 @@ export class Control_cart {
             this.totalAndQuantity.controllerCart_Total_Quantity()
             const controlPurchase = new HandlerClickPurchase()
             //assign listener button of finally purchase
-/*             controlPurchase.addEventListenerPurchase()
- */
+            /*             controlPurchase.addEventListenerPurchase()
+             */
         })
     }
 
@@ -465,7 +462,7 @@ export class Firebase_Auth {
         this.uid = ''
         this.favoritesController = new Controller_Favorites()
         this.auth = new ControllerLoginGmail()
-        this.viewUser = new Display_Data_Firebase_User()
+        this.viewUser = new UIUser()
         this.total_quantity = new HandlerQuantityAndTotal()
         this.addEventCartProduct = new Control_cart()
         this.eventListeners = new EventManager()
@@ -484,18 +481,17 @@ export class Firebase_Auth {
     handlerClickLoginButtonGmail() {
         this.eventListeners.addListener('click', '#google-sign-in-btn', async (e) => {
             const storage = new StorageService()
+            console.log('here');
             e.preventDefault()
             try {
                 //user disconnected
                 if (this.auth.user != null) {
-                    console.log('disconected');
                     this.auth.handlerStateStorageDisconnected()
                     this.auth.user = null
                     this.insertPhoto()
                     const instance_Control_Routes = new Control_Routes()
                     instance_Control_Routes.reception_Hash('#home');
                     console.log('disconnected');
-                    storage.removeItem('USERPHOTO')
                     return this.auth.user
                 }
                 //user connected
@@ -507,6 +503,7 @@ export class Firebase_Auth {
                 const storageFavorite = storage.getItem(keysLocalStorage.FAVORITES)
                 viewFavorites.display_FavoritesHeart(storageFavorite)
                 this.total_quantity.quantity_In_Cart(storageCart)
+                this.viewUser.templateMenuUserConnected()
             }
             catch (error) {
                 console.log('error', error)
@@ -539,19 +536,37 @@ class Control_Routes {
 class HandlerMenu {
     constructor() {
         this.eventManager = new EventManager();
-        this.viewUser = new Display_Data_Firebase_User()
+        this.userMenu = new UIUser()
+        this.app = document.querySelector('.app');
+        this.stateUser = new ControllerLoginGmail()
+
     }
 
     eventMenu() {
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', async (e) => {
             if (e.target && e.target.closest('#menuToggle')) {
                 const handlerClickBtnGmail = new Firebase_Auth()
-                this.viewUser.displayUserMenu(e)
                 handlerClickBtnGmail.handlerClickLoginButtonGmail()
+                this.toggleMenu()
                 return
             }
             return false;
         })
+    }
+    async toggleMenu() {
+        const user = await this.stateUser.stateUser()
+        console.log(user.state);
+        this.app.classList.add('blur')
+        user.state === true ? this.userMenu.insertTemplateUserMenuConnect() : this.userMenu.insertTemplateMenuDisconnect()
+        
+        return
+    };
+
+    displayUserMenu(buttonTarget = undefined) {
+        this.toggleMenu()
+        const closedMenu = document.querySelector('#closed');
+        closedMenu.addEventListener('click', () => this.userMenu.closeMenu())
+        return
     }
 
 }
@@ -564,8 +579,6 @@ if (typeof localStorage !== 'undefined') {
     /* -------------------------------------------------------------- */
     const instanceFirebaseAuth = new Firebase_Auth()
     const user = await instanceFirebaseAuth.auth.stateUser();
-    const userPhoto = user.photoURL
-    console.log(userPhoto);
     /* -------------------------------------------------------------- */
     const controller_Cart_Instance = new Control_cart()
     const storage = new StorageService()
@@ -586,13 +599,15 @@ if (typeof localStorage !== 'undefined') {
         authentication instance, a storage service, and a controller for logging in with Gmail. It
         then attempts to get the current user's state using the `stateUser()` method from the
         `ControllerLoginGmail` class. */
-        const userView = new Display_Data_Firebase_User()
-        const storage = new StorageService()
-        user == !false ? userView.displayProfilePhoto() : userView.displayProfilePhoto(userPhoto)
+        const stateUser = new ControllerLoginGmail()
+        const userView = new UIUser()
+        const user = await stateUser.stateUser()
+        /* user.state === false ? userView.insertTemplateMenuDisconnect() : userView.insertUserMenuConnect() */
+        user.state === false ? userView.displayProfilePhoto() : userView.displayProfilePhoto(user.user.photoURL)
     }
     userData()
     /* -------------------------------------------------------------- */
-    const userView = new Display_Data_Firebase_User()
+    const userView = new Firebase_Auth()
     controller_Cart_Instance.sendListCartToView()
     const returnAllProducts = await handler_Init_Page.controller_get_All_Products()
     products_Instance.create_Card(returnAllProducts),

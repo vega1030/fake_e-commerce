@@ -15,7 +15,7 @@ export class InsertTemplate {
 }
 
 
-class TemplateCards {
+export class TemplateCards {
 
 
     constructor(heartsDom) {
@@ -79,7 +79,7 @@ class TemplateCards {
 //---------------------------------------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------------------------------------
 
-class View_Favorites {
+export class View_Favorites {
 
     constructor(favorites) {
         this.favorites = favorites
@@ -115,8 +115,8 @@ class View_Favorites {
 
         this.fav_DOM.map(i => i.children[ 0 ].firstElementChild).forEach(i => {
 
-            const changueColor = () => { i.style.color === 'black' ? i.style.color = 'red' : i.style.color = 'black' }
-            product === undefined ? i.style.color === 'black' : changueColor()
+            const changeColor = () => { i.style.color === 'black' ? i.style.color = 'red' : i.style.color = 'black' }
+            product === undefined ? i.style.color === 'black' : changeColor()
         })
         /* The above code is assigning the value of `this.fav_DOM` to the `heartsDom` property of the
         `products_Instance` object in JavaScript. */
@@ -129,12 +129,11 @@ class View_Favorites {
 }
 //---------------------------------------------------------------------------------------------------------------------------------------
 
-class Display_Data_Firebase_User {
+export class UIUser {
 
     constructor(dataUser) {
         this.dataUser = dataUser;
         this.eventListeners = new EventManager();
-        this.sectionLogin = document.querySelector('.section_login');
         this.app = document.querySelector('.app');
     }
 
@@ -144,7 +143,7 @@ class Display_Data_Firebase_User {
         contentImageProfile.innerHTML = '';
         const imgProfile = document.createElement('IMG');
         const listenerMenu = document.createElement('A')
-        imgProfile.src = userAvatar
+        imgProfile.src = userAvatar === undefined ? userAvatar : userAvatar
         imgProfile.alt = 'avatar image';
         imgProfile.className = 'img-user';
         listenerMenu.className = 'link-to-user-menu'
@@ -162,8 +161,32 @@ class Display_Data_Firebase_User {
         return this.dataUser.email
     }
 
+    templateUserMenuDisconnect() {
+        const templateMenuUserNoLogin =
+            `
+    <aside class="section_login___aside">
+    <a id='closed' class='closed_Menu_Login'>X</a>
+        <h2>Registrate</h2>
+        <p>Disfruta de los beneficios</p>
+        <div>
+            <ul>
+                <li>Descubre nuestras novedades</li>
+                <li>Inscribite a nuestro Newsletter y te regalamos 3€ en tu proxima compra</li>
+                <li>Conoce nuestras ofertas antes que nadie</li>
+            </ul>
+            <div class="mb-3 form-init">
+                <label for="exampleFormControlInput1" class="form-label"></label>
+                <button type="button" id="google-sign-in-btn" class="btn btn-primary"
+                    data-user-state="disconnect">Login</button>
+            </div>
+        </div>
+    </aside>
+`
+        return templateMenuUserNoLogin
+    }
 
-    templateDisplayMenu() {
+
+    insertTemplateMenuDisconnect() {
         const sectionLogin = document.querySelector('.section_login');
         const checkExistingAside = document.querySelector('.section_login___aside')
 
@@ -171,58 +194,17 @@ class Display_Data_Firebase_User {
             checkExistingAside.remove()
         }
 
-        const templateMenu =
-            `
-            <aside class="section_login___aside">
-            <a id='closed' class='closed_Menu_Login'>X</a>
-                <h2>Registrate</h2>
-                <p>Disfruta de los beneficios</p>
-                <div>
-                    <ul>
-                        <li>Descubre nuestras novedades</li>
-                        <li>Inscribite a nuestro Newsletter y te regalamos 3€ en tu proxima compra</li>
-                        <li>Conoce nuestras ofertas antes que nadie</li>
-                    </ul>
-                    <div class="mb-3 form-init">
-                        <label for="exampleFormControlInput1" class="form-label"></label>
-                        <button type="button" id="google-sign-in-btn" class="btn btn-primary"
-                            data-user-state="disconnect">Login</button>
-                    </div>
-                </div>
-            </aside>
-        `
-        sectionLogin.insertAdjacentHTML('beforeend', templateMenu)
-        return
-    }
-
-    toggleMenu() {
+        sectionLogin.insertAdjacentHTML('beforeend', this.templateUserMenuDisconnect())
         sectionLogin.style.display = 'flex'
-        this.templateDisplayMenu();
-        this.app.classList.add('blur')
-        this.menuUserConnected()
-        return
-    };
-
-    closeMenu() {
-        this.app.classList.remove('blur')
-        const sectionLogin = document.querySelector('.section_login');
-        const aside_SectionLogin = document.querySelector('.section_login___aside');
-        aside_SectionLogin.remove();
-        sectionLogin.style.display = 'none'
-        return
-    };
-
-    displayUserMenu(buttonTarget = undefined) {
-        this.toggleMenu()
-        const closedMenu = document.querySelector('#closed');
-        closedMenu.addEventListener('click', () => this.closeMenu())
         return
     }
 
-    menuUserConnected() {
+    templateUserMenuConnect() {
 
         const templateUserConnected =
-            `
+            `    <aside class="section_login___aside">
+                <a id='closed' class='closed_Menu_Login'>X</a>
+
                         <div class="nav-links">
                     <a class="nav-link active home-link" href="#home" aria-current="page" id="_home">Home</a>
                     <a href="" class="purchases-style" id="purchase">Purchases</a>
@@ -234,18 +216,43 @@ class Display_Data_Firebase_User {
                         <button class="btn btn-outline-success search-button" id="btn-search"
                             type="button">Search</button>
                     </form>
-                    <div class="title-content">
-                    </div>
-
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" id="ul_List">
-
-                    </ul>
                 </div>
+                </aside>
         `
-        const menuUser = document.querySelector('#menuUser')
-        console.log(templateUserConnected);
-/*         menuUser.insertAdjacentHTML('beforeend', menuUser)
- */    }
+        return templateUserConnected
+    }
+
+    insertTemplateUserMenuConnect() {
+        const sectionLogin = document.querySelector('.section_login');
+        const checkExistingAside = document.querySelector('.section_login___aside')
+        if (checkExistingAside) {
+            checkExistingAside.remove()
+        }
+
+        sectionLogin.insertAdjacentHTML('beforeend', this.templateUserMenuConnect())
+        sectionLogin.style.display = 'flex'
+    }
+
+    /*     toggleMenu() {
+            this.insertTemplateMenuDisconnect();
+            this.app.classList.add('blur')
+            return
+        }; */
+    displayUserMenu(buttonTarget = undefined) {
+        const closedMenu = document.querySelector('#closed');
+        closedMenu.addEventListener('click', () => this.closeMenu())
+        return
+    }
+    closeMenu() {
+        this.app.classList.remove('blur')
+        const sectionLogin = document.querySelector('.section_login');
+        const aside_SectionLogin = document.querySelector('.section_login___aside');
+        aside_SectionLogin.remove();
+        sectionLogin.style.display = 'none'
+        return
+    };
+
+
 }
 
 /* const render_Total_And_Pay = (total_And_Quantity) => {
@@ -261,7 +268,7 @@ class Display_Data_Firebase_User {
 
 /* This class is responsible for displaying the correct section of the page based on the hash in the url */
 
-class Handler_Displays_Ui {
+export class Handler_Displays_Ui {
 
     handler_Display_(hash) {
         if (hash === 'categories') {
@@ -341,7 +348,7 @@ class Handler_Displays_Ui {
  * containing an image tag with a trash basket icon and a data-id attribute, or a hyphen symbol (-) as
  * a string, depending on the value of the `flag` parameter.
  */
-const replace_Minus_Symbol_For_Trash_Basket = (content_trash, flag = false) => {
+export const replace_Minus_Symbol_For_Trash_Basket = (content_trash, flag = false) => {
 
     const inputValue = content_trash
     console.log(inputValue)
@@ -387,12 +394,4 @@ const replace_Minus_Symbol_For_Trash_Basket = (content_trash, flag = false) => {
 if (typeof localStorage !== 'undefined') {
     const colorHeartInstance = new TemplateCards()
     colorHeartInstance.changeColorHeart()
-}
-
-export {
-    TemplateCards,
-    Handler_Displays_Ui,
-    View_Favorites,
-    Display_Data_Firebase_User,
-    replace_Minus_Symbol_For_Trash_Basket,
 }
